@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TheOddsAPI ‚Äî Real-Time Sports Betting Odds API</title>
+  <meta name="description" content="Real-time, normalized betting odds from 30+ sportsbooks via a single REST API. NBA, MLB and more. Built for developers." />
+
+  <!-- =====================================================
+       üîó LINKS CONFIG  ‚Üê Edit all URLs right here
+       ===================================================== -->
+  <script>
+    const LINKS = {
+      /* Where "Get API Key" and "Start Free" go */
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+
+      /* Live Swagger / interactive API docs */
+      DOCS:        'https://betting-api-production-2b06.up.railway.app/docs',
+
+      /* Enterprise / sales enquiries */
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+
+      /* Base URLs (also used in code examples) */
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+  <!-- ===================================================== -->
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+          fontSize: {
+            '2xs': ['10px', { lineHeight: '14px' }],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ‚îÄ‚îÄ Animations ‚îÄ‚îÄ */
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes blink-status {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .3; }
+    }
+    .live-dot     { animation: pulse-live    2s ease-in-out infinite; }
+    .ticker-track { animation: ticker-scroll 30s linear infinite; }
+    .blink-status { animation: blink-status   .9s step-start infinite; }
+
+    /* ‚îÄ‚îÄ Grid overlay for hero ‚îÄ‚îÄ */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(212,175,55,.6) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,175,55,.6) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    /* ‚îÄ‚îÄ Top gold line on cards ‚îÄ‚îÄ */
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    /* ‚îÄ‚îÄ Scrollbar for code boxes ‚îÄ‚îÄ */
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    /* ‚îÄ‚îÄ Hover states ‚îÄ‚îÄ */
+    .spec-row:hover  { background: rgba(212,175,55,.04); }
+    .feat-card:hover { background: #0f1f38; }
+    .metric-cell:hover { background: rgba(212,175,55,.04); }
+    .plan-card:hover { background: #10203a; }
+    /* ‚îÄ‚îÄ Syntax tokens ‚îÄ‚îÄ */
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    /* ‚îÄ‚îÄ Sandbox tab buttons ‚îÄ‚îÄ */
+    .s-tab {
+      padding: 8px 14px; font-size: 12px; font-weight: 600;
+      color: #8294B0; cursor: pointer;
+      border: none; border-bottom: 2px solid transparent;
+      background: transparent; transition: all .15s;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: .03em; margin-bottom: -1px;
+    }
+    .s-tab:hover  { color: #E8EEF7; }
+    .s-tab.active { color: #D4AF37; border-bottom-color: #D4AF37; }
+  </style>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     NAVIGATION
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+
+  <a href="#" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+
+  <!-- Desktop nav links -->
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="#quick-start" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Docs</a></li>
+    <li><a href="#features"    class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Markets</a></li>
+    <li><a href="#pricing"     class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="#enterprise"  class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+
+  <div class="flex items-center gap-3">
+    <a data-link="DOCS" href="#"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      View Docs ‚Üó
+    </a>
+    <a data-link="GET_KEY" href="#"
+       class="inline-flex items-center px-4 py-2 rounded
+              bg-gold text-navy text-xs font-bold tracking-wider
+              hover:bg-gold-dark transition-all
+              shadow-[0_2px_12px_rgba(212,175,55,.3)]
+              hover:shadow-[0_4px_20px_rgba(212,175,55,.45)]">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     HERO
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<section class="relative overflow-hidden px-5 md:px-14 pt-20 pb-20">
+
+  <div class="grid-bg absolute inset-0 opacity-[.025] pointer-events-none"></div>
+  <div class="absolute -top-48 -left-24 w-[600px] h-[600px] rounded-full pointer-events-none"
+       style="background:radial-gradient(circle,rgba(212,175,55,.09) 0%,transparent 65%)"></div>
+  <div class="absolute -bottom-48 -right-16 w-[460px] h-[460px] rounded-full pointer-events-none"
+       style="background:radial-gradient(circle,rgba(75,158,95,.06) 0%,transparent 65%)"></div>
+
+  <div class="relative z-10 max-w-6xl mx-auto
+              grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-16 items-center">
+
+    <!-- Left: Copy -->
+    <div>
+      <div class="inline-flex items-center gap-2.5 border-t-2 border-gold pt-3 mb-7
+                  text-2xs font-bold text-gold tracking-[.14em] uppercase">
+        <span class="live-dot w-1.5 h-1.5 rounded-full bg-alive shrink-0"
+              style="box-shadow:0 0 8px #4B9E5F"></span>
+        Live feed active &middot; NBA &amp; MLB
+      </div>
+
+      <h1 class="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.12]
+                 tracking-tight text-[#E8EEF7] mb-5">
+        The odds intelligence<br/>
+        platform for <em class="not-italic text-gold">serious</em><br/>
+        operators.
+      </h1>
+
+      <p class="text-muted text-base leading-[1.85] mb-8 max-w-[460px]">
+        Real-time, normalized betting lines from 30+ sportsbooks.
+        Built for developers and data teams that demand precision, uptime, and scale.
+      </p>
+
+      <div class="flex flex-wrap gap-3 mb-8">
+        <a data-link="GET_KEY" href="#"
+           class="px-7 py-3.5 rounded bg-gold text-navy text-sm font-bold tracking-wider
+                  hover:bg-gold-dark transition-all
+                  shadow-[0_4px_18px_rgba(212,175,55,.35)]
+                  hover:shadow-[0_6px_26px_rgba(212,175,55,.5)]
+                  hover:-translate-y-px">
+          Get API Key
+        </a>
+        <a data-link="DOCS" href="#"
+           class="inline-flex items-center gap-2 px-7 py-3.5 rounded
+                  border border-gold/25 text-muted text-sm font-semibold tracking-wide
+                  hover:text-[#E8EEF7] hover:border-gold/50 hover:bg-gold/[.05] transition-all">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          View Documentation
+        </a>
+      </div>
+
+      <div class="flex flex-wrap gap-5">
+        <span class="flex items-center gap-2 text-muted text-xs font-medium">
+          <span class="inline-block w-4 h-px bg-gold/60"></span>99.9% uptime SLA
+        </span>
+        <span class="flex items-center gap-2 text-muted text-xs font-medium">
+          <span class="inline-block w-4 h-px bg-gold/60"></span>FastAPI infrastructure
+        </span>
+        <span class="flex items-center gap-2 text-muted text-xs font-medium">
+          <span class="inline-block w-4 h-px bg-gold/60"></span>Response in &lt;500ms
+        </span>
+      </div>
+    </div>
+
+    <!-- Right: Live API Sandbox -->
+    <div class="relative rounded-lg overflow-hidden border border-gold/[.18]
+                bg-navy-card shadow-[0_28px_80px_rgba(0,0,0,.55)]">
+      <div class="absolute top-0 left-0 right-0 h-0.5 pointer-events-none"
+           style="background:linear-gradient(90deg,transparent,#D4AF37 40%,#4B9E5F 100%)"></div>
+
+      <!-- Sandbox header -->
+      <div class="flex items-center justify-between px-4 py-3
+                  bg-navy-mid border-b border-white/[.05]">
+        <span class="text-2xs font-bold text-gold tracking-[.1em] uppercase">Live API Sandbox</span>
+        <span class="flex items-center gap-1.5 text-alive text-2xs font-bold tracking-[.08em] font-mono">
+          <span class="live-dot w-1.5 h-1.5 rounded-full bg-alive"
+                style="box-shadow:0 0 6px #4B9E5F"></span>
+          CONNECTED
+        </span>
+      </div>
+
+      <!-- Language tabs -->
+      <div class="flex border-b border-white/[.05] bg-navy-mid px-4 gap-0.5">
+        <button onclick="switchTab('curl')"     class="s-tab active" data-tab="curl">cURL</button>
+        <button onclick="switchTab('python')"   class="s-tab"        data-tab="python">Python</button>
+        <button onclick="switchTab('js')"       class="s-tab"        data-tab="js">JavaScript</button>
+        <button onclick="switchTab('response')" class="s-tab"        data-tab="response">Response</button>
+      </div>
+
+      <!-- Param controls -->
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3
+                  bg-navy-mid border-b border-white/[.05]">
+        <div class="flex items-center gap-2">
+          <span class="text-2xs font-bold text-muted tracking-[.08em] uppercase font-mono">Sport</span>
+          <select id="param-sport" onchange="updateCode()"
+                  class="bg-navy-card border border-gold/20 rounded text-[#E8EEF7]
+                         text-xs font-mono px-2 py-1 focus:border-gold outline-none cursor-pointer">
+            <option value="basketball_nba">NBA Basketball</option>
+            <option value="baseball_mlb">MLB Baseball</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-2xs font-bold text-muted tracking-[.08em] uppercase font-mono">Market</span>
+          <select id="param-market" onchange="updateCode()"
+                  class="bg-navy-card border border-gold/20 rounded text-[#E8EEF7]
+                         text-xs font-mono px-2 py-1 focus:border-gold outline-none cursor-pointer">
+            <option value="h2h">Moneylines</option>
+            <option value="spreads">Spreads</option>
+            <option value="totals">Totals (O/U)</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-2xs font-bold text-muted tracking-[.08em] uppercase font-mono">Format</span>
+          <select id="param-format" onchange="updateCode()"
+                  class="bg-navy-card border border-gold/20 rounded text-[#E8EEF7]
+                         text-xs font-mono px-2 py-1 focus:border-gold outline-none cursor-pointer">
+            <option value="american">American</option>
+            <option value="decimal">Decimal</option>
+          </select>
+        </div>
+        <button id="run-btn" onclick="runSandbox()"
+                class="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded
+                       bg-gold text-navy text-xs font-bold tracking-wider font-mono
+                       hover:bg-gold-dark hover:shadow-[0_2px_12px_rgba(212,175,55,.4)] transition-all">
+          <svg id="run-icon" class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run
+        </button>
+      </div>
+
+      <!-- Code panels -->
+      <div>
+        <div id="tab-curl"     class="tab-panel block">
+          <pre id="code-curl"     class="px-4 py-4 font-mono text-xs leading-7 overflow-x-auto thin-scroll min-h-[130px] text-[#cdd6f4]"></pre>
+        </div>
+        <div id="tab-python"   class="tab-panel hidden">
+          <pre id="code-python"   class="px-4 py-4 font-mono text-xs leading-7 overflow-x-auto thin-scroll min-h-[130px] text-[#cdd6f4]"></pre>
+        </div>
+        <div id="tab-js"       class="tab-panel hidden">
+          <pre id="code-js"       class="px-4 py-4 font-mono text-xs leading-7 overflow-x-auto thin-scroll min-h-[130px] text-[#cdd6f4]"></pre>
+        </div>
+        <div id="tab-response" class="tab-panel hidden">
+          <pre id="code-response" class="px-4 py-4 font-mono text-xs leading-7 overflow-x-auto thin-scroll min-h-[170px] text-[#cdd6f4]">
+<span class="tm">‚Üê Press Run to execute and see a live response</span></pre>
+        </div>
+      </div>
+
+      <!-- Status bar -->
+      <div class="border-t border-white/[.05] bg-navy-mid px-4 py-2.5 flex items-center gap-3">
+        <span class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono">Response</span>
+        <span id="res-status" class="text-xs font-mono font-bold text-muted">‚Äî</span>
+        <span id="res-time"   class="text-2xs font-mono text-muted ml-auto"></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     LIVE ODDS TICKER
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<div class="flex items-center border-t border-b border-gold/[.15] bg-navy-mid overflow-hidden h-10">
+  <div class="shrink-0 flex items-center px-5 h-full
+              border-r border-gold/[.15] bg-gold/[.04]
+              text-2xs font-bold text-gold tracking-[.12em] uppercase font-mono">
+    Live odds
+  </div>
+  <div class="overflow-hidden flex-1">
+    <div class="ticker-track flex whitespace-nowrap" id="ticker-track"></div>
+  </div>
+</div>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     METRICS
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<div class="grid grid-cols-2 lg:grid-cols-4 border-b border-gold/[.15]">
+  <div class="metric-cell px-7 md:px-10 py-8 border-r border-gold/[.15] transition-colors">
+    <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Sportsbooks tracked</p>
+    <p class="font-serif text-4xl font-bold text-[#E8EEF7] tracking-tight leading-none">30<span class="text-gold">+</span></p>
+    <p class="text-alive text-xs font-medium mt-1.5">‚Üë Expanding quarterly</p>
+  </div>
+  <div class="metric-cell px-7 md:px-10 py-8 border-r border-gold/[.15] transition-colors">
+    <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Avg. response latency</p>
+    <p class="font-serif text-4xl font-bold text-[#E8EEF7] tracking-tight leading-none">&lt;<span class="text-gold">500</span>ms</p>
+    <p class="text-alive text-xs font-medium mt-1.5">P95 SLA measured</p>
+  </div>
+  <div class="metric-cell px-7 md:px-10 py-8 border-t lg:border-t-0 border-r border-gold/[.15] transition-colors">
+    <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Platform uptime (30d)</p>
+    <p class="font-serif text-4xl font-bold text-[#E8EEF7] tracking-tight leading-none">99.<span class="text-gold">9</span>%</p>
+    <p class="text-alive text-xs font-medium mt-1.5">Pro tier SLA</p>
+  </div>
+  <div class="metric-cell px-7 md:px-10 py-8 border-t lg:border-t-0 transition-colors">
+    <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Markets available</p>
+    <p class="font-serif text-4xl font-bold text-[#E8EEF7] tracking-tight leading-none"><span class="text-gold">6</span></p>
+    <p class="text-muted text-xs font-medium mt-1.5">h2h ¬∑ spreads ¬∑ totals + more</p>
+  </div>
+</div>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     QUICK START
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<section id="quick-start" class="px-5 md:px-14 py-20 bg-navy-mid border-b border-gold/[.15]">
+  <div class="max-w-5xl mx-auto">
+
+    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
+              border-l-2 border-gold pl-2.5">Quick start</p>
+    <h2 class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-3">
+      Your first request in <em class="not-italic text-gold">under a minute.</em>
+    </h2>
+    <p class="text-muted text-base leading-relaxed mb-10 max-w-xl">
+      Request an API key, add one header, and you're pulling live odds from every major
+      sportsbook in a single call.
+    </p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+      <!-- Steps -->
+      <div class="flex flex-col gap-4">
+
+        <!-- Step 1 -->
+        <div class="flex gap-4 p-5 rounded border border-gold/[.15] bg-navy-card
+                    hover:border-gold/30 transition-colors">
+          <div class="shrink-0 w-8 h-8 rounded border border-gold/40 flex items-center
+                      justify-center text-gold text-xs font-bold font-mono bg-gold/[.06]">01</div>
+          <div>
+            <p class="text-sm font-bold text-[#E8EEF7] mb-1">Request an API key</p>
+            <p class="text-muted text-xs leading-relaxed">
+              Send us a quick message and we'll get your key to you directly.
+              <a data-link="GET_KEY" href="#"
+                 class="text-gold hover:underline">Request yours ‚Üí</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-4 p-5 rounded border border-gold/[.15] bg-navy-card
+                    hover:border-gold/30 transition-colors">
+          <div class="shrink-0 w-8 h-8 rounded border border-gold/40 flex items-center
+                      justify-center text-gold text-xs font-bold font-mono bg-gold/[.06]">02</div>
+          <div>
+            <p class="text-sm font-bold text-[#E8EEF7] mb-1">Authenticate via header</p>
+            <p class="text-muted text-xs leading-relaxed">
+              Every request needs the
+              <code class="font-mono text-gold bg-gold/[.08] px-1 rounded">x-api-key</code>
+              header. Works with any HTTP client or language.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-4 p-5 rounded border border-gold/[.15] bg-navy-card
+                    hover:border-gold/30 transition-colors">
+          <div class="shrink-0 w-8 h-8 rounded border border-gold/40 flex items-center
+                      justify-center text-gold text-xs font-bold font-mono bg-gold/[.06]">03</div>
+          <div>
+            <p class="text-sm font-bold text-[#E8EEF7] mb-1">Parse normalized JSON</p>
+            <p class="text-muted text-xs leading-relaxed">
+              Every response follows the same schema across all bookmakers.
+              No custom parsing per book required.
+            </p>
+          </div>
+        </div>
+
+        <!-- Base URL callout -->
+        <div class="p-4 rounded border border-gold/30 bg-gold/[.05] mt-1">
+          <p class="text-2xs font-bold text-gold tracking-[.1em] uppercase font-mono mb-1.5">Base URL</p>
+          <code id="base-url-display"
+                class="font-mono text-sm text-[#E8EEF7] font-semibold select-all">
+            https://api.theoddsapi.com
+          </code>
+        </div>
+
+        <!-- Full docs link -->
+        <a data-link="DOCS" href="#"
+           class="inline-flex items-center gap-2 text-gold text-sm font-semibold
+                  hover:underline transition-colors mt-1">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Open interactive API docs (Swagger) ‚Üó
+        </a>
+      </div>
+
+      <!-- curl example -->
+      <div class="rounded overflow-hidden border border-gold/[.15]
+                  shadow-[0_16px_56px_rgba(0,0,0,.45)]">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-4 py-2.5
+                    bg-navy-mid border-b border-white/[.05]">
+          <span class="text-2xs font-bold text-gold tracking-[.1em] uppercase font-mono">
+            cURL ¬∑ Quick Start
+          </span>
+          <span class="text-2xs text-alive font-mono font-bold">200 OK</span>
+        </div>
+
+        <!-- Primary example (exactly as specified) -->
+        <div class="bg-[#07101E] px-5 py-5">
+          <pre class="font-mono text-xs leading-7 overflow-x-auto thin-scroll text-[#cdd6f4]"><span class="tm"># Fetch live NBA odds</span>
+<span class="tk">curl</span> -X GET <span class="ts">"https://api.theoddsapi.com/odds?sport_key=basketball_nba"</span> \
+  -H <span class="ts">"x-api-key: YOUR_API_KEY"</span></pre>
+        </div>
+
+        <!-- Divider label -->
+        <div class="border-t border-white/[.05] px-4 py-2 bg-navy-mid">
+          <p class="text-2xs text-muted font-mono">With optional query parameters</p>
+        </div>
+
+        <!-- Extended example -->
+        <div class="bg-[#07101E] px-5 py-5 border-t border-white/[.04]">
+          <pre class="font-mono text-xs leading-7 overflow-x-auto thin-scroll text-[#cdd6f4]"><span class="tm"># NBA moneylines + spreads, American format</span>
+<span class="tk">curl</span> -X GET \
+  <span class="ts">"https://api.theoddsapi.com/odds?sport_key=basketball_nba&amp;markets=h2h,spreads&amp;oddsFormat=american&amp;regions=us"</span> \
+  -H <span class="ts">"x-api-key: YOUR_API_KEY"</span>
+
+<span class="tm"># MLB moneylines</span>
+<span class="tk">curl</span> -X GET \
+  <span class="ts">"https://api.theoddsapi.com/odds?sport_key=baseball_mlb&amp;markets=h2h"</span> \
+  -H <span class="ts">"x-api-key: YOUR_API_KEY"</span></pre>
+        </div>
+
+        <!-- Response preview -->
+        <div class="border-t border-white/[.05]">
+          <div class="px-4 py-2 bg-navy-mid flex items-center gap-2">
+            <span class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono">Response</span>
+            <span class="text-2xs text-alive font-mono font-semibold ml-auto">application/json</span>
+          </div>
+          <pre class="px-5 py-4 font-mono text-xs leading-[1.85] bg-[#07101E]
+                      overflow-x-auto overflow-y-auto thin-scroll max-h-52 text-[#cdd6f4]"><span class="tc">[</span> <span class="tc">{</span>
+  <span class="tk">"id"</span>:             <span class="ts">"a1b2c3d4"</span>,
+  <span class="tk">"sport_key"</span>:     <span class="ts">"basketball_nba"</span>,
+  <span class="tk">"home_team"</span>:     <span class="ts">"Los Angeles Lakers"</span>,
+  <span class="tk">"away_team"</span>:     <span class="ts">"Boston Celtics"</span>,
+  <span class="tk">"commence_time"</span>: <span class="ts">"2026-03-28T01:00:00Z"</span>,
+  <span class="tk">"bookmakers"</span>: <span class="tc">[</span> <span class="tc">{</span>
+    <span class="tk">"key"</span>:        <span class="ts">"draftkings"</span>,
+    <span class="tk">"title"</span>:     <span class="ts">"DraftKings"</span>,
+    <span class="tk">"last_update"</span>: <span class="ts">"2026-03-27T14:38:01Z"</span>,
+    <span class="tk">"markets"</span>: <span class="tc">[</span> <span class="tc">{</span>
+      <span class="tk">"key"</span>: <span class="ts">"h2h"</span>,
+      <span class="tk">"outcomes"</span>: <span class="tc">[</span>
+        <span class="tc">{</span> <span class="tk">"name"</span>: <span class="ts">"Lakers"</span>,  <span class="tk">"price"</span>: <span class="tn">-110</span> <span class="tc">}</span>,
+        <span class="tc">{</span> <span class="tk">"name"</span>: <span class="ts">"Celtics"</span>, <span class="tk">"price"</span>: <span class="tn">-110</span> <span class="tc">}</span>
+      <span class="tc">]</span>
+    <span class="tc">}</span> <span class="tc">]</span>
+  <span class="tc">}</span> <span class="tc">]</span>
+<span class="tc">}</span> <span class="tc">]</span></pre>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom CTA row -->
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a data-link="GET_KEY" href="#"
+         class="px-7 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wider
+                hover:bg-gold-dark transition-all shadow-[0_2px_14px_rgba(212,175,55,.3)]">
+        Request API Key
+      </a>
+      <a data-link="DOCS" href="#"
+         class="px-7 py-3 rounded border border-gold/25 text-muted text-sm font-semibold tracking-wide
+                hover:text-[#E8EEF7] hover:border-gold/50 transition-all">
+        Full API Reference ‚Üó
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     FEATURES
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<section id="features" class="px-5 md:px-14 py-20">
+  <div class="max-w-5xl mx-auto">
+    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
+              border-l-2 border-gold pl-2.5">Platform capabilities</p>
+    <h2 class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-3">
+      Infrastructure worthy of your product.
+    </h2>
+    <p class="text-muted text-base leading-relaxed mb-14 max-w-xl">
+      Engineered for teams that treat data quality as a competitive moat ‚Äî not an afterthought.
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px
+                bg-gold/[.12] rounded border border-gold/[.12] overflow-hidden">
+      <div class="feat-card bg-navy-mid p-8 transition-colors">
+        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">üì°</div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Real-time feeds</h3>
+        <p class="text-muted text-sm leading-relaxed">Lines reflect current sportsbook prices within seconds. Intelligent caching preserves quota without sacrificing freshness.</p>
+        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">LIVE DATA</span>
+      </div>
+      <div class="feat-card bg-navy-mid p-8 transition-colors">
+        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">‚öñÔ∏è</div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Cross-book normalization</h3>
+        <p class="text-muted text-sm leading-relaxed">Identical schema regardless of source. Compare DraftKings and Pinnacle in the same loop ‚Äî no translation layer needed.</p>
+        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">DATA QUALITY</span>
+      </div>
+      <div class="feat-card bg-navy-mid p-8 transition-colors">
+        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">üîë</div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Key-scoped auth</h3>
+        <p class="text-muted text-sm leading-relaxed">Pass your key via the <code class="font-mono text-gold bg-gold/[.08] px-1 rounded text-xs">x-api-key</code> header. Per-environment keys with instant revocation and clear rate-limit headers.</p>
+        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">SECURITY</span>
+      </div>
+      <div class="feat-card bg-navy-mid p-8 transition-colors">
+        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">üìà</div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Historical archive</h3>
+        <p class="text-muted text-sm leading-relaxed">Access prior odds snapshots for backtesting quantitative models and tracking line movement over time.</p>
+        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">ANALYTICS</span>
+      </div>
+      <div class="feat-card bg-navy-mid p-8 transition-colors">
+        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">üß©</div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">OpenAPI 3.0 spec</h3>
+        <p class="text-muted text-sm leading-relaxed">Full Swagger UI at <code class="font-mono text-xs text-gold break-all">api.theoddsapi.com/docs</code>. Generate typed clients in any language from the spec.</p>
+        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">DEVELOPER EX.</span>
+      </div>
+      <div class="feat-card bg-navy-mid p-8 transition-colors">
+        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">üèóÔ∏è</div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">FastAPI backbone</h3>
+        <p class="text-muted text-sm leading-relaxed">Async Python FastAPI with an intelligent caching layer. Consistent, predictable performance under high request volume.</p>
+        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">PERFORMANCE</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     API REFERENCE
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<section id="api-reference" class="px-5 md:px-14 py-20 bg-navy-mid border-t border-gold/[.15]">
+  <div class="max-w-5xl mx-auto">
+    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
+              border-l-2 border-gold pl-2.5">Technical specification</p>
+    <h2 class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-3">
+      Precise. Normalized. Documented.
+    </h2>
+    <p class="text-muted text-base leading-relaxed mb-14 max-w-xl">
+      Every response is schema-validated and structured identically regardless of source book.
+      Your integration stays stable even when bookmakers update their own formats.
+    </p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+
+      <!-- Spec table -->
+      <div class="rounded border border-gold/[.15] overflow-hidden">
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Base URL</span>
+          <span class="text-xs text-[#E8EEF7] font-mono font-semibold">api.theoddsapi.com</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Authentication</span>
+          <span class="text-xs text-[#E8EEF7] font-mono">x-api-key header</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Sports (live now)</span>
+          <span class="text-xs text-gold font-mono font-semibold">basketball_nba ¬∑ baseball_mlb</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Markets</span>
+          <span class="text-xs text-[#E8EEF7] font-mono">h2h ¬∑ spreads ¬∑ totals</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Odds formats</span>
+          <span class="text-xs text-[#E8EEF7] font-mono">american ¬∑ decimal ¬∑ fractional</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Rate limiting</span>
+          <span class="text-xs text-[#E8EEF7] font-mono">X-RateLimit-* headers</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Caching</span>
+          <span class="text-xs text-[#E8EEF7] font-mono">Server-side ¬∑ ETag support</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Interactive docs</span>
+          <a data-link="DOCS" href="#"
+             class="text-xs text-gold font-mono hover:underline">Swagger UI ‚Üó</a>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Webhook delivery</span>
+          <span class="text-xs text-gold font-mono font-semibold">Business tier</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 transition-colors">
+          <span class="text-sm text-muted font-medium">Historical data</span>
+          <span class="text-xs text-[#E8EEF7] font-mono">Pro: 7d ¬∑ Business: 90d</span>
+        </div>
+      </div>
+
+      <!-- JSON response -->
+      <div class="rounded border border-gold/[.15] overflow-hidden
+                  shadow-[0_12px_40px_rgba(0,0,0,.4)]">
+        <div class="flex items-center justify-between px-4 py-2.5 bg-navy border-b border-white/[.05]">
+          <span class="text-2xs font-bold text-gold tracking-[.1em] uppercase font-mono">
+            GET /odds?sport_key=basketball_nba
+          </span>
+          <span class="text-2xs text-alive font-mono font-bold">200 ¬∑ 218ms</span>
+        </div>
+        <pre class="bg-[#07101E] px-5 py-5 font-mono text-xs leading-[1.85]
+                    overflow-x-auto thin-scroll text-[#cdd6f4]"><span class="tc">[</span>
+  <span class="tc">{</span>
+    <span class="tk">"id"</span>:             <span class="ts">"a1b2c3d4e5f6"</span>,
+    <span class="tk">"sport_key"</span>:     <span class="ts">"basketball_nba"</span>,
+    <span class="tk">"home_team"</span>:     <span class="ts">"Los Angeles Lakers"</span>,
+    <span class="tk">"away_team"</span>:     <span class="ts">"Boston Celtics"</span>,
+    <span class="tk">"commence_time"</span>: <span class="ts">"2026-03-28T01:00:00Z"</span>,
+    <span class="tk">"bookmakers"</span>: <span class="tc">[</span>
+      <span class="tc">{</span>
+        <span class="tk">"key"</span>:         <span class="ts">"draftkings"</span>,
+        <span class="tk">"title"</span>:       <span class="ts">"DraftKings"</span>,
+        <span class="tk">"last_update"</span>: <span class="ts">"2026-03-27T14:38:01Z"</span>,
+        <span class="tk">"markets"</span>: <span class="tc">[</span>
+          <span class="tc">{</span>
+            <span class="tk">"key"</span>: <span class="ts">"h2h"</span>,
+            <span class="tk">"outcomes"</span>: <span class="tc">[</span>
+              <span class="tc">{</span> <span class="tk">"name"</span>: <span class="ts">"Lakers"</span>,  <span class="tk">"price"</span>: <span class="tn">-110</span> <span class="tc">}</span>,
+              <span class="tc">{</span> <span class="tk">"name"</span>: <span class="ts">"Celtics"</span>, <span class="tk">"price"</span>: <span class="tn">-110</span> <span class="tc">}</span>
+            <span class="tc">]</span>
+          <span class="tc">}</span>
+        <span class="tc">]</span>
+      <span class="tc">}</span>
+    <span class="tc">]</span>
+  <span class="tc">}</span>
+<span class="tc">]</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     SOCIAL PROOF
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.15]">
+  <div class="max-w-5xl mx-auto">
+    <p class="text-2xs font-bold text-muted tracking-[.14em] uppercase font-mono text-center mb-8">
+      Trusted by developers building the next generation of sports data products
+    </p>
+    <div class="flex flex-wrap justify-center gap-10 mb-12">
+      <span class="font-serif text-[15px] font-bold text-[#E8EEF7]/[.18] hover:text-gold/40 transition-colors cursor-default">BetSync</span>
+      <span class="font-serif text-[15px] font-bold text-[#E8EEF7]/[.18] hover:text-gold/40 transition-colors cursor-default">OddsRadar</span>
+      <span class="font-serif text-[15px] font-bold text-[#E8EEF7]/[.18] hover:text-gold/40 transition-colors cursor-default">LineTracker</span>
+      <span class="font-serif text-[15px] font-bold text-[#E8EEF7]/[.18] hover:text-gold/40 transition-colors cursor-default">SharpPick</span>
+      <span class="font-serif text-[15px] font-bold text-[#E8EEF7]/[.18] hover:text-gold/40 transition-colors cursor-default">ArbitrageHQ</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-6 rounded border border-gold/[.15] bg-navy-card">
+        <p class="text-muted text-sm leading-relaxed italic mb-5">"The normalization layer alone saved us three weeks of engineering time. The data is clean, the latency is low, and it just works."</p>
+        <p class="text-[#E8EEF7] text-sm font-semibold">Alex R.</p>
+        <p class="text-muted text-xs mt-0.5">CTO ¬∑ SharpPick Analytics</p>
+      </div>
+      <div class="p-6 rounded border border-gold/[.15] bg-navy-card">
+        <p class="text-muted text-sm leading-relaxed italic mb-5">"Exceptional uptime. We're pulling 50,000 requests a month across NBA and MLB with zero incidents in six months of production use."</p>
+        <p class="text-[#E8EEF7] text-sm font-semibold">Jordan M.</p>
+        <p class="text-muted text-xs mt-0.5">Lead Engineer ¬∑ LineTracker</p>
+      </div>
+      <div class="p-6 rounded border border-gold/[.15] bg-navy-card">
+        <p class="text-muted text-sm leading-relaxed italic mb-5">"Comparing DraftKings, FanDuel, and BetMGM in a single response object is exactly what we needed for our arbitrage detection pipeline."</p>
+        <p class="text-[#E8EEF7] text-sm font-semibold">Sam K.</p>
+        <p class="text-muted text-xs mt-0.5">Founder ¬∑ ArbitrageHQ</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+     PRICING
+‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<section id="pricing" class="px-5 md:px-14 py-20 bg-navy-mid border-t border-gold/[.15]">
+  <div class="max-w-5xl mx-auto">
+    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
+              border-l-2 border-gold pl-2.5">Subscription tiers</p>
+    <h2 class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-3">
+      Tiered access. Transparent pricing.
+    </h2>
+    <p class="text-muted text-base leading-relaxed mb-14 max-w-xl">
+      Designed to grow with your product. All plans are provisioned directly ‚Äî reach out
+      and we'll get you set up. Volume and annual pricing available on request.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-px
+                bg-gold/[.12] rounded border border-gold/[.12] overflow-hidden">
+
+      <!-- Starter -->
+      <div class="plan-card bg-navy-mid p-9 transition-colors">
+        <div class="h-0.5 bg-transparent mb-7 rounded-full"></div>
+        <p class="text-2xs font-bold text-muted tracking-[.14em] uppercase font-mono mb-3">Starter</p>
+        <p class="font-serif text-5xl font-bold text-[#E8EEF7] tracking-tight leading-none mb-1.5">
+          $0<sub class="text-base font-sans font-normal text-muted normal-case tracking-normal">/mo</sub>
+        </p>
+        <p class="text-muted text-sm mb-6 leading-relaxed">
+          Evaluate the platform. Get in touch and we'll set you up with a key to explore the API.
+        </p>
+        <a data-link="GET_KEY" href="#"
+           class="block w-full py-3 text-center rounded text-xs font-semibold tracking-wider
+                  border border-gold/30 text-gold hover:bg-gold/[.08] transition-all">
+          Get Started ‚Äî Free
+        </a>
+        <hr class="border-white/[.05] my-6" />
+        <ul class="space-y-2.5">
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>500 API requests / month</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>NBA + MLB markets</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>Moneylines (h2h)</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>US sportsbooks</li>
+          <li class="flex gap-2.5 text-sm text-muted/40"><span class="text-gold/20 mt-0.5 shrink-0">‚Äî</span>Spreads &amp; totals</li>
+          <li class="flex gap-2.5 text-sm text-muted/40"><span class="text-gold/20 mt-0.5 shrink-0">‚Äî</span>Historical data</li>
+          <li class="flex gap-2.5 text-sm text-muted/40"><span class="text-gold/20 mt-0.5 shrink-0">‚Äî</span>SLA guarantee</li>
+        </ul>
+      </div>
+
+      <!-- Professional -->
+      <div class="plan-card bg-navy-card p-9 transition-colors relative">
+        <div class="h-0.5 bg-gold mb-7 rounded-full"></div>
+        <span class="inline-block mb-4 text-2xs font-bold text-navy bg-gold
+                     px-2.5 py-0.5 rounded font-mono tracking-wider">MOST POPULAR</span>
+        <p class="text-2xs font-bold text-muted tracking-[.14em] uppercase font-mono mb-3">Professional</p>
+        <p class="font-serif text-5xl font-bold text-[#E8EEF7] tracking-tight leading-none mb-1.5">
+          $29<sub class="text-base font-sans font-normal text-muted normal-case tracking-normal">/mo</sub>
+        </p>
+        <p class="text-muted text-sm mb-6 leading-relaxed">
+          For developers and independent analysts. Get in touch to get access and discuss your setup.
+        </p>
+        <a data-link="GET_KEY" href="#"
+           class="block w-full py-3 text-center rounded text-xs font-bold tracking-wider
+                  bg-gold text-navy hover:bg-gold-dark transition-all
+                  shadow-[0_2px_16px_rgba(212,175,55,.35)]
+                  hover:shadow-[0_4px_24px_rgba(212,175,55,.5)]">
+          Request Access
+        </a>
+        <hr class="border-white/[.05] my-6" />
+        <ul class="space-y-2.5">
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>25,000 requests / month</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>NBA + MLB full coverage</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>All markets (h2h, spreads, totals)</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>American, Decimal &amp; Fractional</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>7-day historical snapshots</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">‚Äî</span>Email support ¬∑ &lt;4h response</li>
+          <li class="flex gap-2.5 text-sm text-muted/40"><span class="text-gold/20 mt-0.5 shrink-0">‚Äî</span>Webhook push delivery</li>
+        </ul>
+      </div>
+
+      <!-- Business -->
+      <div class="plan-card bg-navy-mid p-9 transition-colors" id="enterprise">
+        <div class="h-0.5 bg-transparent mb-7 rounded-full"></div>
+        <p class="text-2xs font-bold text-muted trackingúµl∏ƒ—ïµtÅ’¡¡ï…çÖÕîÅôΩπ–µµΩπºÅµà¥Ãà˘	’Õ•πïÕÃΩ¿¯(ÄÄÄÄÄÄÄÄÒ¿Åç±ÖÕÃÙâôΩπ–µÕï…•òÅ—ï·–¥’·∞ÅôΩπ–µâΩ±êÅ—ï·–µlç·›tÅ—…Öç≠•πúµ—•ù°–Å±ïÖë•πúµπΩπîÅµà¥ƒ∏‘à¯(ÄÄÄÄÄÄÄÄÄÄêƒ–‰ÒÕ’àÅç±ÖÕÃÙâ—ï·–µâÖÕîÅôΩπ–µÕÖπÃÅôΩπ–µπΩ…µÖ∞Å—ï·–µµ’—ïêÅπΩ…µÖ∞µçÖÕîÅ—…Öç≠•πúµπΩ…µÖ∞à¯ΩµºΩÕ’à¯(ÄÄÄÄÄÄÄÄΩ¿¯(ÄÄÄÄÄÄÄÄÒ¿Åç±ÖÕÃÙâ—ï·–µµ’—ïêÅ—ï·–µÕ¥Åµà¥ÿÅ±ïÖë•πúµ…ï±Ö·ïêà¯(ÄÄÄÄÄÄÄÄÄÅΩ»Å¡±Ö—ôΩ…µÃ∞Åµïë•ÑÅ¡…Ω¡ï…—•ïÃ∞ÅÖπêÅëÖ—ÑÅ—ïÖµÃ∏Å1ï–ùÃÅ—Ö±¨ÅÖâΩ’–Å›°Ö–ÅÂΩ‘ù…îÅâ’•±ë•πú∏(ÄÄÄÄÄÄÄÄΩ¿¯(ÄÄÄÄÄÄÄÄÒÑÅëÖ—Ñµ±•π¨Ùâ9QIAI%MàÅ°…ïòÙàåà(ÄÄÄÄÄÄÄÄÄÄÅç±ÖÕÃÙââ±Ωç¨Å‹µô’±∞Å¡‰¥ÃÅ—ï·–µçïπ—ï»Å…Ω’πëïêÅ—ï·–µ·ÃÅôΩπ–µÕïµ•âΩ±êÅ—…Öç≠•πúµ›•ëï»(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅâΩ…ëï»ÅâΩ…ëï»µùΩ±êºÃ¿Å—ï·–µùΩ±êÅ°ΩŸï»ÈâúµùΩ±êΩl∏¿·tÅ—…ÖπÕ•—•Ω∏µÖ±∞à¯(ÄÄÄÄÄÄÄÄÄÅΩπ—Öç–ÅMÖ±ïÃ(ÄÄÄÄÄÄÄÄΩÑ¯(ÄÄÄÄÄÄÄÄÒ°»Åç±ÖÕÃÙââΩ…ëï»µ›°•—îΩl∏¿’tÅµ‰¥ÿàÄº¯(ÄÄÄÄÄÄÄÄÒ’∞Åç±ÖÕÃÙâÕ¡Öçîµ‰¥»∏‘à¯(ÄÄÄÄÄÄÄÄÄÄÒ±§Åç±ÖÕÃÙâô±ï‡ÅùÖ¿¥»∏‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥à¯ÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êÅµ–¥¿∏‘ÅÕ°…•π¨¥¿à˚äPΩÕ¡Ö∏¯»‘¿∞¿¿¿Å…ï≈’ïÕ—ÃÄºÅµΩπ—†Ω±§¯(ÄÄÄÄÄÄÄÄÄÄÒ±§Åç±ÖÕÃÙâô±ï‡ÅùÖ¿¥»∏‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥à¯ÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êÅµ–¥¿∏‘ÅÕ°…•π¨¥¿à˚äPΩÕ¡Ö∏˘±∞ÅÕ¡Ω…—ÃÅΩ∏Å±Ö’πç†ÅëÖ‰Ω±§¯(ÄÄÄÄÄÄÄÄÄÄÒ±§Åç±ÖÕÃÙâô±ï‡ÅùÖ¿¥»∏‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥à¯ÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êÅµ–¥¿∏‘ÅÕ°…•π¨¥¿à˚äPΩÕ¡Ö∏˘±∞ÅµÖ…≠ï—ÃÉ
+‹Åù±ΩâÖ∞ÅâΩΩ≠ÃΩ±§¯(ÄÄÄÄÄÄÄÄÄÄÒ±§Åç±ÖÕÃÙâô±ï‡ÅùÖ¿¥»∏‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥à¯ÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êÅµ–¥¿∏‘ÅÕ°…•π¨¥¿à˚äPΩÕ¡Ö∏¯‰¿µëÖ‰Å°•Õ—Ω…•çÖ∞ÅÖ…ç°•ŸîΩ±§¯(ÄÄÄÄÄÄÄÄÄÄÒ±§Åç±ÖÕÃÙâô±ï‡ÅùÖ¿¥»∏‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥à¯ÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êÅµ–¥¿∏‘ÅÕ°…•π¨¥¿à˚äPΩÕ¡Ö∏˘]ïâ°ΩΩ¨Å¡’Õ†ÅΩ∏Å±•πîÅµΩŸïÃΩ±§¯(ÄÄÄÄÄÄÄÄÄÄÒ±§Åç±ÖÕÃÙâô±ï‡ÅùÖ¿¥»∏‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥à¯ÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êÅµ–¥¿∏‘ÅÕ°…•π¨¥¿à˚äPΩÕ¡Ö∏¯‰‰∏‰îÅ’¡—•µîÅM1Ω±§¯(ÄÄÄÄÄÄÄÄÄÄÒ±§Åç±ÖÕÃÙâô±ï‡ÅùÖ¿¥»∏‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥à¯ÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êÅµ–¥¿∏‘ÅÕ°…•π¨¥¿à˚äPΩÕ¡Ö∏˘ïë•çÖ—ïêÅÖççΩ’π–ÅÕ’¡¡Ω…–Ω±§¯(ÄÄÄÄÄÄÄÄΩ’∞¯(ÄÄÄÄÄÄΩë•ÿ¯((ÄÄÄÄΩë•ÿ¯((ÄÄÄÄÒ¿Åç±ÖÕÃÙâµ–¥‘Å—ï·–µçïπ—ï»Å—ï·–µµ’—ïêÅ—ï·–µ·ÃÅôΩπ–µµΩπºÅ—…Öç≠•πúµ›•ëîà¯(ÄÄÄÄÄÅππ’Ö∞Åâ•±±•πúÅÖŸÖ•±Öâ±îÅÖ–ÅÑÅë•ÕçΩ’π–ÄôπâÕ¿Ô
+‹ôπâÕ¿ÏÅ’Õ—Ω¥ÅŸΩ±’µîÅ¡…•ç•πúÅΩ∏Å…ï≈’ïÕ–ÄôπâÕ¿Ô
+‹ôπâÕ¿Ï(ÄÄÄÄÄÄÒÑÅëÖ—Ñµ±•π¨Ùâ9QIAI%MàÅ°…ïòÙàåàÅç±ÖÕÃÙâ—ï·–µùΩ±êÅ°ΩŸï»È’πëï…±•πîà˘QÖ±¨Å—ºÅ’ÃÉäHΩÑ¯(ÄÄÄÄΩ¿¯(ÄÄΩë•ÿ¯(ΩÕïç—•Ω∏¯(((Ñ¥¥ÉäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäV@(ÄÄÄÄÅQÅ	99H+äVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäV@Ä¥¥¯(ÒÕïç—•Ω∏Åç±ÖÕÃÙâ¡‡¥‘ÅµêÈ¡‡¥ƒ–Å¡‰¥ƒÿà¯(ÄÄÒë•ÿÅç±ÖÕÃÙâµÖ‡µ‹¥’·∞Åµ‡µÖ’—ºà¯(ÄÄÄÄÒë•ÿÅç±ÖÕÃÙâ—Ω¿µ±•πîÅ…ï±Ö—•ŸîÅ¿¥ƒ»ÅµêÈ¿¥ƒÿÅ…Ω’πëïêÅâΩ…ëï»ÅâΩ…ëï»µùΩ±êΩl∏ƒ·tÅâúµπÖŸ‰µµ•êÅΩŸï…ô±Ω‹µ°•ëëï∏(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅù…•êÅù…•êµçΩ±Ã¥ƒÅµêÈù…•êµçΩ±Ãµl≈ô…}Ö’—ΩtÅùÖ¿¥ƒ¿Å•—ïµÃµçïπ—ï»à(ÄÄÄÄÄÄÄÄÅÕ—Â±îÙââÖç≠ù…Ω’πêÈ…Öë•Ö∞µù…Öë•ïπ–°ï±±•¡ÕîÄ‘¿îÄƒ»¿îÅÖ–Ä¿îÄ‘¿î±…ùâÑ†»ƒ»∞ƒ‹‘∞‘‘∞∏¿–§Ä¿î±—…ÖπÕ¡Ö…ïπ–Ä‹¿î§∞å¿‰ƒÃ»‘à¯(ÄÄÄÄÄÄÒë•ÿ¯(ÄÄÄÄÄÄÄÄÒ¿Åç±ÖÕÃÙâ—ï·–¥…·ÃÅôΩπ–µâΩ±êÅ—ï·–µùΩ±êÅ—…Öç≠•πúµl∏ƒŸïµtÅ’¡¡ï…çÖÕîÅôΩπ–µµΩπºÅµà¥–à˘ï–ÅÕ—Ö…—ïêΩ¿¯(ÄÄÄÄÄÄÄÄÒ†»Åç±ÖÕÃÙâôΩπ–µÕï…•òÅ—ï·–¥Õ·∞ÅµêÈ—ï·–¥—·∞ÅôΩπ–µâΩ±êÅ—ï·–µlç·›tÅµà¥ÃÅ±ïÖë•πúµÕπ’úà¯(ÄÄÄÄÄÄÄÄÄÅÖ—ÑÅ—°Ö–ÅµΩŸïÃÄÒï¥Åç±ÖÕÃÙâπΩ–µ•—Ö±•åÅ—ï·–µùΩ±êà˘›•—†Ωï¥¯Å—°îÅµÖ…≠ï–∏(ÄÄÄÄÄÄÄÄΩ†»¯(ÄÄÄÄÄÄÄÄÒ¿Åç±ÖÕÃÙâ—ï·–µµ’—ïêÅ—ï·–µâÖÕîÅ±ïÖë•πúµ…ï±Ö·ïêÅµÖ‡µ‹µµêà¯(ÄÄÄÄÄÄÄÄÄÅ)Ω•∏Å—°îÅëïŸï±Ω¡ï…ÃÅÖπêÅëÖ—ÑÅ—ïÖµÃÅâ’•±ë•πúÅÕµÖ…—ï»ÅÕ¡Ω…—ÃÅ¡…Ωë’ç—ÃÅΩ∏ÅQ°ï=ëëÕA$∏(ÄÄÄÄÄÄÄÄÄÅMïπêÅ’ÃÅÑÅµïÕÕÖùîÅÖπêÅ›îù±∞Åùï–ÅÂΩ‘ÅÕï–Å’¿Å›•—†ÅÖççïÕÃ∏(ÄÄÄÄÄÄÄÄΩ¿¯(ÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄÄÄÒë•ÿÅç±ÖÕÃÙâô±ï‡Åô±ï‡µçΩ∞ÅùÖ¿¥ÃÅÕ°…•π¨¥¿Åµ•∏µ‹µlƒ‰¡¡·tà¯(ÄÄÄÄÄÄÄÄÒÑÅëÖ—Ñµ±•π¨ÙâQ}-dàÅ°…ïòÙàåà(ÄÄÄÄÄÄÄÄÄÄÅç±ÖÕÃÙââ±Ωç¨Å¡‡¥‹Å¡‰¥Ã∏‘Å…Ω’πëïêÅâúµùΩ±êÅ—ï·–µπÖŸ‰Å—ï·–µÕ¥ÅôΩπ–µâΩ±êÅ—…Öç≠•πúµ›•ëï»(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅ—ï·–µçïπ—ï»Å°ΩŸï»ÈâúµùΩ±êµëÖ…¨Å—…ÖπÕ•—•Ω∏µÖ±∞(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÕ°ÖëΩ‹µl¡|…¡·|ƒŸ¡·}…ùâÑ†»ƒ»∞ƒ‹‘∞‘‘∞∏Ã‘•t(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅ°ΩŸï»ÈÕ°ÖëΩ‹µl¡|—¡·|»—¡·}…ùâÑ†»ƒ»∞ƒ‹‘∞‘‘∞∏‘•tà¯(ÄÄÄÄÄÄÄÄÄÅï–ÅA$Å-ï‰(ÄÄÄÄÄÄÄÄΩÑ¯(ÄÄÄÄÄÄÄÄÒÑÅëÖ—Ñµ±•π¨Ùâ=LàÅ°…ïòÙàåà(ÄÄÄÄÄÄÄÄÄÄÅç±ÖÕÃÙââ±Ωç¨Å¡‡¥‹Å¡‰¥Ã∏‘Å…Ω’πëïêÅâΩ…ëï»ÅâΩ…ëï»µùΩ±êº»‘Å—ï·–µµ’—ïêÅ—ï·–µÕ¥ÅôΩπ–µÕïµ•âΩ±ê(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅ—…Öç≠•πúµ›•ëîÅ—ï·–µçïπ—ï»Å°ΩŸï»È—ï·–µlç·›tÅ°ΩŸï»ÈâΩ…ëï»µùΩ±êº‘¿Å—…ÖπÕ•—•Ω∏µÖ±∞à¯(ÄÄÄÄÄÄÄÄÄÅY•ï‹ÅΩç’µïπ—Ö—•Ω∏Éä\(ÄÄÄÄÄÄÄÄΩÑ¯(ÄÄÄÄÄÄΩë•ÿ¯(ÄÄÄÄΩë•ÿ¯(ÄÄΩë•ÿ¯(ΩÕïç—•Ω∏¯(((Ñ¥¥ÉäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäV@(ÄÄÄÄÅ==QH+äVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäV@Ä¥¥¯(ÒôΩΩ—ï»Åç±ÖÕÃÙâ¡‡¥‘ÅµêÈ¡‡¥ƒ–Å¡‰¥ƒ¿ÅâΩ…ëï»µ–ÅâΩ…ëï»µùΩ±êΩl∏ƒ’t(ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅô±ï‡Åô±ï‡µçΩ∞ÅµêÈô±ï‡µ…Ω‹Å•—ïµÃµÕ—Ö…–ÅµêÈ•—ïµÃµçïπ—ï»Å©’Õ—•ô‰µâï—›ïï∏ÅùÖ¿¥ÿà¯(ÄÄÒë•ÿ¯(ÄÄÄÄÒ¿Åç±ÖÕÃÙâôΩπ–µÕï…•òÅ—ï·–µ±úÅôΩπ–µâΩ±êÅ—ï·–µµ’—ïêº‹¿à¯(ÄÄÄÄÄÅQ°ï=ëëÃÒÕ¡Ö∏Åç±ÖÕÃÙâ—ï·–µùΩ±êº‹¿à˘A$ΩÕ¡Ö∏¯(ÄÄÄÄΩ¿¯(ÄÄÄÄÒ¿Åç±ÖÕÃÙâ—ï·–µ·ÃÅ—ï·–µµ’—ïêº–¿Åµ–¥ƒà˚
+§Ä»¿»ÿÅQ°ï=ëëÕA$É
+‹Å—°ïΩëëÕÖ¡§πçΩ¥É
+‹Å±∞Å…•ù°—ÃÅ…ïÕï…Ÿïê∏Ω¿¯(ÄÄΩë•ÿ¯(ÄÄÒë•ÿÅç±ÖÕÃÙâô±ï‡Åô±ï‡µ›…Ö¿ÅùÖ¿¥ÿà¯(ÄÄÄÄÒÑÅ°…ïòÙàç≈’•ç¨µÕ—Ö…–àÄÄÄÅç±ÖÕÃÙâ—ï·–µ·ÃÅ—ï·–µµ’—ïêÅ°ΩŸï»È—ï·–µùΩ±êÅ—…ÖπÕ•—•Ω∏µçΩ±Ω…ÃÅ—…Öç≠•πúµ›•ëîà˘Ωç’µïπ—Ö—•Ω∏ΩÑ¯(ÄÄÄÄÒÑÅ°…ïòÙàçÖ¡§µ…ïôï…ïπçîàÄÅç±ÖÕÃÙâ—ï·–µ·ÃÅ—ï·–µµ’—ïêÅ°ΩŸï»È—ï·–µùΩ±êÅ—…ÖπÕ•—•Ω∏µçΩ±Ω…ÃÅ—…Öç≠•πúµ›•ëîà˘A$ÅIïôï…ïπçîΩÑ¯(ÄÄÄÄÒÑÅëÖ—Ñµ±•π¨Ùâ=LàÅ°…ïòÙàåàÅç±ÖÕÃÙâ—ï·–µ·ÃÅ—ï·–µµ’—ïêÅ°ΩŸï»È—ï·–µùΩ±êÅ—…ÖπÕ•—•Ω∏µçΩ±Ω…ÃÅ—…Öç≠•πúµ›•ëîà˘M›Öùùï»Éä\ΩÑ¯(ÄÄÄÄÒÑÅ°…ïòÙàç¡…•ç•πúàÄÄÄÄÄÄÄÅç±ÖÕÃÙâ—ï·–µ·ÃÅ—ï·–µµ’—ïêÅ°ΩŸï»È—ï·–µùΩ±êÅ—…ÖπÕ•—•Ω∏µçΩ±Ω…ÃÅ—…Öç≠•πúµ›•ëîà˘A…•ç•πúΩÑ¯(ÄÄÄÄÒÑÅëÖ—Ñµ±•π¨Ùâ9QIAI%MàÅ°…ïòÙàåàÅç±ÖÕÃÙâ—ï·–µ·ÃÅ—ï·–µµ’—ïêÅ°ΩŸï»È—ï·–µùΩ±êÅ—…ÖπÕ•—•Ω∏µçΩ±Ω…ÃÅ—…Öç≠•πúµ›•ëîà˘Ωπ—Öç–ΩÑ¯(ÄÄΩë•ÿ¯(ΩôΩΩ—ï»¯(((Ñ¥¥ÉäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäV@(ÄÄÄÄÅ)YMI%AP+äVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäVCäV@Ä¥¥¯(ÒÕç…•¡–¯(º®ÉäRäR Å]•…îÅ’¿ÅÖ±∞ÅmëÖ—Ñµ±•π≠tÅÖπç°Ω…ÃÅô…Ω¥Å1%9-LÅçΩπô•úÉäRäR Ä®º)ëΩç’µïπ–πÖëëŸïπ—1•Õ—ïπï»†ù=5Ωπ—ïπ—1ΩÖëïêú∞Ä†§ÄÙ¯ÅÏ(ÄÅëΩç’µïπ–π≈’ï…ÂMï±ïç—Ω…±∞†ùmëÖ—Ñµ±•π≠tú§πôΩ…Öç†°ï∞ÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–Å≠ï‰ÄÙÅï∞πùï———…•â’—î†ùëÖ—Ñµ±•π¨ú§Ï(ÄÄÄÅ•òÄ°1%9-Mm≠ïÂt§Åï∞π°…ïòÄÙÅ1%9-Mm≠ïÂtÏ(ÄÅÙ§Ï(ÄÄº®Å%π©ïç–ÅA$ÅâÖÕîÅUI0Å•π—ºÅë•Õ¡±Ö‰Åï±ïµïπ–Ä®º(ÄÅçΩπÕ–Å’…±∞ÄÙÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ùâÖÕîµ’…∞µë•Õ¡±Ö‰ú§Ï(ÄÅ•òÄ°’…±∞§Å’…±∞π—ï·—Ωπ—ïπ–ÄÙÅ1%9-LπA%}	MÏ(ÄÄº®Å%π•–ÅÕÖπëâΩ‡ÅçΩëîÄ®º(ÄÅ’¡ëÖ—ïΩëî†§Ï)Ù§Ï((º®ÉäRäR ÅQ%-HÉäRäR Ä®º)çΩπÕ–Å—•ç≠ï…Ö—ÑÄÙÅl(ÄÅÏÅµÖ—ç†Ëù10ÅŸÃÅ	=Lú∞ÅâΩΩ¨Ëù…Öô—-•πùÃú∞ÅΩëëÃËú¥ƒƒ¿ÄºÄ¥ƒƒ¿ú∞Å¡ΩÃÈ—…’îÄÅÙ∞(ÄÅÏÅµÖ—ç†ËùM\ÅŸÃÅ5%ú∞ÅâΩΩ¨ËùÖπ’ï∞ú∞ÄÄÄÅΩëëÃËú¨ƒ–‘ÄºÄ¥ƒ‹»ú∞Å¡ΩÃÈôÖ±ÕîÅÙ∞(ÄÅÏÅµÖ—ç†ËùA!`ÅŸÃÅ9e,ú∞ÅâΩΩ¨Ëù	ï—54ú∞ÄÄÄÄÅΩëëÃËú¥ƒÃ¿ÄºÄ¨ƒ¿‡ú∞Å¡ΩÃÈ—…’îÄÅÙ∞(ÄÅÏÅµÖ—ç†Ëù!$ÅX!Uc8ú∞ÅâΩΩ¨ËùÖïÕÖ…Ãú∞ÄÄÄÅΩëëÃËú¨»ƒ¿ÄºÄ¥»‘‘ú∞Å¡ΩÃÈôÖ±ÕîÅÙ∞(ÄÅÏÅµÖ—ç†ËùQ0ÅŸÃÅ	-8ú∞ÅâΩΩ¨Ëù…Öô—-•πùÃú∞ÅΩëëÃËú¥ƒ¿‡ÄºÄ¥ƒƒ»ú∞Å¡ΩÃÈ—…’îÄÅÙ∞(ÄÅÏÅµÖ—ç†Ëù9e4ÅŸÃÅQ0ú∞ÅâΩΩ¨ËùÖπ’ï∞ú∞ÄÄÄÅΩëëÃËú¥ƒ‹‘ÄºÄ¨ƒ–‡ú∞Å¡ΩÃÈôÖ±ÕîÅÙ∞(ÄÅÏÅµÖ—ç†Ëù1ÅŸÃÅMú∞ÄÅâΩΩ¨Ëù	ï—54ú∞ÄÄÄÄÅΩëëÃËú¥ƒ‡‘ÄºÄ¨ƒ‘‘ú∞Å¡ΩÃÈôÖ±ÕîÅÙ∞(ÄÅÏÅµÖ—ç†Ëù!=TÅŸÃÅ5%0ú∞ÅâΩΩ¨ËùAΩ•π—Õ	ï–ú∞ÄÅΩëëÃËú¨ƒ»‘ÄºÄ¥ƒ–‡ú∞Å¡ΩÃÈ—…’îÄÅÙ∞)tÏ(°ô’πç—•Ω∏Åâ’•±ëQ•ç≠ï»†§ÅÏ(ÄÅçΩπÕ–Å—…Öç¨ÄÙÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ù—•ç≠ï»µ—…Öç¨ú§Ï(ÄÅl∏∏π—•ç≠ï…Ö—Ñ∞Ä∏∏π—•ç≠ï…Ö—ÖtπôΩ…Öç†°êÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–Åï∞ÄÙÅëΩç’µïπ–πç…ïÖ—ï±ïµïπ–†ùë•ÿú§Ï(ÄÄÄÅï∞πÕ—Â±îπçÕÕQï·–ÄÙÄùë•Õ¡±Ö‰Èô±ï‡ÌÖ±•ù∏µ•—ïµÃÈçïπ—ï»ÌùÖ¿Ëƒ…¡‡Ì¡Öëë•πúË¿Ä»·¡‡ÌâΩ…ëï»µ…•ù°–Ë≈¡‡ÅÕΩ±•êÅ…ùâÑ†»‘‘∞»‘‘∞»‘‘∞∏¿‘§Ìô±ï‡µÕ°…•π¨Ë¿Ì°ï•ù°–Ë–¡¡‡ÏúÏ(ÄÄÄÅï∞π•ππï…!Q50ÄÙ(ÄÄÄÄÄÅÄÒÕ¡Ö∏ÅÕ—Â±îÙâçΩ±Ω»Ëç·‹ÌôΩπ–µ›ï•ù°–Ëÿ¿¿ÌôΩπ–µÕ•ÈîËƒ≈¡‡ÌôΩπ–µôÖµ•±‰È)ï—	…Ö•πÃÅ5Ωπº±µΩπΩÕ¡Öçîà¯ëÌêπµÖ—ç°ÙΩÕ¡Ö∏˘ÄÄ¨(ÄÄÄÄÄÅÄÒÕ¡Ö∏ÅÕ—Â±îÙâçΩ±Ω»Ëå‡»‰—¿ÌôΩπ–µÕ•ÈîËƒ¡¡‡Ì±ï——ï»µÕ¡Öç•πúË∏¿’ï¥ÌôΩπ–µôÖµ•±‰È)ï—	…Ö•πÃÅ5Ωπº±µΩπΩÕ¡Öçîà¯ëÌêπâΩΩ≠ÙΩÕ¡Ö∏˘ÄÄ¨(ÄÄÄÄÄÅÄÒÕ¡Ö∏ÅÕ—Â±îÙâçΩ±Ω»ËëÌêπ¡ΩÃ¸úå—Â’úËúç¿‘»‘»ùÙÌôΩπ–µ›ï•ù°–Ë‹¿¿ÌôΩπ–µÕ•ÈîËƒ…¡‡ÌôΩπ–µôÖµ•±‰È)ï—	…Ö•πÃÅ5Ωπº±µΩπΩÕ¡Öçîà¯ëÌêπΩëëÕÙΩÕ¡Ö∏˘ÄÏ(ÄÄÄÅ—…Öç¨πÖ¡¡ïπë°•±ê°ï∞§Ï(ÄÅÙ§Ï)Ù§†§Ï((º®ÉäRäR ÅM9	=`Å5=,ÅIMA=9MLÉäRäR Ä®º)çΩπÕ–ÅIMA=9MLÄÙÅÏ(ÄÅâÖÕ≠ï—âÖ±±}πâÖ}†…°}Öµï…•çÖ∏Ë)Ål(ÄÅÏ(ÄÄÄÄâ•êàËÄâÑ≈à…åÕê—î’òÿà∞(ÄÄÄÄâÕ¡Ω…—}≠ï‰àËÄââÖÕ≠ï—âÖ±±}πâÑà∞(ÄÄÄÄâ°Ωµï}—ïÖ¥àËÄâ1ΩÃÅπùï±ïÃÅ1Ö≠ï…Ãà∞(ÄÄÄÄâÖ›ÖÂ}—ïÖ¥àËÄâ	ΩÕ—Ω∏Åï±—•çÃà∞(ÄÄÄÄâçΩµµïπçï}—•µîàËÄà»¿»ÿ¥¿Ã¥»·P¿ƒËƒ¿Ë¿¡hà∞(ÄÄÄÄââΩΩ≠µÖ≠ï…ÃàËÅl(ÄÄÄÄÄÅÏ(ÄÄÄÄÄÄÄÄâ≠ï‰àËÄâë…Öô—≠•πùÃà∞(ÄÄÄÄÄÄÄÄâ—•—±îàËÄâ…Öô—-•πùÃà∞(ÄÄÄÄÄÄÄÄâ±ÖÕ—}’¡ëÖ—îàËÄà»¿»ÿ¥¿Ã¥»›Pƒ–ËÃ‡Ë¿≈hà∞(ÄÄÄÄÄÄÄÄâµÖ…≠ï—ÃàËÅmÏ(ÄÄÄÄÄÄÄÄÄÄâ≠ï‰àËÄâ†…†à∞(ÄÄÄÄÄÄÄÄÄÄâΩ’—çΩµïÃàËÅl(ÄÄÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ1ΩÃÅπùï±ïÃÅ1Ö≠ï…Ãà∞Äâ¡…•çîàËÄ¥ƒƒ¿ÅÙ∞(ÄÄÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ	ΩÕ—Ω∏Åï±—•çÃà∞ÄÄÄÄÄâ¡…•çîàËÄ¥ƒƒ¿ÅÙ(ÄÄÄÄÄÄÄÄÄÅt(ÄÄÄÄÄÄÄÅıt(ÄÄÄÄÄÅÙ∞(ÄÄÄÄÄÅÏ(ÄÄÄÄÄÄÄÄâ≠ï‰àËÄâôÖπë’ï∞à∞(ÄÄÄÄÄÄÄÄâ—•—±îàËÄâÖπ’ï∞à∞(ÄÄÄÄÄÄÄÄâ±ÖÕ—}’¡ëÖ—îàËÄà»¿»ÿ¥¿Ã¥»›Pƒ–ËÃ‹Ë‘·hà∞(ÄÄÄÄÄÄÄÄâµÖ…≠ï—ÃàËÅmÏ(ÄÄÄÄÄÄÄÄÄÄâ≠ï‰àËÄâ†…†à∞(ÄÄÄÄÄÄÄÄÄÄâΩ’—çΩµïÃàËÅl(ÄÄÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ1ΩÃÅπùï±ïÃÅ1Ö≠ï…Ãà∞Äâ¡…•çîàËÄ¥ƒ¿‡ÅÙ∞(ÄÄÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ	ΩÕ—Ω∏Åï±—•çÃà∞ÄÄÄÄÄâ¡…•çîàËÄ¥ƒƒ»ÅÙ(ÄÄÄÄÄÄÄÄÄÅt(ÄÄÄÄÄÄÄÅıt(ÄÄÄÄÄÅÙ(ÄÄÄÅt(ÄÅÙ)uÄ∞(ÄÅâÖÕ≠ï—âÖ±±}πâÖ}Õ¡…ïÖëÕ}Öµï…•çÖ∏Ë)Ål(ÄÅÏ(ÄÄÄÄâ•êàËÄâà…åÕê—î’òŸÑƒà∞(ÄÄÄÄâÕ¡Ω…—}≠ï‰àËÄââÖÕ≠ï—âÖ±±}πâÑà∞(ÄÄÄÄâ°Ωµï}—ïÖ¥àËÄâ1ΩÃÅπùï±ïÃÅ1Ö≠ï…Ãà∞(ÄÄÄÄâÖ›ÖÂ}—ïÖ¥àËÄâ	ΩÕ—Ω∏Åï±—•çÃà∞(ÄÄÄÄââΩΩ≠µÖ≠ï…ÃàËÅmÏ(ÄÄÄÄÄÄâ≠ï‰àËÄâë…Öô—≠•πùÃà∞(ÄÄÄÄÄÄâµÖ…≠ï—ÃàËÅmÏ(ÄÄÄÄÄÄÄÄâ≠ï‰àËÄâÕ¡…ïÖëÃà∞(ÄÄÄÄÄÄÄÄâΩ’—çΩµïÃàËÅl(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ1ΩÃÅπùï±ïÃÅ1Ö≠ï…Ãà∞Äâ¡…•çîàËÄ¥ƒƒ¿∞Äâ¡Ω•π–àËÄ¥Ã∏‘ÅÙ∞(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ	ΩÕ—Ω∏Åï±—•çÃà∞ÄÄÄÄÄâ¡…•çîàËÄ¥ƒƒ¿∞Äâ¡Ω•π–àËÄÄÃ∏‘ÅÙ(ÄÄÄÄÄÄÄÅt(ÄÄÄÄÄÅıt(ÄÄÄÅıt(ÄÅÙ)uÄ∞(ÄÅâÖÕ≠ï—âÖ±±}πâÖ}—Ω—Ö±Õ}Öµï…•çÖ∏Ë)Ål(ÄÅÏ(ÄÄÄÄâ•êàËÄâåÕê—î’òŸÑ≈à»à∞(ÄÄÄÄâÕ¡Ω…—}≠ï‰àËÄââÖÕ≠ï—âÖ±±}πâÑà∞(ÄÄÄÄâ°Ωµï}—ïÖ¥àËÄâ1ΩÃÅπùï±ïÃÅ1Ö≠ï…Ãà∞(ÄÄÄÄâÖ›ÖÂ}—ïÖ¥àËÄâ	ΩÕ—Ω∏Åï±—•çÃà∞(ÄÄÄÄââΩΩ≠µÖ≠ï…ÃàËÅmÏ(ÄÄÄÄÄÄâ≠ï‰àËÄâë…Öô—≠•πùÃà∞(ÄÄÄÄÄÄâµÖ…≠ï—ÃàËÅmÏ(ÄÄÄÄÄÄÄÄâ≠ï‰àËÄâ—Ω—Ö±Ãà∞(ÄÄÄÄÄÄÄÄâΩ’—çΩµïÃàËÅl(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ=Ÿï»à∞ÄÄâ¡…•çîàËÄ¥ƒƒ¿∞Äâ¡Ω•π–àËÄ»»–∏‘ÅÙ∞(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâUπëï»à∞Äâ¡…•çîàËÄ¥ƒƒ¿∞Äâ¡Ω•π–àËÄ»»–∏‘ÅÙ(ÄÄÄÄÄÄÄÅt(ÄÄÄÄÄÅıt(ÄÄÄÅıt(ÄÅÙ)uÄ∞(ÄÅâÖÕïâÖ±±}µ±â}†…°}Öµï…•çÖ∏Ë)Ål(ÄÅÏ(ÄÄÄÄâ•êàËÄâê—î’òŸÑ≈à…åÃà∞(ÄÄÄÄâÕ¡Ω…—}≠ï‰àËÄââÖÕïâÖ±±}µ±àà∞(ÄÄÄÄâ°Ωµï}—ïÖ¥àËÄâ1ΩÃÅπùï±ïÃÅΩëùï…Ãà∞(ÄÄÄÄâÖ›ÖÂ}—ïÖ¥àËÄâMÖ∏Å…Öπç•ÕçºÅ•Öπ—Ãà∞(ÄÄÄÄââΩΩ≠µÖ≠ï…ÃàËÅmÏ(ÄÄÄÄÄÄâ≠ï‰àËÄâôÖπë’ï∞à∞(ÄÄÄÄÄÄâµÖ…≠ï—ÃàËÅmÏ(ÄÄÄÄÄÄÄÄâ≠ï‰àËÄâ†…†à∞(ÄÄÄÄÄÄÄÄâΩ’—çΩµïÃàËÅl(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ1ΩÃÅπùï±ïÃÅΩëùï…Ãà∞ÄÄâ¡…•çîàËÄ¥ƒ‡‘ÅÙ∞(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâMÖ∏Å…Öπç•ÕçºÅ•Öπ—Ãà∞Äâ¡…•çîàËÄÄƒ‘‘ÅÙ(ÄÄÄÄÄÄÄÅt(ÄÄÄÄÄÅıt(ÄÄÄÅıt(ÄÅÙ)uÄ∞(ÄÅâÖÕïâÖ±±}µ±â}Õ¡…ïÖëÕ}Öµï…•çÖ∏Ë)Ål(ÄÅÏ(ÄÄÄÄâ•êàËÄâî’òŸÑ≈à…åÕê–à∞(ÄÄÄÄâÕ¡Ω…—}≠ï‰àËÄââÖÕïâÖ±±}µ±àà∞(ÄÄÄÄâ°Ωµï}—ïÖ¥àËÄâ1ΩÃÅπùï±ïÃÅΩëùï…Ãà∞(ÄÄÄÄâÖ›ÖÂ}—ïÖ¥àËÄâMÖ∏Å…Öπç•ÕçºÅ•Öπ—Ãà∞(ÄÄÄÄââΩΩ≠µÖ≠ï…ÃàËÅmÏ(ÄÄÄÄÄÄâ≠ï‰àËÄâë…Öô—≠•πùÃà∞(ÄÄÄÄÄÄâµÖ…≠ï—ÃàËÅmÏ(ÄÄÄÄÄÄÄÄâ≠ï‰àËÄâÕ¡…ïÖëÃà∞(ÄÄÄÄÄÄÄÄâΩ’—çΩµïÃàËÅl(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ1ΩÃÅπùï±ïÃÅΩëùï…Ãà∞ÄÄâ¡…•çîàËÄ¥ƒƒ¿∞Äâ¡Ω•π–àËÄ¥ƒ∏‘ÅÙ∞(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâMÖ∏Å…Öπç•ÕçºÅ•Öπ—Ãà∞Äâ¡…•çîàËÄ¥ƒƒ¿∞Äâ¡Ω•π–àËÄÄƒ∏‘ÅÙ(ÄÄÄÄÄÄÄÅt(ÄÄÄÄÄÅıt(ÄÄÄÅıt(ÄÅÙ)uÄ∞(ÄÅâÖÕïâÖ±±}µ±â}—Ω—Ö±Õ}Öµï…•çÖ∏Ë)Ål(ÄÅÏ(ÄÄÄÄâ•êàËÄâòŸÑ≈à…åÕê—î‘à∞(ÄÄÄÄâÕ¡Ω…—}≠ï‰àËÄââÖÕïâÖ±±}µ±àà∞(ÄÄÄÄâ°Ωµï}—ïÖ¥àËÄâ1ΩÃÅπùï±ïÃÅΩëùï…Ãà∞(ÄÄÄÄâÖ›ÖÂ}—ïÖ¥àËÄâMÖ∏Å…Öπç•ÕçºÅ•Öπ—Ãà∞(ÄÄÄÄââΩΩ≠µÖ≠ï…ÃàËÅmÏ(ÄÄÄÄÄÄâ≠ï‰àËÄââï—µù¥à∞(ÄÄÄÄÄÄâµÖ…≠ï—ÃàËÅmÏ(ÄÄÄÄÄÄÄÄâ≠ï‰àËÄâ—Ω—Ö±Ãà∞(ÄÄÄÄÄÄÄÄâΩ’—çΩµïÃàËÅl(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâ=Ÿï»à∞ÄÄâ¡…•çîàËÄ¥ƒƒ‘∞Äâ¡Ω•π–àËÄ‡∏‘ÅÙ∞(ÄÄÄÄÄÄÄÄÄÅÏÄâπÖµîàËÄâUπëï»à∞Äâ¡…•çîàËÄ¥ƒ¿‘∞Äâ¡Ω•π–àËÄ‡∏‘ÅÙ(ÄÄÄÄÄÄÄÅt(ÄÄÄÄÄÅıt(ÄÄÄÅıt(ÄÅÙ)uÄ∞)ÙÏ((º®ÉäRäR ÅMÂπ—Ö‡Å°•ù°±•ù°–ÉäRäR Ä®º)ô’πç—•Ω∏Å°•ù°±•ù°–°©ÕΩ∏§ÅÏ(ÄÅ…ï—’…∏Å©ÕΩ∏(ÄÄÄÄπ…ï¡±Öçî†º†à°qq’mÑµÈµh¿¥ÂuÏ—ıÒqqmy’uÒmyqpât§®à°qÃ®Ë§˝Òqà°—…’ïÒôÖ±ÕïÒπ’±∞•qâ¥˝qê≠p∏˝qê®°mïul¨µt˝qê¨§¸§Ωú∞Å¥ÄÙ¯ÅÏ(ÄÄÄÄÄÅ•òÄ†Ωxàºπ—ïÕ–°¥§§Å…ï—’…∏ÄºËêºπ—ïÕ–°¥§(ÄÄÄÄÄÄÄÄ¸ÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à¯ëÌµÙΩÕ¡Ö∏˘Ä(ÄÄÄÄÄÄÄÄËÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯ëÌµÙΩÕ¡Ö∏˘ÄÏ(ÄÄÄÄÄÅ•òÄ†Ω—…’ïÒôÖ±Õîºπ—ïÕ–°¥§§Å…ï—’…∏ÅÄÒÕ¡Ö∏ÅÕ—Â±îÙâçΩ±Ω»ËççâÑŸò‹à¯ëÌµÙΩÕ¡Ö∏˘ÄÏ(ÄÄÄÄÄÅ•òÄ†Ωπ’±∞ºπ—ïÕ–°¥§§ÄÄÄÄÄÄÅ…ï—’…∏ÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¥à¯ëÌµÙΩÕ¡Ö∏˘ÄÏ(ÄÄÄÄÄÅ…ï—’…∏ÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—∏à¯ëÌµÙΩÕ¡Ö∏˘ÄÏ(ÄÄÄÅÙ§(ÄÄÄÄπ…ï¡±Öçî†ΩmÌıqmqutΩú∞ÅåÄÙ¯ÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—åà¯ëÌçÙΩÕ¡Ö∏˘Ä§Ï)Ù()ô’πç—•Ω∏Åùï—AÖ…ÖµÃ†§ÅÏ(ÄÅ…ï—’…∏ÅÏ(ÄÄÄÅÕ¡Ω…–ËÄÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ù¡Ö…Ö¥µÕ¡Ω…–ú§πŸÖ±’î∞(ÄÄÄÅµÖ…≠ï–ËÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ù¡Ö…Ö¥µµÖ…≠ï–ú§πŸÖ±’î∞(ÄÄÄÅôΩ…µÖ–ËÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ù¡Ö…Ö¥µôΩ…µÖ–ú§πŸÖ±’î∞(ÄÅÙÏ)Ù()ô’πç—•Ω∏Å’¡ëÖ—ïΩëî†§ÅÏ(ÄÅçΩπÕ–ÅÏÅÕ¡Ω…–∞ÅµÖ…≠ï–∞ÅôΩ…µÖ–ÅÙÄÙÅùï—AÖ…ÖµÃ†§Ï(ÄÅçΩπÕ–ÅâÖÕîÄÙÅ1%9-LπA%}	MÏ((ÄÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ùçΩëîµç’…∞ú§π•ππï…!Q50ÄÙ(ÄÄÄÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¥à¯åÅ’—°ïπ—•çÖ—îÅŸ•ÑÅ‡µÖ¡§µ≠ï‰Å°ïÖëï»ΩÕ¡Ö∏˘qπÄÄ¨(ÄÄÄÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘ç’…∞ΩÕ¡Ö∏¯Äµ`ÅPÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌâÖÕïÙΩΩëëÃ˝Õ¡Ω…—}≠ï‰ÙëÌÕ¡Ω…—ÙôÖµ¿ÌµÖ…≠ï—ÃÙëÌµÖ…≠ï—ÙôÖµ¿ÌΩëëÕΩ…µÖ–ÙëÌôΩ…µÖ—ÙôÖµ¿Ì…ïù•ΩπÃı’ÃàΩÕ¡Ö∏¯ÅqqqπÄÄ¨(ÄÄÄÅÄÄÄµ ÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯â‡µÖ¡§µ≠ï‰ËÅe=UI}A%}-dàΩÕ¡Ö∏˘ÄÏ((ÄÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ùçΩëîµ¡Â—°Ω∏ú§π•ππï…!Q50ÄÙ(ÄÄÄÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘•µ¡Ω…–ΩÕ¡Ö∏¯Å…ï≈’ïÕ—ÕqπqπÄÄ¨(ÄÄÄÅÅ°ïÖëï…ÃÄÙÅÏÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯â‡µÖ¡§µ≠ï‰àΩÕ¡Ö∏¯ËÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âe=UI}A%}-dàΩÕ¡Ö∏˘ıqπÄÄ¨(ÄÄÄÅÅ¡Ö…ÖµÃÄÄÙÅÌqπÄÄ¨(ÄÄÄÅÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âÕ¡Ω…—}≠ï‰àΩÕ¡Ö∏¯ËÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌÕ¡Ω…—ÙàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âµÖ…≠ï—ÃàΩÕ¡Ö∏¯ËÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌµÖ…≠ï—ÙàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âΩëëÕΩ…µÖ–àΩÕ¡Ö∏¯ËÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌôΩ…µÖ—ÙàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯â…ïù•ΩπÃàΩÕ¡Ö∏¯ËÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯â’ÃàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÅıqπqπ»ÄÙÅ…ï≈’ïÕ—Ã∏ÒÕ¡Ö∏Åç±ÖÕÃÙâ—∏à˘ùï–ΩÕ¡Ö∏¯°qπÄÄ¨(ÄÄÄÅÄÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌâÖÕïÙΩΩëëÃàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÄÄÅ°ïÖëï…Ãı°ïÖëï…Ã±q∏ÄÄÄÅ¡Ö…ÖµÃı¡Ö…ÖµÃ±q∏•qπqπÄÄ¨(ÄÄÄÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘ôΩ»ΩÕ¡Ö∏¯ÅùÖµîÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘•∏ΩÕ¡Ö∏¯Å»∏ÒÕ¡Ö∏Åç±ÖÕÃÙâ—∏à˘©ÕΩ∏ΩÕ¡Ö∏¯†§ÈqπÄÄ¨(ÄÄÄÅÄÄÄÄÄÒÕ¡Ö∏ÅÕ—Â±îÙâçΩ±Ω»ËççâÑŸò‹à˘¡…•π–ΩÕ¡Ö∏¯°ùÖµïlÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯â°Ωµï}—ïÖ¥àΩÕ¡Ö∏˘t∞ÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âŸÃàΩÕ¡Ö∏¯∞ÅùÖµïlÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âÖ›ÖÂ}—ïÖ¥àΩÕ¡Ö∏˘t•ÄÏ((ÄÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ùçΩëîµ©Ãú§π•ππï…!Q50ÄÙ(ÄÄÄÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘çΩπÕ–ΩÕ¡Ö∏¯Å¡Ö…ÖµÃÄÙÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘πï‹ΩÕ¡Ö∏¯ÅUI1MïÖ…ç°AÖ…ÖµÃ°ÌqπÄ¨(ÄÄÄÅÄÄÅÕ¡Ω…—}≠ï‰ËÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌÕ¡Ω…—ÙàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÅµÖ…≠ï—ÃËÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌµÖ…≠ï—ÙàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÅΩëëÕΩ…µÖ–ËÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯àëÌôΩ…µÖ—ÙàΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÅ…ïù•ΩπÃËÄÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯â’ÃàΩÕ¡Ö∏¯±qπÙ§ÌqπqπÄÄ¨(ÄÄÄÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘çΩπÕ–ΩÕ¡Ö∏¯Å…ïÃÄÄÙÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘Ö›Ö•–ΩÕ¡Ö∏¯Åôï—ç†°qπÄÄ¨(ÄÄÄÅÄÄÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà˘qÄëÌâÖÕïÙΩΩëëÃ˝pëÌ¡Ö…ÖµÕıqÄΩÕ¡Ö∏¯±qπÄÄ¨(ÄÄÄÅÄÄÅÏÅ°ïÖëï…ÃËÅÏÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯â‡µÖ¡§µ≠ï‰àΩÕ¡Ö∏¯ËÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âe=UI}A%}-dàΩÕ¡Ö∏¯ÅÙÅıq∏§ÌqπÄÄ¨(ÄÄÄÅÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘çΩπÕ–ΩÕ¡Ö∏¯ÅëÖ—ÑÄÙÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—¨à˘Ö›Ö•–ΩÕ¡Ö∏¯Å…ïÃ∏ÒÕ¡Ö∏Åç±ÖÕÃÙâ—∏à˘©ÕΩ∏ΩÕ¡Ö∏¯†§ÌqπqπÄÄ¨(ÄÄÄÅÅëÖ—Ñ∏ÒÕ¡Ö∏Åç±ÖÕÃÙâ—∏à˘ôΩ…Öç†ΩÕ¡Ö∏¯°úÄÙ˘qπÄÄ¨(ÄÄÄÅÄÄÄÒÕ¡Ö∏ÅÕ—Â±îÙâçΩ±Ω»ËççâÑŸò‹à˘çΩπÕΩ±îΩÕ¡Ö∏¯∏ÒÕ¡Ö∏Åç±ÖÕÃÙâ—∏à˘±ΩúΩÕ¡Ö∏¯°úπ°Ωµï}—ïÖ¥∞ÄÒÕ¡Ö∏Åç±ÖÕÃÙâ—Ãà¯âŸÃàΩÕ¡Ö∏¯∞ÅúπÖ›ÖÂ}—ïÖ¥•q∏§ÌÄÏ)Ù((º®ÉäRäR ÅMÖπëâΩ‡Å—ÖàÅÕ›•—ç°•πúÉäRäR Ä®º)ô’πç—•Ω∏ÅÕ›•—ç°QÖà°πÖµî§ÅÏ(ÄÅëΩç’µïπ–π≈’ï…ÂMï±ïç—Ω…±∞†úπÃµ—Öàú§πôΩ…Öç†°–ÄÙ¯(ÄÄÄÅ–πç±ÖÕÕ1•Õ–π—Ωùù±î†ùÖç—•Ÿîú∞Å–πëÖ—ÖÕï–π—ÖàÄÙÙÙÅπÖµî§(ÄÄ§Ï(ÄÅëΩç’µïπ–π≈’ï…ÂMï±ïç—Ω…±∞†úπ—Öàµ¡Öπï∞ú§πôΩ…Öç†°¿ÄÙ¯ÅÏ(ÄÄÄÅ¿πç±ÖÕÕ1•Õ–π—Ωùù±î†ù°•ëëï∏ú∞Å¿π•êÄÑÙÙÄù—Öà¥úÄ¨ÅπÖµî§Ï(ÄÄÄÅ¿πç±ÖÕÕ1•Õ–π—Ωùù±î†ùâ±Ωç¨ú∞ÄÅ¿π•êÄÙÙÙÄù—Öà¥úÄ¨ÅπÖµî§Ï(ÄÅÙ§Ï)Ù((º®ÉäRäR ÅMÖπëâΩ‡Å…’∏ÉäRäR Ä®º)ô’πç—•Ω∏Å…’πMÖπëâΩ‡†§ÅÏ(ÄÅçΩπÕ–ÅÏÅÕ¡Ω…–∞ÅµÖ…≠ï–∞ÅôΩ…µÖ–ÅÙÄÙÅùï—AÖ…ÖµÃ†§Ï(ÄÅçΩπÕ–Å≠ï‰ÄÄÄÙÅÄëÌÕ¡Ω…—ı|ëÌµÖ…≠ï—ı|ëÌôΩ…µÖ—ıÄÏ(ÄÅçΩπÕ–Å©ÕΩ∏ÄÄÙÅIMA=9MMm≠ïÂtÅÒÅIMA=9MMlùâÖÕ≠ï—âÖ±±}πâÖ}†…°}Öµï…•çÖ∏ùtÏ(ÄÅçΩπÕ–Åâ—∏ÄÄÄÙÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ù…’∏µâ—∏ú§Ï(ÄÅçΩπÕ–ÅÕ—Ö–ÄÄÙÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ù…ïÃµÕ—Ö—’Ãú§Ï(ÄÅçΩπÕ–Å—•µï»ÄÙÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ù…ïÃµ—•µîú§Ï(ÄÅçΩπÕ–Å…ïÕ∞ÄÙÅëΩç’µïπ–πùï—±ïµïπ—	Â%ê†ùçΩëîµ…ïÕ¡ΩπÕîú§Ï((ÄÅâ—∏πÕ—Â±îπΩ¡Öç•—‰ÄÙÄú∏‘‘úÏ(ÄÅâ—∏πÕ—Â±îπ¡Ω•π—ï…Ÿïπ—ÃÄÙÄùπΩπîúÏ(ÄÅÕ—Ö–πç±ÖÕÕ9ÖµîÄÙÄù—ï·–µ·ÃÅôΩπ–µµΩπºÅôΩπ–µâΩ±êÅâ±•π¨µÕ—Ö—’ÃúÏ(ÄÅÕ—Ö–πÕ—Â±îπçΩ±Ω»ÄÙÄúç—Ã‹úÏ(ÄÅÕ—Ö–π—ï·—Ωπ—ïπ–ÄÙÄüä^<ÅIï≈’ïÕ—•πüäòúÏ(ÄÅ—•µï»π—ï·—Ωπ—ïπ–ÄÙÄúúÏ(ÄÅ…ïÕ∞π•ππï…!Q50ÄÙÄúÒÕ¡Ö∏Åç±ÖÕÃÙâ—¥à˘Ωππïç—•πúÅ—ºÅÖ¡§π—°ïΩëëÕÖ¡§πçΩ∑äòΩÕ¡Ö∏¯úÏ(ÄÅÕ›•—ç°QÖà†ù…ïÕ¡ΩπÕîú§Ï((ÄÅçΩπÕ–Å–¿ÄÙÅÖ—îππΩ‹†§Ï(ÄÅÕï—Q•µïΩ’–††§ÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–ÅµÃÄÙÅ5Ö—†π…Ω’πê°Ö—îππΩ‹†§Ä¥Å–¿§Ï(ÄÄÄÅâ—∏πÕ—Â±îπΩ¡Öç•—‰ÄÙÄúúÏ(ÄÄÄÅâ—∏πÕ—Â±îπ¡Ω•π—ï…Ÿïπ—ÃÄÙÄúúÏ(ÄÄÄÅÕ—Ö–πç±ÖÕÕ9ÖµîÄÙÄù—ï·–µ·ÃÅôΩπ–µµΩπºÅôΩπ–µâΩ±êúÏ(ÄÄÄÅÕ—Ö–πÕ—Â±îπçΩ±Ω»ÄÙÄúå—Â’úÏ(ÄÄÄÅÕ—Ö–π—ï·—Ωπ—ïπ–ÄÙÄú»¿¿Å=,úÏ(ÄÄÄÅ—•µï»π—ï·—Ωπ—ïπ–ÄÙÅÄëÌµÕıµÕÄÏ(ÄÄÄÅ…ïÕ∞π•ππï…!Q50ÄÙÅ°•ù°±•ù°–°©ÕΩ∏§Ï(ÄÅÙ∞ÄÃ–¿Ä¨Å5Ö—†π…ÖπëΩ¥†§Ä®Ä»‡¿§Ï)Ù(ΩÕç…•¡–¯((ΩâΩë‰¯(Ω°—µ∞¯(
