@@ -904,6 +904,41 @@
 
 
 <!-- ══════════════════════════════════════════════
+     CONTACT MODAL (Formspree — Free tier + Enterprise)
+══════════════════════════════════════════════ -->
+<div id="contact-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/60 backdrop-blur-sm">
+  <div class="relative w-full max-w-md mx-4 p-10 rounded-lg border border-gold/20 bg-[#0B1628] shadow-2xl">
+    <button onclick="closeContactModal()" class="absolute top-4 right-4 text-muted hover:text-[#E8EEF7] text-xl leading-none">&times;</button>
+    <p class="text-2xs font-bold text-gold tracking-[.14em] uppercase font-mono mb-2">Request access</p>
+    <h3 class="font-serif text-2xl font-bold text-[#E8EEF7] mb-2">Let's get you set up</h3>
+    <p class="text-muted text-sm mb-6 leading-relaxed">
+      Tell us a little about what you're building. We'll reply from hello@theoddsapi.com within one business day.
+    </p>
+    <form id="contact-form" action="https://formspree.io/f/xdapznor" method="POST">
+      <label for="contact-name" class="block text-xs font-semibold text-muted tracking-wider mb-2">NAME</label>
+      <input id="contact-name" name="name" type="text" required placeholder=""
+             class="w-full px-4 py-3 rounded bg-[#0E1D33] border border-gold/20 text-[#E8EEF7] text-sm
+                    placeholder:text-muted/50 focus:outline-none focus:border-gold/50 mb-4" />
+      <label for="contact-email" class="block text-xs font-semibold text-muted tracking-wider mb-2">EMAIL</label>
+      <input id="contact-email" name="email" type="email" required placeholder=""
+             class="w-full px-4 py-3 rounded bg-[#0E1D33] border border-gold/20 text-[#E8EEF7] text-sm
+                    placeholder:text-muted/50 focus:outline-none focus:border-gold/50 mb-4" />
+      <label for="contact-message" class="block text-xs font-semibold text-muted tracking-wider mb-2">WHAT ARE YOU BUILDING?</label>
+      <textarea id="contact-message" name="message" rows="3" placeholder="Short description helps us route you to the right tier."
+                class="w-full px-4 py-3 rounded bg-[#0E1D33] border border-gold/20 text-[#E8EEF7] text-sm
+                       placeholder:text-muted/50 focus:outline-none focus:border-gold/50 mb-4 resize-none"></textarea>
+      <button type="submit"
+              class="w-full py-3 rounded bg-gold text-navy text-sm font-bold tracking-wider
+                     hover:bg-gold-dark transition-all shadow-[0_2px_16px_rgba(212,175,55,.35)]">
+        Send request
+      </button>
+      <p id="contact-status" class="text-xs mt-3 text-center min-h-[1.2em]"></p>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
      CHECKOUT MODAL (Stripe)
 ══════════════════════════════════════════════ -->
 <div id="checkout-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -954,6 +989,56 @@
      JAVASCRIPT
 ══════════════════════════════════════════════ -->
 <script>
+/* ── Contact modal (Formspree) ── */
+function openContactModal() {
+  const m = document.getElementById('contact-modal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+  const m = document.getElementById('contact-modal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+
+/* Handle Formspree submission via AJAX (stay on page) */
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const status = document.getElementById('contact-status');
+  const btn = form.querySelector('button[type="submit"]');
+
+  btn.disabled = true;
+  btn.style.opacity = '.6';
+  btn.textContent = 'Sending...';
+
+  try {
+    const res = await fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' },
+    });
+    if (res.ok) {
+      status.style.color = '#4B9E5F';
+      status.textContent = 'Sent! We\'ll be in touch shortly.';
+      form.reset();
+      setTimeout(() => closeContactModal(), 2000);
+    } else {
+      status.style.color = '#E05252';
+      status.textContent = 'Something went wrong. Email hello@theoddsapi.com directly.';
+    }
+  } catch (err) {
+    status.style.color = '#E05252';
+    status.textContent = 'Network error. Email hello@theoddsapi.com directly.';
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.textContent = 'Send request';
+  }
+});
+
 /* ── Checkout modal (Stripe) ── */
 const CHECKOUT_COPY = {
   SUBSCRIBE_PRO: {
@@ -1031,11 +1116,17 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 });
 
 /* ── Wire up all [data-link] anchors from LINKS config ── */
-/* GET_KEY and ENTERPRISE open mailto; SUBSCRIBE_* open checkout modal; rest use LINKS. */
+/* GET_KEY + ENTERPRISE open contact modal; SUBSCRIBE_* open checkout modal; rest use LINKS. */
 (function initLinks() {
   document.querySelectorAll('[data-link]').forEach(el => {
     const key = el.getAttribute('data-link');
-    if (key.startsWith('SUBSCRIBE_')) {
+    if (key === 'GET_KEY' || key === 'ENTERPRISE') {
+      el.href = '#';
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        openContactModal();
+      });
+    } else if (key.startsWith('SUBSCRIBE_')) {
       el.href = '#';
       el.addEventListener('click', e => {
         e.preventDefault();
