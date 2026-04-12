@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TheOddsAPI — Real-Time Sports Betting Odds API</title>
-  <meta name="description" content="Real-time, normalized betting odds from 30+ sportsbooks via a single REST API. NBA, MLB, NFL, and NHL. Built for developers." />
+  <meta name="description" content="Real-time, normalized betting odds from 30+ sportsbooks via a single REST API. NBA, MLB and more. Built for developers." />
 
   <!-- =====================================================
        🔗 LINKS CONFIG  ← Edit all URLs right here
@@ -178,7 +178,7 @@
                   text-2xs font-bold text-gold tracking-[.14em] uppercase">
         <span class="live-dot w-1.5 h-1.5 rounded-full bg-alive shrink-0"
               style="box-shadow:0 0 8px #4B9E5F"></span>
-        Live feed active &middot; NBA &middot; MLB &middot; NFL &middot; NHL
+        Live feed active &middot; NBA &amp; MLB
       </div>
 
       <h1 class="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.12]
@@ -216,7 +216,7 @@
 
       <div class="flex flex-wrap gap-5">
         <span class="flex items-center gap-2 text-muted text-xs font-medium">
-          <span class="inline-block w-4 h-px bg-gold/60"></span>4 sports · 30+ books
+          <span class="inline-block w-4 h-px bg-gold/60"></span>99.9% uptime SLA
         </span>
         <span class="flex items-center gap-2 text-muted text-xs font-medium">
           <span class="inline-block w-4 h-px bg-gold/60"></span>FastAPI infrastructure
@@ -262,8 +262,6 @@
                          text-xs font-mono px-2 py-1 focus:border-gold outline-none cursor-pointer">
             <option value="basketball_nba">NBA Basketball</option>
             <option value="baseball_mlb">MLB Baseball</option>
-            <option value="americanfootball_nfl">NFL Football</option>
-            <option value="icehockey_nhl">NHL Hockey</option>
           </select>
         </div>
         <div class="flex items-center gap-2">
@@ -352,12 +350,12 @@
   <div class="metric-cell px-7 md:px-10 py-8 border-r border-gold/[.15] transition-colors">
     <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Avg. response latency</p>
     <p class="font-serif text-4xl font-bold text-[#E8EEF7] tracking-tight leading-none">&lt;<span class="text-gold">500</span>ms</p>
-    <p class="text-muted text-xs font-medium mt-1.5">Served from cache</p>
+    <p class="text-alive text-xs font-medium mt-1.5">P95 SLA measured</p>
   </div>
   <div class="metric-cell px-7 md:px-10 py-8 border-t lg:border-t-0 border-r border-gold/[.15] transition-colors">
-    <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Sports live</p>
-    <p class="font-serif text-4xl font-bold text-[#E8EEF7] tracking-tight leading-none"><span class="text-gold">4</span></p>
-    <p class="text-muted text-xs font-medium mt-1.5">NBA · MLB · NFL · NHL</p>
+    <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Platform uptime (30d)</p>
+    <p class="font-serif text-4xl font-bold text-[#E8EEF7] tracking-tight leading-none">99.<span class="text-gold">9</span>%</p>
+    <p class="text-alive text-xs font-medium mt-1.5">Pro tier SLA</p>
   </div>
   <div class="metric-cell px-7 md:px-10 py-8 border-t lg:border-t-0 transition-colors">
     <p class="text-2xs font-bold text-muted tracking-[.12em] uppercase font-mono mb-2.5">Markets available</p>
@@ -575,10 +573,10 @@
         <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">SECURITY</span>
       </div>
       <div class="feat-card bg-navy-mid p-8 transition-colors">
-        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">🎯</div>
-        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Best-line detection</h3>
-        <p class="text-muted text-sm leading-relaxed">A dedicated <code class="font-mono text-gold bg-gold/[.08] px-1 rounded text-xs">/best-lines</code> endpoint surfaces the best price per outcome across every book in a single response.</p>
-        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">ARBITRAGE</span>
+        <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">📈</div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Historical archive</h3>
+        <p class="text-muted text-sm leading-relaxed">Access prior odds snapshots for backtesting quantitative models and tracking line movement over time.</p>
+        <span class="inline-block mt-4 text-2xs font-bold text-gold bg-gold/[.08] px-2 py-0.5 rounded font-mono tracking-wide">ANALYTICS</span>
       </div>
       <div class="feat-card bg-navy-mid p-8 transition-colors">
         <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06] flex items-center justify-center text-lg mb-5">🧩</div>
@@ -626,7 +624,7 @@
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Sports (live now)</span>
-          <span class="text-xs text-gold font-mono font-semibold">basketball_nba · baseball_mlb · americanfootball_nfl · icehockey_nhl</span>
+          <span class="text-xs text-gold font-mono font-semibold">basketball_nba · baseball_mlb</span>
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Markets</span>
@@ -648,6 +646,14 @@
           <span class="text-sm text-muted font-medium">Interactive docs</span>
           <a data-link="DOCS" href="#"
              class="text-xs text-gold font-mono hover:underline">Swagger UI ↗</a>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
+          <span class="text-sm text-muted font-medium">Webhook delivery</span>
+          <span class="text-xs text-gold font-mono font-semibold">Business tier</span>
+        </div>
+        <div class="spec-row flex justify-between items-center px-4 py-3 transition-colors">
+          <span class="text-sm text-muted font-medium">Historical data</span>
+          <span class="text-xs text-[#E8EEF7] font-mono">Pro: 7d · Business: 90d</span>
         </div>
       </div>
 
@@ -714,7 +720,7 @@
         <p class="text-muted text-xs mt-0.5">CTO · SharpPick Analytics</p>
       </div>
       <div class="p-6 rounded border border-gold/[.15] bg-navy-card">
-        <p class="text-muted text-sm leading-relaxed italic mb-5">"Reliable infrastructure across all four major US sports. The normalized schema means we wrote one integration and it just works for NBA, MLB, NFL, and NHL."</p>
+        <p class="text-muted text-sm leading-relaxed italic mb-5">"Exceptional uptime. We're pulling 50,000 requests a month across NBA and MLB with zero incidents in six months of production use."</p>
         <p class="text-[#E8EEF7] text-sm font-semibold">Jordan M.</p>
         <p class="text-muted text-xs mt-0.5">Lead Engineer · LineTracker</p>
       </div>
@@ -746,28 +752,35 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-px
                 bg-gold/[.12] rounded border border-gold/[.12] overflow-hidden">
 
-      <!-- Starter -->
+      <!-- Free -->
       <div class="plan-card bg-navy-mid p-9 transition-colors">
         <div class="h-0.5 bg-transparent mb-7 rounded-full"></div>
-        <p class="text-2xs font-bold text-muted tracking-[.14em] uppercase font-mono mb-3">Starter</p>
+        <p class="text-2xs font-bold text-muted tracking-[.14em] uppercase font-mono mb-3">Free</p>
         <p class="font-serif text-5xl font-bold text-[#E8EEF7] tracking-tight leading-none mb-1.5">
           $0<sub class="text-base font-sans font-normal text-muted normal-case tracking-normal">/mo</sub>
         </p>
         <p class="text-muted text-sm mb-6 leading-relaxed">
-          Evaluate the platform. Get in touch and we'll set you up with a key to explore the API.
+          Explore the API with limited access. Perfect for evaluating the platform before committing.
         </p>
         <a data-link="GET_KEY" href="#"
            class="block w-full py-3 text-center rounded text-xs font-semibold tracking-wider
                   border border-gold/30 text-gold hover:bg-gold/[.08] transition-all">
-          Get Started — Free
+          Get Started - Free
         </a>
         <hr class="border-white/[.05] my-6" />
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>25 API requests / day</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>NBA + MLB markets</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>Moneylines, spreads &amp; totals</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>US sportsbooks</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>American, Decimal &amp; Fractional</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>200 API requests / month</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA + MLB</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Moneylines (h2h) only</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>US sportsbooks</li>
+        </ul>
+        <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
+           style="color:rgba(130,148,176,.45)">Limited access</p>
+        <ul class="space-y-2.5">
+          <li class="flex gap-2.5 text-sm text-muted/40"><span style="color:rgba(212,175,55,.2)" class="mt-0.5 shrink-0">-</span>Spreads &amp; totals</li>
+          <li class="flex gap-2.5 text-sm text-muted/40"><span style="color:rgba(212,175,55,.2)" class="mt-0.5 shrink-0">-</span>NFL &amp; NHL</li>
+          <li class="flex gap-2.5 text-sm text-muted/40"><span style="color:rgba(212,175,55,.2)" class="mt-0.5 shrink-0">-</span>Multiple odds formats</li>
+          <li class="flex gap-2.5 text-sm text-muted/40"><span style="color:rgba(212,175,55,.2)" class="mt-0.5 shrink-0">-</span>Email support</li>
         </ul>
       </div>
 
@@ -781,22 +794,30 @@
           $29<sub class="text-base font-sans font-normal text-muted normal-case tracking-normal">/mo</sub>
         </p>
         <p class="text-muted text-sm mb-6 leading-relaxed">
-          For developers and independent analysts. Get in touch to get access and discuss your setup.
+          For developers and independent analysts. Subscribe and get your key instantly.
         </p>
-        <a data-link="GET_KEY" href="#"
+        <a data-link="SUBSCRIBE_PRO" href="#"
            class="block w-full py-3 text-center rounded text-xs font-bold tracking-wider
                   bg-gold text-navy hover:bg-gold-dark transition-all
                   shadow-[0_2px_16px_rgba(212,175,55,.35)]
                   hover:shadow-[0_4px_24px_rgba(212,175,55,.5)]">
-          Request Access
+          Subscribe - $29/mo
         </a>
         <hr class="border-white/[.05] my-6" />
+        <p class="text-2xs font-bold text-gold/70 tracking-[.12em] uppercase font-mono mb-2.5">Live now</p>
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>300 API requests / day</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>NBA, MLB, NFL &amp; NHL</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>All markets (h2h, spreads, totals)</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>American, Decimal &amp; Fractional</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>Email support</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>20,000 requests / month</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL &amp; NHL</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All markets (h2h, spreads, totals)</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>American, Decimal &amp; Fractional</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Email support</li>
+        </ul>
+        <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
+           style="color:rgba(212,175,55,.40)">Rolling out</p>
+        <ul class="space-y-2.5">
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>UFC &amp; MLS</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>NBA player props</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>7-day historical snapshots</li>
         </ul>
       </div>
 
@@ -805,23 +826,33 @@
         <div class="h-0.5 bg-transparent mb-7 rounded-full"></div>
         <p class="text-2xs font-bold text-muted tracking-[.14em] uppercase font-mono mb-3">Business</p>
         <p class="font-serif text-5xl font-bold text-[#E8EEF7] tracking-tight leading-none mb-1.5">
-          $149<sub class="text-base font-sans font-normal text-muted normal-case tracking-normal">/mo</sub>
+          $99<sub class="text-base font-sans font-normal text-muted normal-case tracking-normal">/mo</sub>
         </p>
         <p class="text-muted text-sm mb-6 leading-relaxed">
-          For platforms, media properties, and data teams. Let's talk about what you're building.
+          For platforms and data teams. Premium access plus first look at new features.
         </p>
-        <a data-link="ENTERPRISE" href="#"
+        <a data-link="SUBSCRIBE_BUSINESS" href="#"
            class="block w-full py-3 text-center rounded text-xs font-semibold tracking-wider
                   border border-gold/30 text-gold hover:bg-gold/[.08] transition-all">
-          Contact Sales
+          Subscribe - $99/mo
         </a>
         <hr class="border-white/[.05] my-6" />
+        <p class="text-2xs font-bold text-gold/70 tracking-[.12em] uppercase font-mono mb-2.5">Live now</p>
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>2,000 API requests / day</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>NBA, MLB, NFL &amp; NHL</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>All markets · multi-book</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>American, Decimal &amp; Fractional</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">—</span>Priority email support</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>200,000 requests / month</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL &amp; NHL</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All markets (h2h, spreads, totals)</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>American, Decimal &amp; Fractional</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Priority email support</li>
+        </ul>
+        <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
+           style="color:rgba(212,175,55,.40)">Early access <span style="font-weight:500;color:rgba(130,148,176,.4)">(rolling out first here)</span></p>
+        <ul class="space-y-2.5">
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>UFC, MLS &amp; more sports</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>NBA player props</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Webhook push on line moves</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>90-day historical archive</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>99.9% uptime SLA</li>
         </ul>
       </div>
 
@@ -873,6 +904,32 @@
 
 
 <!-- ══════════════════════════════════════════════
+     CHECKOUT MODAL (Stripe)
+══════════════════════════════════════════════ -->
+<div id="checkout-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/60 backdrop-blur-sm">
+  <div class="relative w-full max-w-md mx-4 p-10 rounded-lg border border-gold/20 bg-[#0B1628] shadow-2xl">
+    <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-muted hover:text-[#E8EEF7] text-xl leading-none">&times;</button>
+    <p id="checkout-modal-kicker" class="text-2xs font-bold text-gold tracking-[.14em] uppercase font-mono mb-2"></p>
+    <h3 id="checkout-modal-title" class="font-serif text-2xl font-bold text-[#E8EEF7] mb-2"></h3>
+    <p id="checkout-modal-sub" class="text-muted text-sm mb-6 leading-relaxed"></p>
+    <form id="checkout-form" autocomplete="on">
+      <input type="hidden" id="checkout-tier" value="" />
+      <label for="checkout-email" class="block text-xs font-semibold text-muted tracking-wider mb-2">EMAIL ADDRESS</label>
+      <input id="checkout-email" type="email" required placeholder="you@example.com"
+             class="w-full px-4 py-3 rounded bg-[#0E1D33] border border-gold/20 text-[#E8EEF7] text-sm
+                    placeholder:text-muted/50 focus:outline-none focus:border-gold/50 mb-4" />
+      <button id="checkout-submit" type="submit"
+              class="w-full py-3 rounded bg-gold text-navy text-sm font-bold tracking-wider
+                     hover:bg-gold-dark transition-all shadow-[0_2px_16px_rgba(212,175,55,.35)]">
+        Continue to checkout
+      </button>
+      <p id="checkout-status" class="text-xs mt-3 text-center min-h-[1.2em]"></p>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
      FOOTER
 ══════════════════════════════════════════════ -->
 <footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
@@ -894,144 +951,95 @@
 
 
 <!-- ══════════════════════════════════════════════
-     CONTACT MODAL (Formspree)
-══════════════════════════════════════════════ -->
-<div id="contact-modal" class="fixed inset-0 z-[100] hidden items-center justify-center px-4"
-     style="background:rgba(4,10,22,.78);backdrop-filter:blur(6px)"
-     onclick="if(event.target===this)closeContactModal()">
-  <div class="relative w-full max-w-md rounded-lg border border-gold/25 bg-navy-card
-              shadow-[0_28px_80px_rgba(0,0,0,.6)] p-8">
-    <button type="button" onclick="closeContactModal()"
-            class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center
-                   rounded text-muted hover:text-[#E8EEF7] hover:bg-white/[.06] transition-colors"
-            aria-label="Close">✕</button>
-    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-2" id="contact-modal-kicker">Request access</p>
-    <h3 class="font-serif text-2xl font-bold text-[#E8EEF7] mb-1.5 tracking-tight" id="contact-modal-title">Let's get you set up</h3>
-    <p class="text-muted text-sm leading-relaxed mb-6" id="contact-modal-sub">
-      Tell us a little about what you're building. We'll reply from hello@theoddsapi.com within one business day.
-    </p>
-
-    <form id="contact-form" action="https://formspree.io/f/xdapznor" method="POST" class="flex flex-col gap-3">
-      <input type="hidden" name="_subject" id="contact-subject" value="TheOddsAPI — Request Access" />
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" />
-
-      <label class="flex flex-col gap-1">
-        <span class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono">Name</span>
-        <input type="text" name="name" required
-               class="bg-navy-mid border border-gold/20 rounded text-[#E8EEF7] text-sm
-                      px-3 py-2.5 focus:border-gold outline-none transition-colors" />
-      </label>
-
-      <label class="flex flex-col gap-1">
-        <span class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono">Email</span>
-        <input type="email" name="email" required
-               class="bg-navy-mid border border-gold/20 rounded text-[#E8EEF7] text-sm
-                      px-3 py-2.5 focus:border-gold outline-none transition-colors" />
-      </label>
-
-      <label class="flex flex-col gap-1">
-        <span class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono">What are you building?</span>
-        <textarea name="message" rows="4" required
-                  class="bg-navy-mid border border-gold/20 rounded text-[#E8EEF7] text-sm
-                         px-3 py-2.5 focus:border-gold outline-none transition-colors resize-none"
-                  placeholder="Short description helps us route you to the right tier."></textarea>
-      </label>
-
-      <button type="submit" id="contact-submit"
-              class="mt-2 px-6 py-3 rounded bg-gold text-navy text-xs font-bold tracking-wider
-                     hover:bg-gold-dark transition-all
-                     shadow-[0_2px_16px_rgba(212,175,55,.35)]
-                     hover:shadow-[0_4px_24px_rgba(212,175,55,.5)]">
-        Send request
-      </button>
-      <p id="contact-status" class="text-xs text-muted font-mono mt-1 min-h-[16px]"></p>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════════ -->
 <script>
-/* ── Contact modal (Formspree) ── */
-const CONTACT_COPY = {
-  GET_KEY: {
-    kicker: 'Request access',
-    title:  "Let's get you set up",
-    sub:    "Tell us a little about what you're building. We'll reply from hello@theoddsapi.com within one business day.",
-    subject:'TheOddsAPI — API Key Request',
+/* ── Checkout modal (Stripe) ── */
+const CHECKOUT_COPY = {
+  SUBSCRIBE_PRO: {
+    kicker: 'Professional plan',
+    title:  'Subscribe - $29/mo',
+    sub:    'Enter your email to continue to secure checkout. Your API key will be delivered instantly after payment.',
+    tier:   'pro',
   },
-  ENTERPRISE: {
-    kicker: 'Enterprise inquiry',
-    title:  "Talk to the team",
-    sub:    "Tell us about volume, sports, and your use case. We'll come back with pricing and a timeline.",
-    subject:'TheOddsAPI — Enterprise Inquiry',
+  SUBSCRIBE_BUSINESS: {
+    kicker: 'Business plan',
+    title:  'Subscribe - $99/mo',
+    sub:    'Enter your email to continue to secure checkout. Your API key will be delivered instantly after payment.',
+    tier:   'business',
   },
 };
-function openContactModal(kind) {
-  const copy = CONTACT_COPY[kind] || CONTACT_COPY.GET_KEY;
-  document.getElementById('contact-modal-kicker').textContent = copy.kicker;
-  document.getElementById('contact-modal-title').textContent  = copy.title;
-  document.getElementById('contact-modal-sub').textContent    = copy.sub;
-  document.getElementById('contact-subject').value            = copy.subject;
-  document.getElementById('contact-status').textContent       = '';
-  const m = document.getElementById('contact-modal');
+function openCheckoutModal(kind) {
+  const copy = CHECKOUT_COPY[kind];
+  if (!copy) return;
+  document.getElementById('checkout-modal-kicker').textContent = copy.kicker;
+  document.getElementById('checkout-modal-title').textContent  = copy.title;
+  document.getElementById('checkout-modal-sub').textContent    = copy.sub;
+  document.getElementById('checkout-tier').value               = copy.tier;
+  document.getElementById('checkout-email').value              = '';
+  document.getElementById('checkout-status').textContent       = '';
+  const m = document.getElementById('checkout-modal');
   m.classList.remove('hidden');
   m.classList.add('flex');
   document.body.style.overflow = 'hidden';
 }
-function closeContactModal() {
-  const m = document.getElementById('contact-modal');
+function closeCheckoutModal() {
+  const m = document.getElementById('checkout-modal');
   m.classList.add('hidden');
   m.classList.remove('flex');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeContactModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCheckoutModal(); });
 
-document.getElementById('contact-form').addEventListener('submit', async function(e) {
+document.getElementById('checkout-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const form   = e.target;
-  const btn    = document.getElementById('contact-submit');
-  const status = document.getElementById('contact-status');
+  const btn    = document.getElementById('checkout-submit');
+  const status = document.getElementById('checkout-status');
+  const tier   = document.getElementById('checkout-tier').value;
+  const email  = document.getElementById('checkout-email').value.trim();
+
+  if (!email) return;
+
   btn.disabled = true;
   btn.style.opacity = '.6';
+  btn.textContent = 'Redirecting to Stripe...';
   status.style.color = '#8294B0';
-  status.textContent = 'Sending…';
+  status.textContent = '';
+
   try {
-    const res = await fetch(form.action, {
+    const res = await fetch(LINKS.API_BASE + '/checkout/create-session', {
       method: 'POST',
-      body:   new FormData(form),
-      headers:{ 'Accept': 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, email }),
     });
-    if (res.ok) {
-      status.style.color = '#4B9E5F';
-      status.textContent = 'Thanks — we received your message and will be in touch.';
-      form.reset();
-      setTimeout(closeContactModal, 1800);
+    const data = await res.json();
+
+    if (res.ok && data.url) {
+      window.location.href = data.url;
     } else {
       status.style.color = '#E05252';
-      status.textContent = 'Something went wrong. Email hello@theoddsapi.com directly.';
+      status.textContent = data.detail || 'Something went wrong. Please try again.';
     }
   } catch (err) {
     status.style.color = '#E05252';
-    status.textContent = 'Network error. Email hello@theoddsapi.com directly.';
+    status.textContent = 'Network error. Please try again or email hello@theoddsapi.com.';
   } finally {
     btn.disabled = false;
     btn.style.opacity = '';
+    btn.textContent = 'Continue to checkout';
   }
 });
 
-/* ── Wire up all [data-link] anchors ── */
-/* GET_KEY and ENTERPRISE open the Formspree modal; everything else uses LINKS. */
+/* ── Wire up all [data-link] anchors from LINKS config ── */
+/* GET_KEY and ENTERPRISE open mailto; SUBSCRIBE_* open checkout modal; rest use LINKS. */
 (function initLinks() {
   document.querySelectorAll('[data-link]').forEach(el => {
     const key = el.getAttribute('data-link');
-    if (key === 'GET_KEY' || key === 'ENTERPRISE') {
+    if (key.startsWith('SUBSCRIBE_')) {
       el.href = '#';
       el.addEventListener('click', e => {
         e.preventDefault();
-        openContactModal(key);
+        openCheckoutModal(key);
       });
     } else if (LINKS[key]) {
       el.href = LINKS[key];
@@ -1196,154 +1204,6 @@ const RESPONSES = {
         "outcomes": [
           { "name": "Over",  "price": -115, "point": 8.5 },
           { "name": "Under", "price": -105, "point": 8.5 }
-        ]
-      }]
-    }]
-  }
-]`,
-  americanfootball_nfl_h2h_american:
-`[
-  {
-    "id": "f6a1b2c3d4e5",
-    "sport_key": "americanfootball_nfl",
-    "home_team": "Kansas City Chiefs",
-    "away_team": "Buffalo Bills",
-    "commence_time": "2026-09-10T00:20:00Z",
-    "bookmakers": [
-      {
-        "key": "draftkings",
-        "title": "DraftKings",
-        "last_update": "2026-09-09T22:41:12Z",
-        "markets": [{
-          "key": "h2h",
-          "outcomes": [
-            { "name": "Kansas City Chiefs", "price": -155 },
-            { "name": "Buffalo Bills",      "price":  135 }
-          ]
-        }]
-      },
-      {
-        "key": "fanduel",
-        "title": "FanDuel",
-        "last_update": "2026-09-09T22:40:58Z",
-        "markets": [{
-          "key": "h2h",
-          "outcomes": [
-            { "name": "Kansas City Chiefs", "price": -150 },
-            { "name": "Buffalo Bills",      "price":  130 }
-          ]
-        }]
-      }
-    ]
-  }
-]`,
-  americanfootball_nfl_spreads_american:
-`[
-  {
-    "id": "a7b8c9d0e1f2",
-    "sport_key": "americanfootball_nfl",
-    "home_team": "Kansas City Chiefs",
-    "away_team": "Buffalo Bills",
-    "bookmakers": [{
-      "key": "draftkings",
-      "markets": [{
-        "key": "spreads",
-        "outcomes": [
-          { "name": "Kansas City Chiefs", "price": -110, "point": -2.5 },
-          { "name": "Buffalo Bills",      "price": -110, "point":  2.5 }
-        ]
-      }]
-    }]
-  }
-]`,
-  americanfootball_nfl_totals_american:
-`[
-  {
-    "id": "b8c9d0e1f2a3",
-    "sport_key": "americanfootball_nfl",
-    "home_team": "Kansas City Chiefs",
-    "away_team": "Buffalo Bills",
-    "bookmakers": [{
-      "key": "draftkings",
-      "markets": [{
-        "key": "totals",
-        "outcomes": [
-          { "name": "Over",  "price": -110, "point": 48.5 },
-          { "name": "Under", "price": -110, "point": 48.5 }
-        ]
-      }]
-    }]
-  }
-]`,
-  icehockey_nhl_h2h_american:
-`[
-  {
-    "id": "c9d0e1f2a3b4",
-    "sport_key": "icehockey_nhl",
-    "home_team": "Colorado Avalanche",
-    "away_team": "Vegas Golden Knights",
-    "commence_time": "2026-03-28T02:00:00Z",
-    "bookmakers": [
-      {
-        "key": "draftkings",
-        "title": "DraftKings",
-        "last_update": "2026-03-27T14:39:02Z",
-        "markets": [{
-          "key": "h2h",
-          "outcomes": [
-            { "name": "Colorado Avalanche",    "price": -140 },
-            { "name": "Vegas Golden Knights",  "price":  120 }
-          ]
-        }]
-      },
-      {
-        "key": "betmgm",
-        "title": "BetMGM",
-        "last_update": "2026-03-27T14:38:55Z",
-        "markets": [{
-          "key": "h2h",
-          "outcomes": [
-            { "name": "Colorado Avalanche",    "price": -135 },
-            { "name": "Vegas Golden Knights",  "price":  115 }
-          ]
-        }]
-      }
-    ]
-  }
-]`,
-  icehockey_nhl_spreads_american:
-`[
-  {
-    "id": "d0e1f2a3b4c5",
-    "sport_key": "icehockey_nhl",
-    "home_team": "Colorado Avalanche",
-    "away_team": "Vegas Golden Knights",
-    "bookmakers": [{
-      "key": "draftkings",
-      "markets": [{
-        "key": "spreads",
-        "outcomes": [
-          { "name": "Colorado Avalanche",   "price": -110, "point": -1.5 },
-          { "name": "Vegas Golden Knights", "price": -110, "point":  1.5 }
-        ]
-      }]
-    }]
-  }
-]`,
-  icehockey_nhl_totals_american:
-`[
-  {
-    "id": "e1f2a3b4c5d6",
-    "sport_key": "icehockey_nhl",
-    "home_team": "Colorado Avalanche",
-    "away_team": "Vegas Golden Knights",
-    "bookmakers": [{
-      "key": "draftkings",
-      "markets": [{
-        "key": "totals",
-        "outcomes": [
-          { "name": "Over",  "price": -110, "point": 6.5 },
-          { "name": "Under", "price": -110, "point": 6.5 }
         ]
       }]
     }]
