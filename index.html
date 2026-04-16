@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TheOddsAPI — Real-Time Sports Betting Odds API</title>
-  <meta name="description" content="Real-time, normalized betting odds from 30+ sportsbooks via a single REST API. NBA, MLB and more. Built for developers." />
+  <meta name="description" content="Real-time, normalized betting odds with multi-book aggregation via a single REST API. NBA, MLB, NFL, NHL, UFC and more. Built for developers." />
 
   <!-- =====================================================
        🔗 LINKS CONFIG  ← Edit all URLs right here
@@ -15,7 +15,7 @@
       GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
 
       /* Live Swagger / interactive API docs */
-      DOCS:        'https://betting-api-production-2b06.up.railway.app/docs',
+      DOCS:        'https://api.theoddsapi.com/docs',
 
       /* Enterprise / sales enquiries */
       ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
@@ -178,7 +178,7 @@
                   text-2xs font-bold text-gold tracking-[.14em] uppercase">
         <span class="live-dot w-1.5 h-1.5 rounded-full bg-alive shrink-0"
               style="box-shadow:0 0 8px #4B9E5F"></span>
-        Live feed active &middot; NBA &amp; MLB
+        Live feed active &middot; NBA &middot; MLB &middot; NFL &middot; NHL &middot; UFC
       </div>
 
       <h1 class="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.12]
@@ -188,9 +188,15 @@
         operators.
       </h1>
 
-      <p class="text-muted text-base leading-[1.85] mb-8 max-w-[460px]">
-        Real-time, normalized betting lines from 30+ sportsbooks.
+      <p class="text-muted text-base leading-[1.85] mb-4 max-w-[460px]">
+        Real-time, normalized betting lines with multi-book aggregation.
         Built for developers and data teams that demand precision, uptime, and scale.
+      </p>
+      <p class="text-muted text-sm leading-[1.85] mb-4 max-w-[460px]">
+        Aggregated, normalized, and enhanced for real-world betting systems.
+      </p>
+      <p class="text-muted/60 text-xs leading-[1.85] mb-8 max-w-[460px] italic">
+        Line movement and advanced signals coming soon.
       </p>
 
       <div class="flex flex-wrap gap-3 mb-8">
@@ -262,6 +268,9 @@
                          text-xs font-mono px-2 py-1 focus:border-gold outline-none cursor-pointer">
             <option value="basketball_nba">NBA Basketball</option>
             <option value="baseball_mlb">MLB Baseball</option>
+            <option value="americanfootball_nfl">NFL Football</option>
+            <option value="icehockey_nhl">NHL Hockey</option>
+            <option value="mma_mixed_martial_arts">UFC MMA</option>
           </select>
         </div>
         <div class="flex items-center gap-2">
@@ -377,8 +386,8 @@
       Your first request in <em class="not-italic text-gold">under a minute.</em>
     </h2>
     <p class="text-muted text-base leading-relaxed mb-10 max-w-xl">
-      Request an API key, add one header, and you're pulling live odds from every major
-      sportsbook in a single call.
+      Request access, add one header, and you're pulling normalized odds data from
+      supported sportsbooks in a single call.
     </p>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -392,9 +401,9 @@
           <div class="shrink-0 w-8 h-8 rounded border border-gold/40 flex items-center
                       justify-center text-gold text-xs font-bold font-mono bg-gold/[.06]">01</div>
           <div>
-            <p class="text-sm font-bold text-[#E8EEF7] mb-1">Request an API key</p>
+            <p class="text-sm font-bold text-[#E8EEF7] mb-1">Request access</p>
             <p class="text-muted text-xs leading-relaxed">
-              Send us a quick message and we'll get your key to you directly.
+              Request access and we'll send your API key directly.
               <a data-link="GET_KEY" href="#"
                  class="text-gold hover:underline">Request yours →</a>
             </p>
@@ -596,6 +605,110 @@
 
 
 <!-- ══════════════════════════════════════════════
+     INTELLIGENCE LAYER TEASER
+══════════════════════════════════════════════ -->
+<section class="relative px-5 md:px-14 py-20 border-t border-gold/[.15] overflow-hidden">
+  <!-- Subtle background glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full pointer-events-none"
+       style="background:radial-gradient(ellipse,rgba(212,175,55,.05) 0%,transparent 60%)"></div>
+
+  <div class="relative z-10 max-w-5xl mx-auto">
+    <div class="flex items-center gap-3 mb-3">
+      <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono
+                border-l-2 border-gold pl-2.5">Intelligence layer</p>
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full
+                   border border-gold/30 bg-gold/[.06]
+                   text-2xs font-bold text-gold tracking-[.08em] uppercase font-mono">
+        Coming soon
+      </span>
+    </div>
+
+    <h2 class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-3 leading-snug">
+      We're not just serving odds.<br/>
+      We're <em class="not-italic text-gold">learning</em> from them.
+    </h2>
+    <p class="text-muted text-base leading-relaxed mb-5 max-w-xl">
+      Raw odds are just the starting point. We're building the analytical layer on top —
+      line movement, cross-book edge detection, and consensus modeling.
+    </p>
+    <p class="text-muted/70 text-sm leading-relaxed mb-14 max-w-xl">
+      Business tier subscribers get first access when intelligence endpoints go live.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-px
+                bg-gold/[.12] rounded border border-gold/[.12] overflow-hidden">
+
+      <!-- Line Movement -->
+      <div class="bg-navy-mid p-8 transition-colors hover:bg-[#0f1f38]">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06]
+                      flex items-center justify-center text-lg">📉</div>
+        </div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Line movement</h3>
+        <p class="text-muted text-sm leading-relaxed mb-4">
+          Track how odds shift across sportsbooks in real-time. Spot steam moves,
+          reverse line movement, and sharp action before the market adjusts.
+        </p>
+        <code class="text-2xs font-mono text-gold/60 bg-gold/[.05] px-2 py-1 rounded">
+          GET /intelligence/line-movement
+        </code>
+      </div>
+
+      <!-- Edge Detection -->
+      <div class="bg-navy-mid p-8 transition-colors hover:bg-[#0f1f38]">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06]
+                      flex items-center justify-center text-lg">🎯</div>
+        </div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Edge detection</h3>
+        <p class="text-muted text-sm leading-relaxed mb-4">
+          Automated identification of pricing inefficiencies across books.
+          Surface the signals your models are missing — the edges that close fast.
+        </p>
+        <code class="text-2xs font-mono text-gold/60 bg-gold/[.05] px-2 py-1 rounded">
+          GET /intelligence/edges
+        </code>
+      </div>
+
+      <!-- Consensus Odds -->
+      <div class="bg-navy-mid p-8 transition-colors hover:bg-[#0f1f38]">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06]
+                      flex items-center justify-center text-lg">⚖️</div>
+        </div>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Consensus odds</h3>
+        <p class="text-muted text-sm leading-relaxed mb-4">
+          Aggregated fair market price from multi-book data. Know what the line
+          <em>should</em> be — not just what it is at any single book.
+        </p>
+        <code class="text-2xs font-mono text-gold/60 bg-gold/[.05] px-2 py-1 rounded">
+          GET /intelligence/consensus
+        </code>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-4
+                p-5 rounded border border-gold/[.15] bg-navy-card">
+      <div>
+        <p class="text-sm font-bold text-[#E8EEF7]">Business tier · Early access</p>
+        <p class="text-muted text-xs mt-0.5">Intelligence endpoints available first to Business tier subscribers.</p>
+      </div>
+      <a data-link="GET_KEY" href="#"
+         class="px-6 py-2.5 rounded bg-gold text-navy text-xs font-bold tracking-wider
+                hover:bg-gold-dark transition-all
+                shadow-[0_2px_12px_rgba(212,175,55,.3)]
+                hover:shadow-[0_4px_20px_rgba(212,175,55,.45)]">
+        Get early access
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
      API REFERENCE
 ══════════════════════════════════════════════ -->
 <section id="api-reference" class="px-5 md:px-14 py-20 bg-navy-mid border-t border-gold/[.15]">
@@ -624,7 +737,7 @@
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Sports (live now)</span>
-          <span class="text-xs text-gold font-mono font-semibold">basketball_nba · baseball_mlb</span>
+          <span class="text-xs text-gold font-mono font-semibold">NBA · MLB · NFL · NHL · UFC</span>
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Markets</span>
@@ -807,15 +920,15 @@
         <p class="text-2xs font-bold text-gold/70 tracking-[.12em] uppercase font-mono mb-2.5">Live now</p>
         <ul class="space-y-2.5">
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>20,000 requests / month</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL &amp; NHL</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL, NHL &amp; UFC</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All markets (h2h, spreads, totals)</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>American, Decimal &amp; Fractional</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Email support</li>
         </ul>
         <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
-           style="color:rgba(212,175,55,.40)">Rolling out</p>
+           style="color:rgba(212,175,55,.40)">Coming soon</p>
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>UFC &amp; MLS</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>MLS &amp; more sports</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>NBA player props</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>7-day historical snapshots</li>
         </ul>
@@ -829,7 +942,7 @@
           $99<sub class="text-base font-sans font-normal text-muted normal-case tracking-normal">/mo</sub>
         </p>
         <p class="text-muted text-sm mb-6 leading-relaxed">
-          For platforms and data teams. Premium access plus first look at new features.
+          For platforms and data teams. Premium data plus early access to the intelligence layer.
         </p>
         <a data-link="SUBSCRIBE_BUSINESS" href="#"
            class="block w-full py-3 text-center rounded text-xs font-semibold tracking-wider
@@ -840,17 +953,23 @@
         <p class="text-2xs font-bold text-gold/70 tracking-[.12em] uppercase font-mono mb-2.5">Live now</p>
         <ul class="space-y-2.5">
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>200,000 requests / month</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL &amp; NHL</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL, NHL &amp; UFC</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All markets (h2h, spreads, totals)</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>American, Decimal &amp; Fractional</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Priority email support</li>
         </ul>
         <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
-           style="color:rgba(212,175,55,.40)">Early access <span style="font-weight:500;color:rgba(130,148,176,.4)">(rolling out first here)</span></p>
+           style="color:rgba(212,175,55,.40)">Intelligence layer <span style="font-weight:500;color:rgba(130,148,176,.4)">(coming soon)</span></p>
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>UFC, MLS &amp; more sports</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Line movement tracking</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Edge detection across books</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Consensus odds modeling</li>
+        </ul>
+        <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
+           style="color:rgba(212,175,55,.40)">Also coming</p>
+        <ul class="space-y-2.5">
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>MLS &amp; more sports</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>NBA player props</li>
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Webhook push on line moves</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>90-day historical archive</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>99.9% uptime SLA</li>
         </ul>
@@ -881,7 +1000,7 @@
         </h2>
         <p class="text-muted text-base leading-relaxed max-w-md">
           Join the developers and data teams building smarter sports products on TheOddsAPI.
-          Send us a message and we'll get you set up with access.
+          Request access and we'll send your API key directly.
         </p>
       </div>
       <div class="flex flex-col gap-3 shrink-0 min-w-[190px]">
@@ -912,9 +1031,11 @@
     <p class="text-2xs font-bold text-gold tracking-[.14em] uppercase font-mono mb-2">Request access</p>
     <h3 class="font-serif text-2xl font-bold text-[#E8EEF7] mb-2">Let's get you set up</h3>
     <p class="text-muted text-sm mb-6 leading-relaxed">
-      Tell us a little about what you're building. We'll reply from hello@theoddsapi.com within one business day.
+      Tell us what you're building. We'll send your API key from hello@theoddsapi.com within one business day.
     </p>
-    <form id="contact-form" action="https://formspree.io/f/xdapznor" method="POST">
+    <!-- Primary: /lead endpoint. Fallback: Formspree (keep account active until confirmed) -->
+    <form id="contact-form" action="https://api.theoddsapi.com/lead" method="POST"
+          data-fallback="https://formspree.io/f/xdapznor">
       <label for="contact-name" class="block text-xs font-semibold text-muted tracking-wider mb-2">NAME</label>
       <input id="contact-name" name="name" type="text" required placeholder=""
              class="w-full px-4 py-3 rounded bg-[#0E1D33] border border-gold/20 text-[#E8EEF7] text-sm
@@ -1003,7 +1124,7 @@ function closeContactModal() {
   document.body.style.overflow = '';
 }
 
-/* Handle Formspree submission via AJAX (stay on page) */
+/* Handle lead submission — primary: /lead endpoint, fallback: Formspree */
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const form = e.target;
@@ -1014,29 +1135,50 @@ document.getElementById('contact-form').addEventListener('submit', async functio
   btn.style.opacity = '.6';
   btn.textContent = 'Sending...';
 
+  const payload = {
+    name:    form.querySelector('[name="name"]').value.trim(),
+    email:   form.querySelector('[name="email"]').value.trim(),
+    message: form.querySelector('[name="message"]').value.trim(),
+  };
+
+  let sent = false;
+
+  /* Try /lead endpoint first */
   try {
     const res = await fetch(form.action, {
       method: 'POST',
-      body: new FormData(form),
-      headers: { 'Accept': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
     });
-    if (res.ok) {
-      status.style.color = '#4B9E5F';
-      status.textContent = 'Sent! We\'ll be in touch shortly.';
-      form.reset();
-      setTimeout(() => closeContactModal(), 2000);
-    } else {
-      status.style.color = '#E05252';
-      status.textContent = 'Something went wrong. Email hello@theoddsapi.com directly.';
-    }
-  } catch (err) {
-    status.style.color = '#E05252';
-    status.textContent = 'Network error. Email hello@theoddsapi.com directly.';
-  } finally {
-    btn.disabled = false;
-    btn.style.opacity = '';
-    btn.textContent = 'Send request';
+    if (res.ok) sent = true;
+  } catch (_) { /* fall through to Formspree */ }
+
+  /* Fallback to Formspree if /lead failed */
+  if (!sent) {
+    try {
+      const fallbackUrl = form.getAttribute('data-fallback');
+      const res = await fetch(fallbackUrl, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' },
+      });
+      if (res.ok) sent = true;
+    } catch (_) { /* both failed */ }
   }
+
+  if (sent) {
+    status.style.color = '#4B9E5F';
+    status.textContent = 'Sent! We\'ll be in touch shortly.';
+    form.reset();
+    setTimeout(() => closeContactModal(), 2000);
+  } else {
+    status.style.color = '#E05252';
+    status.textContent = 'Something went wrong. Email hello@theoddsapi.com directly.';
+  }
+
+  btn.disabled = false;
+  btn.style.opacity = '';
+  btn.textContent = 'Send request';
 });
 
 /* ── Checkout modal (Stripe) ── */
@@ -1295,6 +1437,186 @@ const RESPONSES = {
         "outcomes": [
           { "name": "Over",  "price": -115, "point": 8.5 },
           { "name": "Under", "price": -105, "point": 8.5 }
+        ]
+      }]
+    }]
+  }
+]`,
+  americanfootball_nfl_h2h_american:
+`[
+  {
+    "id": "nfl1a2b3c4d5e",
+    "sport_key": "americanfootball_nfl",
+    "home_team": "Kansas City Chiefs",
+    "away_team": "Philadelphia Eagles",
+    "commence_time": "2026-09-10T00:20:00Z",
+    "bookmakers": [{
+      "key": "draftkings",
+      "title": "DraftKings",
+      "last_update": "2026-09-09T18:12:05Z",
+      "markets": [{
+        "key": "h2h",
+        "outcomes": [
+          { "name": "Kansas City Chiefs",    "price": -145 },
+          { "name": "Philadelphia Eagles",   "price": 122 }
+        ]
+      }]
+    }]
+  }
+]`,
+  americanfootball_nfl_spreads_american:
+`[
+  {
+    "id": "nfl2b3c4d5e6f",
+    "sport_key": "americanfootball_nfl",
+    "home_team": "Kansas City Chiefs",
+    "away_team": "Philadelphia Eagles",
+    "bookmakers": [{
+      "key": "fanduel",
+      "markets": [{
+        "key": "spreads",
+        "outcomes": [
+          { "name": "Kansas City Chiefs",  "price": -110, "point": -2.5 },
+          { "name": "Philadelphia Eagles", "price": -110, "point":  2.5 }
+        ]
+      }]
+    }]
+  }
+]`,
+  americanfootball_nfl_totals_american:
+`[
+  {
+    "id": "nfl3c4d5e6f7g",
+    "sport_key": "americanfootball_nfl",
+    "home_team": "Kansas City Chiefs",
+    "away_team": "Philadelphia Eagles",
+    "bookmakers": [{
+      "key": "caesars",
+      "markets": [{
+        "key": "totals",
+        "outcomes": [
+          { "name": "Over",  "price": -110, "point": 48.5 },
+          { "name": "Under", "price": -110, "point": 48.5 }
+        ]
+      }]
+    }]
+  }
+]`,
+  icehockey_nhl_h2h_american:
+`[
+  {
+    "id": "nhl1a2b3c4d5e",
+    "sport_key": "icehockey_nhl",
+    "home_team": "Toronto Maple Leafs",
+    "away_team": "Montreal Canadiens",
+    "commence_time": "2026-10-15T23:00:00Z",
+    "bookmakers": [{
+      "key": "draftkings",
+      "title": "DraftKings",
+      "last_update": "2026-10-15T17:22:10Z",
+      "markets": [{
+        "key": "h2h",
+        "outcomes": [
+          { "name": "Toronto Maple Leafs",  "price": -155 },
+          { "name": "Montreal Canadiens",    "price": 130 }
+        ]
+      }]
+    }]
+  }
+]`,
+  icehockey_nhl_spreads_american:
+`[
+  {
+    "id": "nhl2b3c4d5e6f",
+    "sport_key": "icehockey_nhl",
+    "home_team": "Toronto Maple Leafs",
+    "away_team": "Montreal Canadiens",
+    "bookmakers": [{
+      "key": "betmgm",
+      "markets": [{
+        "key": "spreads",
+        "outcomes": [
+          { "name": "Toronto Maple Leafs", "price": +135, "point": -1.5 },
+          { "name": "Montreal Canadiens",  "price": -160, "point":  1.5 }
+        ]
+      }]
+    }]
+  }
+]`,
+  icehockey_nhl_totals_american:
+`[
+  {
+    "id": "nhl3c4d5e6f7g",
+    "sport_key": "icehockey_nhl",
+    "home_team": "Toronto Maple Leafs",
+    "away_team": "Montreal Canadiens",
+    "bookmakers": [{
+      "key": "fanduel",
+      "markets": [{
+        "key": "totals",
+        "outcomes": [
+          { "name": "Over",  "price": -112, "point": 6.5 },
+          { "name": "Under", "price": -108, "point": 6.5 }
+        ]
+      }]
+    }]
+  }
+]`,
+  mma_mixed_martial_arts_h2h_american:
+`[
+  {
+    "id": "ufc1a2b3c4d5e",
+    "sport_key": "mma_mixed_martial_arts",
+    "home_team": "Islam Makhachev",
+    "away_team": "Charles Oliveira",
+    "commence_time": "2026-06-14T04:00:00Z",
+    "bookmakers": [{
+      "key": "draftkings",
+      "title": "DraftKings",
+      "last_update": "2026-06-13T20:15:03Z",
+      "markets": [{
+        "key": "h2h",
+        "outcomes": [
+          { "name": "Islam Makhachev",   "price": -210 },
+          { "name": "Charles Oliveira",  "price": 175 }
+        ]
+      }]
+    }]
+  }
+]`,
+  mma_mixed_martial_arts_spreads_american:
+`[
+  {
+    "id": "ufc2b3c4d5e6f",
+    "sport_key": "mma_mixed_martial_arts",
+    "home_team": "Islam Makhachev",
+    "away_team": "Charles Oliveira",
+    "bookmakers": [{
+      "key": "fanduel",
+      "markets": [{
+        "key": "spreads",
+        "outcomes": [
+          { "name": "Islam Makhachev",  "price": -110, "point": -4.5 },
+          { "name": "Charles Oliveira", "price": -110, "point":  4.5 }
+        ]
+      }]
+    }]
+  }
+]`,
+  mma_mixed_martial_arts_totals_american:
+`[
+  {
+    "id": "ufc3c4d5e6f7g",
+    "sport_key": "mma_mixed_martial_arts",
+    "home_team": "Islam Makhachev",
+    "away_team": "Charles Oliveira",
+    "bookmakers": [{
+      "key": "draftkings",
+      "markets": [{
+        "key": "totals",
+        "outcomes": [
+          { "name": "Over",  "price": -130, "point": 2.5 },
+          { "name": "Under", "price": 110,  "point": 2.5 }
         ]
       }]
     }]
