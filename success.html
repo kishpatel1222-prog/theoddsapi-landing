@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to TheOddsAPI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a1a;
+      color: #E8EEF7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      max-width: 520px;
+      width: 100%;
+      background: #111428;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      padding: 48px 40px;
+      text-align: center;
+    }
+    .check {
+      width: 64px;
+      height: 64px;
+      background: rgba(212, 175, 55, 0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 28px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #d4af37;
+    }
+    p {
+      color: #8294B0;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .highlight {
+      background: rgba(212, 175, 55, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 24px 0;
+      font-size: 14px;
+      color: #E8EEF7;
+    }
+    .btn {
+      display: inline-block;
+      background: #d4af37;
+      color: #0a0a1a;
+      padding: 12px 32px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #c4a030; }
+    .secondary {
+      display: block;
+      margin-top: 16px;
+      color: #d4af37;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .secondary:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="check">&#10003;</div>
+    <h1>You're all set.</h1>
+    <p>
+      Your payment was successful. We're generating your API key right now.
+    </p>
+    <div class="highlight">
+      Check your email — your API key and quickstart guide are on the way.
+      If you don't see it within a few minutes, check your spam folder.
+    </div>
+    <a href="https://api.theoddsapi.com/docs" class="btn">View API Docs</a>
+    <a href="https://theoddsapi.com" class="secondary">Back to theoddsapi.com</a>
+  </div>
+</body>
+</html>
