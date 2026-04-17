@@ -1033,9 +1033,9 @@
     <p class="text-muted text-sm mb-6 leading-relaxed">
       Tell us what you're building. We'll send your API key from hello@theoddsapi.com within one business day.
     </p>
-    <!-- Primary: /lead endpoint. Fallback: Formspree (keep account active until confirmed) -->
-    <form id="contact-form" action="https://api.theoddsapi.com/lead" method="POST"
-          data-fallback="https://formspree.io/f/xdapznor">
+    <!-- Primary: Formspree (email delivery). Secondary: /lead (Supabase capture, fire-and-forget). -->
+    <form id="contact-form" action="https://formspree.io/f/xdapznor" method="POST"
+          data-secondary="https://api.theoddsapi.com/lead">
       <label for="contact-name" class="block text-xs font-semibold text-muted tracking-wider mb-2">NAME</label>
       <input id="contact-name" name="name" type="text" required placeholder=""
              class="w-full px-4 py-3 rounded bg-[#0E1D33] border border-gold/20 text-[#E8EEF7] text-sm
