@@ -1085,7 +1085,8 @@
     <p class="text-muted text-sm mb-6 leading-relaxed">
       Tell us what you're building. We'll send your API key from hello@theoddsapi.com within one business day.
     </p>
-    <!-- Primary: Formspree (email delivery). Secondary: /lead (Supabase capture, fire-and-forget). -->
+    <!-- Dual-fire (2026-04-20): /lead and Formspree both POSTed on every submit.
+         24h observation window to confirm parity before Formspree is retired. -->
     <form id="contact-form" action="https://formspree.io/f/xdapznor" method="POST"
           data-secondary="https://api.theoddsapi.com/lead">
       <label for="contact-name" class="block text-xs font-semibold text-muted tracking-wider mb-2">NAME</label>
@@ -1176,7 +1177,10 @@ function closeContactModal() {
   document.body.style.overflow = '';
 }
 
-/* Handle lead submission — primary: /lead endpoint, fallback: Formspree */
+/* Handle lead submission — DUAL-FIRE (2026-04-20 observation window).
+   Both /lead (api.theoddsapi.com) and Formspree receive every submission
+   independently. User sees success if either path returns ok. Kill the
+   Formspree half once 24h of parity is confirmed. */
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const form = e.target;
@@ -1193,30 +1197,26 @@ document.getElementById('contact-form').addEventListener('submit', async functio
     message: form.querySelector('[name="message"]').value.trim(),
   };
 
-  let sent = false;
+  const leadUrl      = form.getAttribute('data-secondary'); /* api.theoddsapi.com/lead */
+  const formspreeUrl = form.action;                         /* formspree.io/f/xdapznor  */
 
-  /* Try /lead endpoint first */
-  try {
-    const res = await fetch(form.action, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (res.ok) sent = true;
-  } catch (_) { /* fall through to Formspree */ }
+  const leadP = fetch(leadUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload),
+  }).then(r => r.ok).catch(() => false);
 
-  /* Fallback to Formspree if /lead failed */
-  if (!sent) {
-    try {
-      const fallbackUrl = form.getAttribute('data-fallback');
-      const res = await fetch(fallbackUrl, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' },
-      });
-      if (res.ok) sent = true;
-    } catch (_) { /* both failed */ }
-  }
+  const formspreeP = fetch(formspreeUrl, {
+    method: 'POST',
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' },
+  }).then(r => r.ok).catch(() => false);
+
+  const [leadOk, formspreeOk] = await Promise.all([leadP, formspreeP]);
+  const sent = leadOk || formspreeOk;
+
+  /* Dev-visible trace for the observation window. Remove once Formspree is killed. */
+  console.log('[contact-form] dual-fire result', { leadOk: leadOk, formspreeOk: formspreeOk });
 
   if (sent) {
     status.style.color = '#4B9E5F';
