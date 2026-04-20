@@ -3,8 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TheOddsAPI — Real-Time Sports Betting Odds API</title>
-  <meta name="description" content="Real-time, normalized betting odds with multi-book aggregation via a single REST API. NBA, MLB, NFL, NHL, UFC, MLS, Tennis and more. Built for developers." />
+  <title>TheOddsAPI — Sports Odds API for Developers (NBA, NFL, AFL &amp; more)</title>
+  <meta name="description" content="Real-time, normalized betting odds via a single REST API. 14 sports including NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL &amp; NRL. Multi-book aggregation across DraftKings, FanDuel, Sportsbet, TAB, Ladbrokes and more. Built for developers." />
+  <link rel="canonical" href="https://theoddsapi.com/" />
+
+  <!-- Open Graph (social previews: Slack, Discord, LinkedIn, Facebook) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://theoddsapi.com/" />
+  <meta property="og:title" content="TheOddsAPI — Sports Odds API for Developers" />
+  <meta property="og:description" content="Real-time odds for NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL &amp; NRL via a single REST API. Multi-book aggregation, 30s refresh, free tier." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="TheOddsAPI — Sports Odds API for Developers" />
+  <meta name="twitter:description" content="Real-time odds for NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL &amp; NRL via a single REST API. Multi-book aggregation, 30s refresh, free tier." />
+  <meta name="twitter:image" content="https://theoddsapi.com/og-image.png" />
+
+  <!-- Structured data: SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "TheOddsAPI",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web-based REST API",
+    "description": "Real-time sports betting odds via a single normalized REST API. Covers 14 sports including NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL, NRL and top soccer leagues. Aggregates odds across US, UK, EU, and Australian sportsbooks.",
+    "url": "https://theoddsapi.com",
+    "image": "https://theoddsapi.com/og-image.png",
+    "featureList": [
+      "NBA, NFL, MLB, NHL, UFC, MLS odds",
+      "Tennis (ATP + WTA) odds",
+      "AFL and NRL odds",
+      "EPL, La Liga, Bundesliga, Serie A, Ligue 1 odds",
+      "Multi-bookmaker aggregation (DraftKings, FanDuel, Sportsbet, TAB, Ladbrokes, Betfair and more)",
+      "30-second refresh cadence",
+      "Arbitrage and value-bet intelligence endpoints",
+      "OpenAPI 3.0 spec",
+      "Free tier available"
+    ],
+    "provider": {
+      "@type": "Organization",
+      "name": "TheOddsAPI",
+      "url": "https://theoddsapi.com",
+      "email": "hello@theoddsapi.com"
+    }
+  }
+  </script>
 
   <!-- =====================================================
        🔗 LINKS CONFIG  ← Edit all URLs right here
@@ -178,7 +226,7 @@
                   text-2xs font-bold text-gold tracking-[.14em] uppercase">
         <span class="live-dot w-1.5 h-1.5 rounded-full bg-alive shrink-0"
               style="box-shadow:0 0 8px #4B9E5F"></span>
-        Live feed active &middot; NBA &middot; MLB &middot; NFL &middot; NHL &middot; UFC &middot; MLS &middot; Tennis
+        Live feed active &middot; NBA &middot; MLB &middot; NFL &middot; NHL &middot; UFC &middot; MLS &middot; Tennis &middot; AFL &middot; NRL
       </div>
 
       <h1 class="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.12]
@@ -271,6 +319,8 @@
             <option value="americanfootball_nfl">NFL Football</option>
             <option value="icehockey_nhl">NHL Hockey</option>
             <option value="mma_mixed_martial_arts">UFC MMA</option>
+            <option value="aussierules_afl">AFL Australian Rules</option>
+            <option value="rugbyleague_nrl">NRL Rugby League</option>
           </select>
         </div>
         <div class="flex items-center gap-2">
@@ -495,6 +545,11 @@
 <span class="tm"># MLB moneylines</span>
 <span class="tk">curl</span> -X GET \
   <span class="ts">"https://api.theoddsapi.com/odds?sport_key=baseball_mlb&amp;markets=h2h"</span> \
+  -H <span class="ts">"x-api-key: YOUR_API_KEY"</span>
+
+<span class="tm"># AFL odds, decimal format</span>
+<span class="tk">curl</span> -X GET \
+  <span class="ts">"https://api.theoddsapi.com/odds?sport_key=aussierules_afl&amp;markets=h2h&amp;oddsFormat=decimal"</span> \
   -H <span class="ts">"x-api-key: YOUR_API_KEY"</span></pre>
         </div>
 
@@ -737,7 +792,7 @@
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Sports (live now)</span>
-          <span class="text-xs text-gold font-mono font-semibold">NBA · MLB · NFL · NHL · UFC · MLS · Tennis</span>
+          <span class="text-xs text-gold font-mono font-semibold">NBA · MLB · NFL · NHL · UFC · MLS · Tennis · AFL · NRL</span>
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Markets</span>
@@ -920,7 +975,7 @@
         <p class="text-2xs font-bold text-gold/70 tracking-[.12em] uppercase font-mono mb-2.5">Live now</p>
         <ul class="space-y-2.5">
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>20,000 requests / month</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL, NHL, UFC, MLS &amp; Tennis</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL, NHL, UFC, MLS, Tennis, AFL &amp; NRL</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All markets (h2h, spreads, totals)</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Best lines across sportsbooks</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>American, Decimal &amp; Fractional</li>
