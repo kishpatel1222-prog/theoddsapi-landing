@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TheOddsAPI — Sports Odds API for Developers (NBA, NFL, AFL &amp; more)</title>
-  <meta name="description" content="Real-time, normalized betting odds via a single REST API. 14 sports including NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL &amp; NRL. Multi-book aggregation across DraftKings, FanDuel, Sportsbet, TAB, Ladbrokes and more. Built for developers." />
+  <title>TheOddsAPI — NBA, NFL, MLB &amp; NHL Odds API for Developers</title>
+  <meta name="description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, AFL, NRL, and more. 30-second refresh, multi-bookmaker aggregation, intelligence layer included." />
   <link rel="canonical" href="https://theoddsapi.com/" />
 
   <!-- Open Graph (social previews: Slack, Discord, LinkedIn, Facebook) -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://theoddsapi.com/" />
-  <meta property="og:title" content="TheOddsAPI — Sports Odds API for Developers" />
-  <meta property="og:description" content="Real-time odds for NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL &amp; NRL via a single REST API. Multi-book aggregation, 30s refresh, free tier." />
+  <meta property="og:title" content="TheOddsAPI — NBA, NFL, MLB &amp; NHL Odds API for Developers" />
+  <meta property="og:description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, and 7 more sports. 30-second refresh, multi-bookmaker aggregation, intelligence layer included." />
   <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -19,8 +19,8 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="TheOddsAPI — Sports Odds API for Developers" />
-  <meta name="twitter:description" content="Real-time odds for NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL &amp; NRL via a single REST API. Multi-book aggregation, 30s refresh, free tier." />
+  <meta name="twitter:title" content="TheOddsAPI — NBA, NFL, MLB &amp; NHL Odds API for Developers" />
+  <meta name="twitter:description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, and 7 more sports. 30-second refresh, multi-bookmaker aggregation, intelligence layer included." />
   <meta name="twitter:image" content="https://theoddsapi.com/og-image.png" />
 
   <!-- Structured data: SoftwareApplication -->
@@ -31,17 +31,18 @@
     "name": "TheOddsAPI",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Web-based REST API",
-    "description": "Real-time sports betting odds via a single normalized REST API. Covers 14 sports including NBA, NFL, MLB, NHL, UFC, MLS, Tennis, AFL, NRL and top soccer leagues. Aggregates odds across US, UK, EU, and Australian sportsbooks.",
+    "description": "Real-time NBA, NFL, MLB, and NHL odds API with h2h, spreads, and totals from 30+ sportsbooks in one normalized REST call. Also covers UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Serie A, Ligue 1, AFL, and NRL — 14 sports in total. 30-second refresh, intelligence layer with fair odds, arbitrage detection, and consensus pricing.",
     "url": "https://theoddsapi.com",
     "image": "https://theoddsapi.com/og-image.png",
+    "keywords": "NBA odds API, NFL odds API, MLB odds API, NHL odds API, sports odds API, h2h odds, spreads, totals, moneyline, multi-bookmaker, arbitrage detection, fair odds, consensus pricing, UFC odds, MLS odds, tennis odds, EPL odds, AFL odds, NRL odds",
     "featureList": [
-      "NBA, NFL, MLB, NHL, UFC, MLS odds",
-      "Tennis (ATP + WTA) odds",
-      "AFL and NRL odds",
+      "NBA, NFL, MLB, NHL odds with h2h, spreads, and totals",
+      "UFC, MLS, and Tennis (ATP + WTA) odds",
       "EPL, La Liga, Bundesliga, Serie A, Ligue 1 odds",
-      "Multi-bookmaker aggregation (DraftKings, FanDuel, Sportsbet, TAB, Ladbrokes, Betfair and more)",
+      "AFL and NRL odds",
+      "Multi-bookmaker aggregation (DraftKings, FanDuel, BetMGM, Caesars, Pinnacle, and more)",
       "30-second refresh cadence",
-      "Arbitrage and value-bet intelligence endpoints",
+      "Fair odds, arbitrage detection, and consensus pricing (intelligence layer)",
       "OpenAPI 3.0 spec",
       "Free tier available"
     ],
@@ -222,11 +223,11 @@
 
     <!-- Left: Copy -->
     <div>
-      <div class="inline-flex items-center gap-2.5 border-t-2 border-gold pt-3 mb-7
+      <div class="inline-flex flex-wrap items-center gap-2.5 border-t-2 border-gold pt-3 mb-7
                   text-2xs font-bold text-gold tracking-[.14em] uppercase">
         <span class="live-dot w-1.5 h-1.5 rounded-full bg-alive shrink-0"
               style="box-shadow:0 0 8px #4B9E5F"></span>
-        Live feed active &middot; NBA &middot; MLB &middot; NFL &middot; NHL &middot; UFC &middot; MLS &middot; Tennis &middot; AFL &middot; NRL
+        14 sports live &middot; NBA &middot; NFL &middot; MLB &middot; NHL &middot; UFC &middot; MLS &middot; Tennis &middot; AFL &middot; NRL &middot; +5 soccer
       </div>
 
       <h1 class="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.12]
@@ -244,7 +245,7 @@
         Aggregated, normalized, and enhanced for real-world betting systems.
       </p>
       <p class="text-muted/60 text-xs leading-[1.85] mb-8 max-w-[460px] italic">
-        Line movement and advanced signals coming soon.
+        Intelligence layer live — fair odds, arbitrage detection, and consensus pricing.
       </p>
 
       <div class="flex flex-wrap gap-3 mb-8">
@@ -674,7 +675,7 @@
       <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full
                    border border-gold/30 bg-gold/[.06]
                    text-2xs font-bold text-gold tracking-[.08em] uppercase font-mono">
-        Coming soon
+        Now live
       </span>
     </div>
 
@@ -683,29 +684,29 @@
       We're <em class="not-italic text-gold">learning</em> from them.
     </h2>
     <p class="text-muted text-base leading-relaxed mb-5 max-w-xl">
-      Raw odds are just the starting point. We're building the analytical layer on top —
-      line movement, cross-book edge detection, and consensus modeling.
+      Raw odds are just the starting point. We run the analytical layer on top —
+      fair odds pricing, cross-book edge detection, and consensus modeling.
     </p>
     <p class="text-muted/70 text-sm leading-relaxed mb-14 max-w-xl">
-      Business tier subscribers get first access when intelligence endpoints go live.
+      Business tier subscribers get full access to the intelligence endpoints, included in the plan.
     </p>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-px
                 bg-gold/[.12] rounded border border-gold/[.12] overflow-hidden">
 
-      <!-- Line Movement -->
+      <!-- Fair Odds -->
       <div class="bg-navy-mid p-8 transition-colors hover:bg-[#0f1f38]">
         <div class="flex items-center gap-2 mb-5">
           <div class="w-10 h-10 border border-gold/30 rounded bg-gold/[.06]
-                      flex items-center justify-center text-lg">📉</div>
+                      flex items-center justify-center text-lg">🎲</div>
         </div>
-        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Line movement</h3>
+        <h3 class="text-base font-bold text-[#E8EEF7] mb-2.5 tracking-tight">Fair odds</h3>
         <p class="text-muted text-sm leading-relaxed mb-4">
-          Track how odds shift across sportsbooks in real-time. Spot steam moves,
-          reverse line movement, and sharp action before the market adjusts.
+          No-vig fair prices derived from multi-book consensus. Benchmark any sportsbook
+          against the true market and spot mispriced lines at a glance.
         </p>
         <code class="text-2xs font-mono text-gold/60 bg-gold/[.05] px-2 py-1 rounded">
-          GET /intelligence/line-movement
+          GET /intelligence/fair-odds
         </code>
       </div>
 
@@ -747,15 +748,15 @@
     <div class="mt-6 flex flex-wrap items-center justify-between gap-4
                 p-5 rounded border border-gold/[.15] bg-navy-card">
       <div>
-        <p class="text-sm font-bold text-[#E8EEF7]">Business tier · Coming Soon</p>
-        <p class="text-muted text-xs mt-0.5">Intelligence endpoints available first to Business tier subscribers.</p>
+        <p class="text-sm font-bold text-[#E8EEF7]">Business tier · Live now</p>
+        <p class="text-muted text-xs mt-0.5">Intelligence endpoints included with every Business tier subscription.</p>
       </div>
       <a data-link="GET_KEY" href="#"
          class="px-6 py-2.5 rounded bg-gold text-navy text-xs font-bold tracking-wider
                 hover:bg-gold-dark transition-all
                 shadow-[0_2px_12px_rgba(212,175,55,.3)]
                 hover:shadow-[0_4px_20px_rgba(212,175,55,.45)]">
-        Get early access
+        Get access
       </a>
     </div>
 
@@ -790,9 +791,9 @@
           <span class="text-sm text-muted font-medium">Authentication</span>
           <span class="text-xs text-[#E8EEF7] font-mono">x-api-key header</span>
         </div>
-        <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
-          <span class="text-sm text-muted font-medium">Sports (live now)</span>
-          <span class="text-xs text-gold font-mono font-semibold">NBA · MLB · NFL · NHL · UFC · MLS · Tennis · AFL · NRL</span>
+        <div class="spec-row flex justify-between items-start px-4 py-3 border-b border-white/[.05] transition-colors gap-4">
+          <span class="text-sm text-muted font-medium shrink-0">Sports (live now)</span>
+          <span class="text-xs text-gold font-mono font-semibold text-right leading-relaxed">NBA · MLB · NFL · NHL · UFC · MLS · Tennis · AFL · NRL<br/>EPL · La Liga · Bundesliga · Serie A · Ligue 1</span>
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Markets</span>
@@ -976,6 +977,7 @@
         <ul class="space-y-2.5">
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>20,000 requests / month</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL, NHL, UFC, MLS, Tennis, AFL &amp; NRL</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>EPL, La Liga, Bundesliga, Serie A &amp; Ligue 1</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All markets (h2h, spreads, totals)</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Best lines across sportsbooks</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>American, Decimal &amp; Fractional</li>
@@ -984,7 +986,6 @@
         <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
            style="color:rgba(212,175,55,.40)">Coming soon</p>
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Soccer expansion (EPL, La Liga, Bundesliga)</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>NBA player props</li>
         </ul>
       </div>
@@ -1011,17 +1012,16 @@
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All Pro sports + markets</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Priority email support</li>
         </ul>
-        <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
-           style="color:rgba(212,175,55,.40)">Intelligence layer <span style="font-weight:500;color:rgba(130,148,176,.4)">(coming soon)</span></p>
+        <p class="text-2xs font-bold text-gold/70 tracking-[.12em] uppercase font-mono mt-6 mb-2.5">Intelligence layer <span class="text-muted" style="font-weight:500">(live)</span></p>
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Line movement tracking</li>
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Cross-book edge detection</li>
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Consensus pricing across books</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Fair odds pricing</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Cross-book edge detection</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Consensus pricing across books</li>
         </ul>
         <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
            style="color:rgba(212,175,55,.40)">Also coming</p>
         <ul class="space-y-2.5">
-          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Soccer expansion (EPL, La Liga, Bundesliga)</li>
+          <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Line movement tracking</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>NBA player props</li>
           <li class="flex gap-2.5 text-sm" style="color:rgba(130,148,176,.55)"><span style="color:rgba(212,175,55,.35)" class="mt-0.5 shrink-0">-</span>Historical data archive</li>
         </ul>
