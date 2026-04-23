@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-site-verification" content="NWKu073GlI4qoby1ZikU5vWyhl8M1a64Ddm7e45vOoU" />
   <title>TheOddsAPI — NBA, NFL, MLB &amp; NHL Odds API for Developers</title>
   <meta name="description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Eredivisie, Championship, AFL, and NRL. Pinnacle, Betfair, William Hill and 30+ international books. 30s refresh, intelligence layer." />
   <link rel="canonical" href="https://theoddsapi.com/" />
@@ -164,6 +165,15 @@
     .s-tab:hover  { color: #E8EEF7; }
     .s-tab.active { color: #D4AF37; border-bottom-color: #D4AF37; }
   </style>
+
+  <!-- Google Analytics 4 (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
 </head>
 
 <body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
@@ -1288,22 +1298,34 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 /* ── Wire up all [data-link] anchors from LINKS config ── */
 /* GET_KEY + ENTERPRISE open contact modal; SUBSCRIBE_* open checkout modal; rest use LINKS. */
 (function initLinks() {
+  /* Fire a GA4 event if gtag is loaded (no-op under ad blockers) */
+  function track(event, params) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', event, params || {});
+    }
+  }
   document.querySelectorAll('[data-link]').forEach(el => {
     const key = el.getAttribute('data-link');
     if (key === 'GET_KEY' || key === 'ENTERPRISE') {
       el.href = '#';
       el.addEventListener('click', e => {
         e.preventDefault();
+        track(key === 'GET_KEY' ? 'get_key_click' : 'enterprise_click');
         openContactModal();
       });
     } else if (key.startsWith('SUBSCRIBE_')) {
       el.href = '#';
       el.addEventListener('click', e => {
         e.preventDefault();
+        const tier = key === 'SUBSCRIBE_PRO' ? 'pro' : 'business';
+        track('subscribe_' + tier + '_click');
         openCheckoutModal(key);
       });
     } else if (LINKS[key]) {
       el.href = LINKS[key];
+      if (key === 'DOCS') {
+        el.addEventListener('click', () => track('docs_click'));
+      }
     }
   });
   /* Inject API base URL into display element */
