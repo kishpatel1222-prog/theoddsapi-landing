@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="NWKu073GlI4qoby1ZikU5vWyhl8M1a64Ddm7e45vOoU" />
   <title>TheOddsAPI — NBA, NFL, MLB, NHL &amp; Soccer Odds API</title>
-  <meta name="description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Eredivisie, Championship, AFL, and NRL. Pinnacle, Betfair, William Hill and 30+ international books. 30s refresh, intelligence layer." />
+  <meta name="description" content="Real-time odds API for 25+ sports — NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, UFC, MLS, Tennis, Cricket, Boxing, EPL, Champions League, La Liga, Bundesliga, Serie A, Liga MX, and more. h2h, spreads, and totals from 30+ sportsbooks including Pinnacle. Player props, intelligence layer, historical odds." />
   <link rel="canonical" href="https://theoddsapi.com/" />
 
   <!-- Open Graph (social previews: Slack, Discord, LinkedIn, Facebook) -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://theoddsapi.com/" />
   <meta property="og:title" content="TheOddsAPI — NBA, NFL, MLB, NHL &amp; Soccer Odds API" />
-  <meta property="og:description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Eredivisie, Championship, AFL, and NRL. Pinnacle, Betfair, William Hill and 30+ international books. 30s refresh, intelligence layer." />
+  <meta property="og:description" content="Real-time odds API for 25+ sports — NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, UFC, MLS, Tennis, Cricket, Boxing, EPL, Champions League, La Liga, and more. h2h, spreads, totals from 30+ sportsbooks including Pinnacle. Player props and intelligence layer." />
   <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -21,7 +21,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="TheOddsAPI — NBA, NFL, MLB, NHL &amp; Soccer Odds API" />
-  <meta name="twitter:description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Eredivisie, Championship, AFL, and NRL. Pinnacle, Betfair, William Hill and 30+ international books. 30s refresh, intelligence layer." />
+  <meta name="twitter:description" content="Real-time odds API for 25+ sports — NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, UFC, MLS, Tennis, Cricket, Boxing, EPL, Champions League, La Liga, and more. h2h, spreads, totals from 30+ sportsbooks including Pinnacle. Player props and intelligence layer." />
   <meta name="twitter:image" content="https://theoddsapi.com/og-image.png" />
 
   <!-- Structured data: SoftwareApplication -->
@@ -32,15 +32,15 @@
     "name": "TheOddsAPI",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Web-based REST API",
-    "description": "Real-time NBA, NFL, MLB, and NHL odds API with h2h, spreads, and totals from 30+ sportsbooks in one normalized REST call. Also covers UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, EFL Championship, AFL, and NRL — 16 sports in total. 30-second refresh, intelligence layer with fair odds, arbitrage detection, and consensus pricing.",
+    "description": "Real-time odds API covering 25+ sports with h2h, spreads, and totals from 30+ sportsbooks in one normalized REST call. NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, UFC, MLS, Tennis, Cricket, Boxing, EPL, Champions League, Europa League, La Liga, Bundesliga, Serie A, Ligue 1, Liga MX, Euroleague, Eredivisie, EFL Championship, AFL, and NRL. Pinnacle included. Player props, intelligence layer, historical odds archive.",
     "url": "https://theoddsapi.com",
     "image": "https://theoddsapi.com/og-image.png",
-    "keywords": "NBA odds API, NFL odds API, MLB odds API, NHL odds API, sports odds API, h2h odds, spreads, totals, moneyline, multi-bookmaker, arbitrage detection, fair odds, consensus pricing, UFC odds, MLS odds, tennis odds, EPL odds, La Liga odds, Bundesliga odds, Eredivisie odds, EFL Championship odds, AFL odds, NRL odds, Pinnacle odds API, Betfair odds API, William Hill odds, international odds API",
+    "keywords": "NBA odds API, NFL odds API, MLB odds API, NHL odds API, NCAAB odds API, NCAAF odds API, WNBA odds API, sports odds API, h2h odds, spreads, totals, moneyline, multi-bookmaker, arbitrage detection, fair odds, consensus pricing, UFC odds, MLS odds, tennis odds, cricket odds API, boxing odds API, EPL odds, Champions League odds, Europa League odds, La Liga odds, Bundesliga odds, Liga MX odds, Euroleague odds, Eredivisie odds, EFL Championship odds, AFL odds, NRL odds, Pinnacle odds API, Betfair odds API, William Hill odds, international odds API, player props API, historical odds API",
     "featureList": [
-      "NBA, NFL, MLB, NHL odds with h2h, spreads, and totals",
-      "UFC, MLS, and Tennis (ATP + WTA) odds",
-      "EPL, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, and EFL Championship odds",
-      "AFL and NRL odds",
+      "25+ sports: NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, UFC, MLS, Tennis, Cricket, Boxing, and more",
+      "European soccer: EPL, Champions League, Europa League, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, EFL Championship",
+      "International: Liga MX, Euroleague, Cricket (IPL, T20, ODI), AFL, NRL",
+      "NBA player props (points, rebounds, assists, PRA) with Pinnacle lines",
       "Multi-bookmaker aggregation (DraftKings, FanDuel, BetMGM, Caesars, Pinnacle, and more)",
       "30-second refresh cadence",
       "Fair odds, arbitrage detection, and consensus pricing (intelligence layer)",
@@ -237,7 +237,7 @@
                   text-2xs font-bold text-gold tracking-[.14em] uppercase">
         <span class="live-dot w-1.5 h-1.5 rounded-full bg-alive shrink-0"
               style="box-shadow:0 0 8px #4B9E5F"></span>
-        14 sports live &middot; NBA &middot; NFL &middot; MLB &middot; NHL &middot; UFC &middot; MLS &middot; Tennis &middot; +5 soccer &middot; AFL &middot; NRL
+        25+ sports live &middot; NBA &middot; NFL &middot; MLB &middot; NHL &middot; NCAAB &middot; NCAAF &middot; WNBA &middot; UFC &middot; Soccer &middot; Cricket &middot; Boxing &middot; Tennis
       </div>
 
       <h1 class="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.12]
@@ -813,7 +813,7 @@
         </div>
         <div class="spec-row flex justify-between items-start px-4 py-3 border-b border-white/[.05] transition-colors gap-4">
           <span class="text-sm text-muted font-medium shrink-0">Sports (live now)</span>
-          <span class="text-xs text-gold font-mono font-semibold text-right leading-relaxed">NBA · MLB · NFL · NHL · UFC · MLS · Tennis · AFL · NRL<br/>EPL · La Liga · Bundesliga · Serie A · Ligue 1 · Eredivisie · Championship</span>
+          <span class="text-xs text-gold font-mono font-semibold text-right leading-relaxed">NBA · MLB · NFL · NHL · NCAAB · NCAAF · WNBA · UFC · MLS · Tennis<br/>EPL · UCL · UEL · La Liga · Bundesliga · Serie A · Ligue 1 · Liga MX<br/>Cricket · Boxing · Euroleague · Eredivisie · Championship · AFL · NRL</span>
         </div>
         <div class="spec-row flex justify-between items-center px-4 py-3 border-b border-white/[.05] transition-colors">
           <span class="text-sm text-muted font-medium">Markets</span>
@@ -993,8 +993,9 @@
         <p class="text-2xs font-bold text-gold/70 tracking-[.12em] uppercase font-mono mb-2.5">Live now</p>
         <ul class="space-y-2.5">
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>20,000 requests / month</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, MLB, NFL, NHL, UFC, MLS, Tennis, AFL &amp; NRL</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>EPL, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie &amp; Championship</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>25+ sports: NBA, MLB, NFL, NHL, NCAAB, NCAAF, WNBA &amp; more</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>EPL, Champions League, La Liga, Bundesliga, Serie A, Liga MX &amp; more</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Cricket, Boxing, Tennis, Euroleague, UFC, MLS, AFL &amp; NRL</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>All markets (h2h, spreads, totals)</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Best lines across sportsbooks</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Pinnacle, Betfair, William Hill &amp; 30+ international books</li>
