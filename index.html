@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="NWKu073GlI4qoby1ZikU5vWyhl8M1a64Ddm7e45vOoU" />
-  <title>TheOddsAPI — NBA, NFL, MLB &amp; NHL Odds API for Developers</title>
+  <title>TheOddsAPI — NBA, NFL, MLB, NHL &amp; Soccer Odds API</title>
   <meta name="description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Eredivisie, Championship, AFL, and NRL. Pinnacle, Betfair, William Hill and 30+ international books. 30s refresh, intelligence layer." />
   <link rel="canonical" href="https://theoddsapi.com/" />
 
   <!-- Open Graph (social previews: Slack, Discord, LinkedIn, Facebook) -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://theoddsapi.com/" />
-  <meta property="og:title" content="TheOddsAPI — NBA, NFL, MLB &amp; NHL Odds API for Developers" />
+  <meta property="og:title" content="TheOddsAPI — NBA, NFL, MLB, NHL &amp; Soccer Odds API" />
   <meta property="og:description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Eredivisie, Championship, AFL, and NRL. Pinnacle, Betfair, William Hill and 30+ international books. 30s refresh, intelligence layer." />
   <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
   <meta property="og:image:width" content="1200" />
@@ -20,7 +20,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="TheOddsAPI — NBA, NFL, MLB &amp; NHL Odds API for Developers" />
+  <meta name="twitter:title" content="TheOddsAPI — NBA, NFL, MLB, NHL &amp; Soccer Odds API" />
   <meta name="twitter:description" content="Real-time NBA, NFL, MLB, and NHL odds API — h2h, spreads, and totals from 30+ sportsbooks in one call. Plus UFC, MLS, Tennis, EPL, La Liga, Bundesliga, Eredivisie, Championship, AFL, and NRL. Pinnacle, Betfair, William Hill and 30+ international books. 30s refresh, intelligence layer." />
   <meta name="twitter:image" content="https://theoddsapi.com/og-image.png" />
 
@@ -558,9 +558,19 @@
   <span class="ts">"https://api.theoddsapi.com/odds?sport_key=baseball_mlb&amp;markets=h2h"</span> \
   -H <span class="ts">"x-api-key: YOUR_API_KEY"</span>
 
-<span class="tm"># AFL odds, decimal format</span>
+<span class="tm"># NBA player props (Business tier)</span>
 <span class="tk">curl</span> -X GET \
-  <span class="ts">"https://api.theoddsapi.com/odds?sport_key=aussierules_afl&amp;markets=h2h&amp;oddsFormat=decimal"</span> \
+  <span class="ts">"https://api.theoddsapi.com/props?sport_key=basketball_nba"</span> \
+  -H <span class="ts">"x-api-key: YOUR_API_KEY"</span>
+
+<span class="tm"># Historical odds for backtesting (Pro+)</span>
+<span class="tk">curl</span> -X GET \
+  <span class="ts">"https://api.theoddsapi.com/historical/odds?sport_key=baseball_mlb&amp;date=2026-04-20"</span> \
+  -H <span class="ts">"x-api-key: YOUR_API_KEY"</span>
+
+<span class="tm"># EPL odds with international books</span>
+<span class="tk">curl</span> -X GET \
+  <span class="ts">"https://api.theoddsapi.com/odds?sport_key=soccer_epl&amp;markets=h2h,spreads,totals"</span> \
   -H <span class="ts">"x-api-key: YOUR_API_KEY"</span></pre>
         </div>
 
