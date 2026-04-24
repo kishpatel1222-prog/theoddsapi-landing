@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start Guide — TheOddsAPI | Sports Odds API for Developers</title>
+  <meta name="description" content="Get started with TheOddsAPI in under 60 seconds. Live odds from 30+ sportsbooks across 25+ sports including NBA, NFL, MLB, EPL, and more. Pinnacle, Betfair, DraftKings. Code examples in cURL, Python, and JavaScript." />
+  <link rel="canonical" href="https://theoddsapi.com/quickstart.html" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/quickstart.html" />
+  <meta property="og:title" content="Quick Start Guide — TheOddsAPI" />
+  <meta property="og:description" content="Get live sports odds in under 60 seconds. 25+ sports, 30+ sportsbooks, one API call." />
+  <meta property="og:site_name" content="TheOddsAPI" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+          fontSize: {
+            '2xs': ['10px', { lineHeight: '14px' }],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="bg-navy text-[#c8d0e0] font-sans antialiased">
+
+<!-- NAV -->
+<header class="flex items-center justify-between px-5 md:px-14 py-4 border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-lg font-bold text-muted/70">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+  <div class="flex gap-6">
+    <a href="/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Home</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+  </div>
+</header>
+
+<main class="px-5 md:px-14 py-16 max-w-3xl mx-auto">
+
+  <!-- HERO -->
+  <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
+            border-l-2 border-gold pl-2.5">Quick start guide</p>
+  <h1 class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-3">
+    Your first API call in <em class="not-italic text-gold">under a minute.</em>
+  </h1>
+  <p class="text-muted text-base leading-relaxed mb-10 max-w-xl">
+    Real-time sports odds from 30+ sportsbooks across 25+ sports. One API key, one header, normalized JSON.
+  </p>
+
+  <!-- BASE URL -->
+  <div class="p-5 rounded border border-gold/30 bg-gold/[.05] mb-10">
+    <p class="text-2xs font-bold text-gold tracking-[.1em] uppercase font-mono mb-2">Your base URL</p>
+    <code class="font-mono text-lg text-[#E8EEF7] font-semibold select-all">https://api.theoddsapi.com</code>
+    <p class="text-muted text-xs mt-2">All requests go to this URL. Make sure this is set correctly before making your first call.</p>
+  </div>
+
+  <!-- AUTH -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Authentication</h2>
+  <p class="text-[15px] mb-3">Pass your API key as the <code class="font-mono text-gold bg-gold/[.08] px-1.5 rounded text-sm">x-api-key</code> header on every request.</p>
+  <div class="bg-[#07101E] rounded-lg border border-white/[.06] px-5 py-4 mb-8 overflow-x-auto">
+    <pre class="font-mono text-xs leading-7 text-[#cdd6f4]"><span class="text-gold">curl</span> -H <span class="text-alive">"x-api-key: YOUR_API_KEY"</span> \
+  https://api.theoddsapi.com/sports/</pre>
+  </div>
+
+  <!-- FIRST CALL -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Get live odds</h2>
+  <p class="text-[15px] mb-3">Pull real-time odds from DraftKings, FanDuel, BetMGM, Pinnacle, Betfair, and 25+ more sportsbooks in a single call.</p>
+  <div class="bg-[#07101E] rounded-lg border border-white/[.06] px-5 py-4 mb-4 overflow-x-auto">
+    <pre class="font-mono text-xs leading-7 text-[#cdd6f4]"><span class="text-muted"># NBA odds — all markets, all books</span>
+<span class="text-gold">curl</span> -H <span class="text-alive">"x-api-key: YOUR_API_KEY"</span> \
+  "https://api.theoddsapi.com/odds/?sport_key=basketball_nba"
+
+<span class="text-muted"># EPL soccer with Pinnacle + EU books</span>
+<span class="text-gold">curl</span> -H <span class="text-alive">"x-api-key: YOUR_API_KEY"</span> \
+  "https://api.theoddsapi.com/odds/?sport_key=soccer_epl"
+
+<span class="text-muted"># MLB run lines (spreads) only</span>
+<span class="text-gold">curl</span> -H <span class="text-alive">"x-api-key: YOUR_API_KEY"</span> \
+  "https://api.theoddsapi.com/odds/?sport_key=baseball_mlb&amp;markets=spreads"
+
+<span class="text-muted"># Champions League totals (over/under)</span>
+<span class="text-gold">curl</span> -H <span class="text-alive">"x-api-key: YOUR_API_KEY"</span> \
+  "https://api.theoddsapi.com/odds/?sport_key=soccer_uefa_champs_league&amp;markets=totals"</pre>
+  </div>
+
+  <p class="text-[15px] mb-8">
+    <a href="https://api.theoddsapi.com/docs" class="text-gold hover:underline font-semibold">Try it live in Swagger</a> — click Authorize, paste your key, hit Try It. No terminal needed.
+  </p>
+
+  <!-- SPORTS -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">25+ sports available</h2>
+  <p class="text-[15px] mb-4">Hit <code class="font-mono text-gold bg-gold/[.08] px-1.5 rounded text-sm">/sports/</code> to see what's available on your tier.</p>
+
+  <div class="rounded border border-gold/[.15] overflow-hidden mb-8">
+    <div class="grid grid-cols-[120px_1fr] text-sm">
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">US Major</div>
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">NBA &middot; MLB &middot; NFL &middot; NHL</div>
+
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">College + WNBA</div>
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">NCAAB &middot; NCAAF &middot; WNBA</div>
+
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Combat</div>
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">UFC &middot; Boxing</div>
+
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Soccer</div>
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">EPL &middot; Champions League &middot; La Liga &middot; Bundesliga &middot; Serie A &middot; Ligue 1 &middot; MLS &middot; Liga MX &middot; Europa League &middot; Eredivisie &middot; Championship</div>
+
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono bg-navy-mid">International</div>
+      <div class="px-4 py-3 text-gold font-mono text-xs">Cricket &middot; Tennis &middot; Euroleague &middot; AFL &middot; NRL</div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3 mb-8">
+    <span class="inline-block px-3 py-1 rounded text-2xs font-bold font-mono tracking-wider bg-muted/10 text-muted">FREE: NBA + MLB</span>
+    <span class="inline-block px-3 py-1 rounded text-2xs font-bold font-mono tracking-wider bg-gold/10 text-gold">PRO: All 25+ sports</span>
+    <span class="inline-block px-3 py-1 rounded text-2xs font-bold font-mono tracking-wider bg-alive/10 text-alive">BUSINESS: + Props + Intelligence + Edges</span>
+  </div>
+
+  <!-- ENDPOINTS -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Endpoints</h2>
+
+  <div class="rounded border border-gold/[.15] overflow-hidden mb-8">
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/sports/</span>
+      <span class="text-xs text-muted ml-auto">List sports for your tier</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/odds/?sport_key=</span>
+      <span class="text-xs text-muted ml-auto">Live odds from 30+ books</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/events/?sport_key=</span>
+      <span class="text-xs text-muted ml-auto">Upcoming events</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/best-lines/?sport_key=</span>
+      <span class="text-xs text-muted ml-auto">Best price per outcome across books</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/historical/odds?sport_key=</span>
+      <span class="text-xs text-muted ml-auto">Historical snapshots for backtesting</span>
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-gold/15 text-gold">PRO+</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/props/?sport_key=</span>
+      <span class="text-xs text-muted ml-auto">NBA player props (4 markets)</span>
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">BIZ</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/edges/?sport_key=</span>
+      <span class="text-xs text-muted ml-auto">Pinnacle-anchored edge detection</span>
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">BIZ</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/intelligence/fair-odds</span>
+      <span class="text-xs text-muted ml-auto">Vig-removed fair prices</span>
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">BIZ</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/[.05] hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/intelligence/arbitrage</span>
+      <span class="text-xs text-muted ml-auto">Cross-book arb detection</span>
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">BIZ</span>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-3 hover:bg-navy-card transition-colors">
+      <span class="text-2xs font-bold font-mono px-2 py-0.5 rounded bg-alive/15 text-alive">GET</span>
+      <span class="text-sm text-[#E8EEF7] font-mono">/me/</span>
+      <span class="text-xs text-muted ml-auto">Your usage, tier, and quota</span>
+    </div>
+  </div>
+
+  <!-- MARKETS -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Markets</h2>
+
+  <div class="rounded border border-gold/[.15] overflow-hidden mb-8">
+    <div class="grid grid-cols-3 text-sm">
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Market key</div>
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Also known as</div>
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Description</div>
+
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">h2h</div>
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]">Moneyline</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Who wins the game</div>
+
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">spreads</div>
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]">Run line / Puck line / Handicap</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Point spread</div>
+
+      <div class="px-4 py-3 text-gold font-mono text-xs">totals</div>
+      <div class="px-4 py-3 text-xs">Over/Under</div>
+      <div class="px-4 py-3 text-xs text-muted">Total points, runs, or goals</div>
+    </div>
+  </div>
+
+  <!-- PARAMS -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Query parameters</h2>
+
+  <div class="rounded border border-gold/[.15] overflow-hidden mb-8">
+    <div class="grid grid-cols-3 text-sm">
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Param</div>
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Example</div>
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Description</div>
+
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">sport_key</div>
+      <div class="px-4 py-3 text-xs font-mono border-b border-white/[.05]">basketball_nba</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Required on most endpoints</div>
+
+      <div class="px-4 py-3 text-gold font-mono text-xs border-b border-white/[.05]">markets</div>
+      <div class="px-4 py-3 text-xs font-mono border-b border-white/[.05]">h2h,spreads</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Filter markets (default: all)</div>
+
+      <div class="px-4 py-3 text-gold font-mono text-xs">event_id</div>
+      <div class="px-4 py-3 text-xs font-mono">abc123</div>
+      <div class="px-4 py-3 text-xs text-muted">Filter to one event</div>
+    </div>
+  </div>
+
+  <!-- RATE LIMITS -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Rate limits</h2>
+
+  <div class="rounded border border-gold/[.15] overflow-hidden mb-4">
+    <div class="grid grid-cols-3 text-sm">
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Tier</div>
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Daily</div>
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Monthly</div>
+
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]"><span class="px-2 py-0.5 rounded bg-muted/10 text-muted font-mono font-bold text-2xs">FREE</span></div>
+      <div class="px-4 py-3 text-xs font-mono border-b border-white/[.05]">25</div>
+      <div class="px-4 py-3 text-xs font-mono border-b border-white/[.05]">~750</div>
+
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]"><span class="px-2 py-0.5 rounded bg-gold/10 text-gold font-mono font-bold text-2xs">PRO $29</span></div>
+      <div class="px-4 py-3 text-xs font-mono border-b border-white/[.05]">667</div>
+      <div class="px-4 py-3 text-xs font-mono border-b border-white/[.05]">~20,000</div>
+
+      <div class="px-4 py-3 text-xs"><span class="px-2 py-0.5 rounded bg-alive/10 text-alive font-mono font-bold text-2xs">BIZ $99</span></div>
+      <div class="px-4 py-3 text-xs font-mono">6,667</div>
+      <div class="px-4 py-3 text-xs font-mono">~200,000</div>
+    </div>
+  </div>
+  <p class="text-xs text-muted mb-8">Rate limit headers on every response: <code class="font-mono text-gold bg-gold/[.08] px-1 rounded text-xs">X-RateLimit-Remaining</code>, <code class="font-mono text-gold bg-gold/[.08] px-1 rounded text-xs">X-RateLimit-Reset</code></p>
+
+  <!-- BOOKS -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">30+ sportsbooks</h2>
+  <p class="text-[15px] mb-4">DraftKings, FanDuel, BetMGM, Caesars, BetRivers, Fanatics, Pinnacle, Betfair Exchange, William Hill, Marathonbet, Paddy Power, Sky Bet, Ladbrokes, Unibet, and more. Coverage varies by sport — US sports include EU sharp books, European soccer includes UK books.</p>
+
+  <!-- COMMON MISTAKES -->
+  <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Troubleshooting</h2>
+
+  <div class="rounded border border-gold/[.15] overflow-hidden mb-8">
+    <div class="grid grid-cols-2 text-sm">
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Issue</div>
+      <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Fix</div>
+
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]">401 / Invalid key</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Check base URL is <code class="text-gold">api.theoddsapi.com</code> and key is in the <code class="text-gold">x-api-key</code> header</div>
+
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]">403 on a sport</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Free tier only gets NBA + MLB. Upgrade to Pro for all sports.</div>
+
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]">Empty response</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Sport may be off-season. Check <code class="text-gold">/sports/</code> for active sports.</div>
+
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]">Only seeing moneylines</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">All 3 markets return by default. Filter with <code class="text-gold">&amp;markets=spreads,totals</code></div>
+
+      <div class="px-4 py-3 text-xs">Rate limit hit</div>
+      <div class="px-4 py-3 text-xs text-muted">Check <code class="text-gold">/me/</code> for usage. Resets at midnight UTC. Upgrade for more.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="p-8 rounded border border-gold/[.18] bg-navy-mid mt-12 text-center"
+       style="background:radial-gradient(ellipse 50% 120% at 50% 50%,rgba(212,175,55,.04) 0%,transparent 70%),#091325">
+    <h2 class="font-serif text-2xl font-bold text-[#E8EEF7] mb-2">Ready to build?</h2>
+    <p class="text-muted text-sm mb-5">Get your API key and start pulling live odds in seconds.</p>
+    <div class="flex justify-center gap-3">
+      <a href="/#pricing" class="px-7 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wider hover:bg-gold-dark transition-all shadow-[0_2px_14px_rgba(212,175,55,.3)]">Get API key</a>
+      <a href="https://api.theoddsapi.com/docs" class="px-7 py-3 rounded border border-gold/25 text-muted text-sm font-semibold tracking-wide hover:text-[#E8EEF7] hover:border-gold/50 transition-all">Swagger UI</a>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15] mt-16
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-[#E8EEF7]">TheOdds<span class="text-gold">API</span></p>
+    <p class="text-xs text-muted/40 mt-1">&copy; 2026 TheOddsAPI &middot; theoddsapi.com</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Home</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="mailto:hello@theoddsapi.com" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>
