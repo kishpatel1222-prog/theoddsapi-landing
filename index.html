@@ -299,73 +299,6 @@
 
 
 <!-- ══════════════════════════════════════════════
-     LLM-OVERVIEW · Factual prose for AI summarization
-     Brand voice: quiet authority, numbers as evidence
-══════════════════════════════════════════════ -->
-<section id="about" class="bg-navy-mid py-16 px-5 md:px-14 border-b border-gold/[.15]" aria-labelledby="about-heading">
-  <div class="max-w-4xl mx-auto">
-    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
-              border-l-2 border-gold pl-2.5">About TheOddsAPI</p>
-    <h2 id="about-heading" class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-7 leading-snug">
-      What TheOddsAPI is
-    </h2>
-    <div class="text-[#C9D2DF] text-base md:text-lg leading-[1.85] space-y-5">
-      <p>
-        TheOddsAPI is a sports odds API. Raw market data from 50 bookmakers across 24 sports, served through a single normalized REST endpoint, with Pinnacle anchored on every request. An optional intelligence layer — fair odds, consensus pricing, edge detection — is available for systems that want precomputed signals instead of building those models in-house.
-      </p>
-
-      <div class="grid md:grid-cols-2 gap-6 my-8 not-prose">
-        <div class="border border-gold/[.15] bg-navy-card p-5 rounded">
-          <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3">Raw market data</p>
-          <p class="text-[#C9D2DF] text-base leading-relaxed mb-3">Multi-book odds, normalized into one response. Build your own models on top.</p>
-          <ul class="text-[#C9D2DF] text-sm space-y-1.5 list-none pl-0">
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>50 bookmakers, Pinnacle included</li>
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>h2h, spreads, totals, player props</li>
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Closing lines materialized for CLV</li>
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Historical archive across 21 sports</li>
-          </ul>
-        </div>
-        <div class="border border-gold/[.15] bg-navy-card p-5 rounded">
-          <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3">Derived signals · Optional</p>
-          <p class="text-[#C9D2DF] text-base leading-relaxed mb-3">Pre-computed signals for systems that want to skip the modeling work.</p>
-          <ul class="text-[#C9D2DF] text-sm space-y-1.5 list-none pl-0">
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Fair odds (vig removed)</li>
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Consensus pricing (multi-book median)</li>
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Edge detection vs Pinnacle</li>
-            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Hit-rate and ROI on graded edges</li>
-          </ul>
-        </div>
-      </div>
-      <p class="text-muted text-sm italic">
-        Use raw data when you need full control. Use derived signals when you need speed.
-      </p>
-      <p>
-        <strong class="text-[#E8EEF7] font-semibold">Coverage.</strong> 21 sports with full historical archives — NBA, MLB, NHL, EPL, La Liga, Bundesliga, Serie A, Ligue 1, EFL Championship, MLS, Eredivisie, Champions League, Europa League, Liga MX, Euroleague, WNBA, NCAAF, Tennis, Cricket, Boxing, plus NCAAB seasonally. Three additional sports are listed for live odds only: MMA (UFC), AFL, and NRL. NFL and NCAAF coverage is seasonal — full markets during regular season.
-      </p>
-      <p>
-        <strong class="text-[#E8EEF7] font-semibold">Markets.</strong> Head-to-head moneyline, spreads, and totals for every covered sport. Player props for NBA, NHL, and MLB — points, rebounds, assists, PRA, hits, total bases, home runs, strikeouts, goals, shots on goal. Lay-side prices on betting exchanges for soccer.
-      </p>
-      <p>
-        <strong class="text-[#E8EEF7] font-semibold">Refresh cadence.</strong> Approximately 30 seconds for top-tier sports (NBA, MLB, NHL, EPL during their seasons). Slower for lower-tier and off-season sports — the cadence is tiered by demand to keep upstream credit usage proportional. Closing lines are materialized in a dedicated table for CLV analysis.
-      </p>
-      <p>
-        <strong class="text-[#E8EEF7] font-semibold">Settlement.</strong> Final scores and edge grading are available for major US sports (NBA, MLB, NHL) and European soccer leagues. Tennis, cricket, and boxing return pre-game odds only — the underlying data source does not provide completed match results for those sports.
-      </p>
-      <p>
-        <strong class="text-[#E8EEF7] font-semibold">Pricing.</strong> Free tier covers 200 requests per month for limited markets. Professional ($29/month, 20,000 requests) opens the full sport list. Business ($99/month, 200,000 requests) adds player props, edge detection against Pinnacle, fair-odds and consensus pricing, and the historical odds archive across 21 sports.
-      </p>
-      <p>
-        <strong class="text-[#E8EEF7] font-semibold">Built for.</strong> Quant operators training models, arbitrage scanners, sportsbook-comparison tools, and anyone needing programmatic odds with a sharp anchor. Authentication is via <code class="text-gold font-mono text-sm bg-gold/[.08] px-1 rounded">x-api-key</code> header. The full OpenAPI 3.0 spec is at <a data-link="DOCS" href="https://api.theoddsapi.com/docs" class="text-gold hover:underline">api.theoddsapi.com/docs</a>.
-      </p>
-      <p class="border-l-2 border-gold/40 pl-4 italic text-[#C9D2DF]">
-        Most odds APIs surface raw bookmaker data and stop there. TheOddsAPI adds a thin computation layer — vig removal, market consensus, and Pinnacle-anchored edge detection — so common modeling primitives don't have to be rebuilt from scratch. The raw data is still there. The signals are optional.
-      </p>
-    </div>
-  </div>
-</section>
-
-
-<!-- ══════════════════════════════════════════════
      HERO
 ══════════════════════════════════════════════ -->
 <section class="relative overflow-hidden px-5 md:px-14 pt-20 pb-20">
@@ -555,6 +488,74 @@
       </div>
     </div>
 
+  </div>
+</section>
+
+
+
+<!-- ══════════════════════════════════════════════
+     LLM-OVERVIEW · Factual prose for AI summarization
+     Brand voice: quiet authority, numbers as evidence
+══════════════════════════════════════════════ -->
+<section id="about" class="bg-navy-mid py-16 px-5 md:px-14 border-b border-gold/[.15]" aria-labelledby="about-heading">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
+              border-l-2 border-gold pl-2.5">About TheOddsAPI</p>
+    <h2 id="about-heading" class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-7 leading-snug">
+      What TheOddsAPI is
+    </h2>
+    <div class="text-[#C9D2DF] text-base md:text-lg leading-[1.85] space-y-5">
+      <p>
+        TheOddsAPI is a sports odds API. Raw market data from 50 bookmakers across 24 sports, served through a single normalized REST endpoint, with Pinnacle anchored on every request. An optional intelligence layer — fair odds, consensus pricing, edge detection — is available for systems that want precomputed signals instead of building those models in-house.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6 my-8 not-prose">
+        <div class="border border-gold/[.15] bg-navy-card p-5 rounded">
+          <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3">Raw market data</p>
+          <p class="text-[#C9D2DF] text-base leading-relaxed mb-3">Multi-book odds, normalized into one response. Build your own models on top.</p>
+          <ul class="text-[#C9D2DF] text-sm space-y-1.5 list-none pl-0">
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>50 bookmakers, Pinnacle included</li>
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>h2h, spreads, totals, player props</li>
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Closing lines materialized for CLV</li>
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Historical archive across 21 sports</li>
+          </ul>
+        </div>
+        <div class="border border-gold/[.15] bg-navy-card p-5 rounded">
+          <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3">Derived signals · Optional</p>
+          <p class="text-[#C9D2DF] text-base leading-relaxed mb-3">Pre-computed signals for systems that want to skip the modeling work.</p>
+          <ul class="text-[#C9D2DF] text-sm space-y-1.5 list-none pl-0">
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Fair odds (vig removed)</li>
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Consensus pricing (multi-book median)</li>
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Edge detection vs Pinnacle</li>
+            <li class="flex gap-2"><span class="text-gold shrink-0">-</span>Hit-rate and ROI on graded edges</li>
+          </ul>
+        </div>
+      </div>
+      <p class="text-muted text-sm italic">
+        Use raw data when you need full control. Use derived signals when you need speed.
+      </p>
+      <p>
+        <strong class="text-[#E8EEF7] font-semibold">Coverage.</strong> 21 sports with full historical archives — NBA, MLB, NHL, EPL, La Liga, Bundesliga, Serie A, Ligue 1, EFL Championship, MLS, Eredivisie, Champions League, Europa League, Liga MX, Euroleague, WNBA, NCAAF, Tennis, Cricket, Boxing, plus NCAAB seasonally. Three additional sports are listed for live odds only: MMA (UFC), AFL, and NRL. NFL and NCAAF coverage is seasonal — full markets during regular season.
+      </p>
+      <p>
+        <strong class="text-[#E8EEF7] font-semibold">Markets.</strong> Head-to-head moneyline, spreads, and totals for every covered sport. Player props for NBA, NHL, and MLB — points, rebounds, assists, PRA, hits, total bases, home runs, strikeouts, goals, shots on goal. Lay-side prices on betting exchanges for soccer.
+      </p>
+      <p>
+        <strong class="text-[#E8EEF7] font-semibold">Refresh cadence.</strong> Approximately 30 seconds for top-tier sports (NBA, MLB, NHL, EPL during their seasons). Slower for lower-tier and off-season sports — the cadence is tiered by demand so quota usage stays proportional to active markets. Closing lines are materialized in a dedicated table for CLV analysis.
+      </p>
+      <p>
+        <strong class="text-[#E8EEF7] font-semibold">Settlement.</strong> Final scores and edge grading are available for major US sports (NBA, MLB, NHL) and European soccer leagues. Tennis, cricket, and boxing return pre-game odds only — completed match results are not available for those sports.
+      </p>
+      <p>
+        <strong class="text-[#E8EEF7] font-semibold">Pricing.</strong> Free tier covers 200 requests per month for limited markets. Professional ($29/month, 20,000 requests) opens the full sport list. Business ($99/month, 200,000 requests) adds player props, edge detection against Pinnacle, fair-odds and consensus pricing, and the historical odds archive across 21 sports.
+      </p>
+      <p>
+        <strong class="text-[#E8EEF7] font-semibold">Built for.</strong> Quant operators training models, arbitrage scanners, sportsbook-comparison tools, and anyone needing programmatic odds with a sharp anchor. Authentication is via <code class="text-gold font-mono text-sm bg-gold/[.08] px-1 rounded">x-api-key</code> header. The full OpenAPI 3.0 spec is at <a data-link="DOCS" href="https://api.theoddsapi.com/docs" class="text-gold hover:underline">api.theoddsapi.com/docs</a>.
+      </p>
+      <p class="border-l-2 border-gold/40 pl-4 italic text-[#C9D2DF]">
+        Most odds APIs surface raw bookmaker data and stop there. TheOddsAPI adds a thin computation layer — vig removal, market consensus, and Pinnacle-anchored edge detection — so common modeling primitives don't have to be rebuilt from scratch. The raw data is still there. The signals are optional.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -809,7 +810,7 @@
         Developers use TheOddsAPI to power <strong class="text-[#E8EEF7] font-semibold">arbitrage detection</strong>, <strong class="text-[#E8EEF7] font-semibold">odds comparison apps</strong>, <strong class="text-[#E8EEF7] font-semibold">betting models</strong>, and <strong class="text-[#E8EEF7] font-semibold">analytics dashboards</strong>. Supported markets include <code class="text-gold/80 font-mono text-sm">h2h</code> (moneyline), <code class="text-gold/80 font-mono text-sm">spreads</code>, <code class="text-gold/80 font-mono text-sm">totals</code>, and player props for NBA, NHL, and MLB. Sports coverage spans 24 sports — NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, MLS, soccer (EPL, Champions League, Europa League, La Liga, Bundesliga, Serie A, Ligue 1, Liga MX, Eredivisie, EFL Championship), tennis, cricket, boxing, Euroleague, plus UFC, AFL, and NRL as live odds only.
       </p>
       <p>
-        Why normalized multi-book data matters: every sportsbook publishes odds in its own format, schema, and update cadence. A single normalized response object lets you compare lines across books in milliseconds &mdash; the foundation of every modern sharp tool. TheOddsAPI handles the upstream noise so your code stays focused on the part that ships value: signal detection, model training, and user experience.
+        Why normalized multi-book data matters: every sportsbook publishes odds in its own format, schema, and update cadence. A single normalized response object lets you compare lines across books in milliseconds &mdash; the foundation of every modern sharp tool. TheOddsAPI normalizes that noise so your code stays focused on the part that ships value: signal detection, model training, and user experience.
       </p>
       <p>
         A typical call looks like <code class="text-gold/80 font-mono text-sm">GET /v4/sports/basketball_nba/odds?regions=us&amp;markets=h2h,spreads,totals</code>. The response returns every NBA game with every book's lines, structured identically. The <a data-link="DOCS" href="https://api.theoddsapi.com/docs" class="text-gold hover:underline">interactive docs</a> show every endpoint and response shape.
