@@ -76,10 +76,47 @@
 
   <!-- AUTH -->
   <h2 class="font-serif text-xl font-bold text-[#E8EEF7] mb-3 mt-10 border-b border-gold/[.15] pb-2">Authentication</h2>
-  <p class="text-[15px] mb-3">Pass your API key as the <code class="font-mono text-gold bg-gold/[.08] px-1.5 rounded text-sm">x-api-key</code> header on every request.</p>
-  <div class="bg-[#07101E] rounded-lg border border-white/[.06] px-5 py-4 mb-8 overflow-x-auto">
+  <p class="text-[15px] mb-3">Pass your API key as the <code class="font-mono text-gold bg-gold/[.08] px-1.5 rounded text-sm">x-api-key</code> header on every request. You can also pass it as a query parameter for quick browser testing.</p>
+
+  <p class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono mb-2 mt-6">Browser — paste this into your address bar</p>
+  <div class="bg-[#07101E] rounded-lg border border-white/[.06] px-5 py-4 mb-4 overflow-x-auto">
+    <pre class="font-mono text-xs leading-7 text-[#cdd6f4]">https://api.theoddsapi.com/me/?x-api-key=YOUR_API_KEY</pre>
+  </div>
+
+  <p class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono mb-2 mt-6">cURL</p>
+  <div class="bg-[#07101E] rounded-lg border border-white/[.06] px-5 py-4 mb-4 overflow-x-auto">
     <pre class="font-mono text-xs leading-7 text-[#cdd6f4]"><span class="text-gold">curl</span> -H <span class="text-alive">"x-api-key: YOUR_API_KEY"</span> \
   https://api.theoddsapi.com/sports/</pre>
+  </div>
+
+  <p class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono mb-2 mt-6">Python</p>
+  <div class="bg-[#07101E] rounded-lg border border-white/[.06] px-5 py-4 mb-4 overflow-x-auto">
+    <pre class="font-mono text-xs leading-7 text-[#cdd6f4]"><span class="text-muted"># pip install requests</span>
+<span class="text-gold">import</span> requests
+
+API_KEY = <span class="text-alive">"YOUR_API_KEY"</span>
+headers = {<span class="text-alive">"x-api-key"</span>: API_KEY}
+
+resp = requests.get(
+    <span class="text-alive">"https://api.theoddsapi.com/odds/"</span>,
+    headers=headers,
+    params={<span class="text-alive">"sport_key"</span>: <span class="text-alive">"basketball_nba"</span>}
+)
+
+<span class="text-gold">print</span>(resp.json())</pre>
+  </div>
+
+  <p class="text-2xs font-bold text-muted tracking-[.1em] uppercase font-mono mb-2 mt-6">JavaScript (fetch)</p>
+  <div class="bg-[#07101E] rounded-lg border border-white/[.06] px-5 py-4 mb-8 overflow-x-auto">
+    <pre class="font-mono text-xs leading-7 text-[#cdd6f4]"><span class="text-gold">const</span> API_KEY = <span class="text-alive">"YOUR_API_KEY"</span>;
+
+<span class="text-gold">const</span> resp = <span class="text-gold">await</span> fetch(
+  <span class="text-alive">"https://api.theoddsapi.com/odds/?sport_key=basketball_nba"</span>,
+  { headers: { <span class="text-alive">"x-api-key"</span>: API_KEY } }
+);
+
+<span class="text-gold">const</span> data = <span class="text-gold">await</span> resp.json();
+console.log(data);</pre>
   </div>
 
   <!-- FIRST CALL -->
@@ -133,7 +170,7 @@
   <div class="flex flex-wrap gap-3 mb-8">
     <span class="inline-block px-3 py-1 rounded text-2xs font-bold font-mono tracking-wider bg-muted/10 text-muted">FREE: NBA + MLB</span>
     <span class="inline-block px-3 py-1 rounded text-2xs font-bold font-mono tracking-wider bg-gold/10 text-gold">PRO: All 24 sports</span>
-    <span class="inline-block px-3 py-1 rounded text-2xs font-bold font-mono tracking-wider bg-alive/10 text-alive">BUSINESS: + Props + Intelligence + Edges</span>
+    <span class="inline-block px-3 py-1 rounded text-2xs font-bold font-mono tracking-wider bg-alive/10 text-alive">BUSINESS: + Historical + Props + Intelligence + Edges</span>
   </div>
 
   <!-- ENDPOINTS -->
@@ -279,8 +316,8 @@
       <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Issue</div>
       <div class="px-4 py-3 text-2xs font-bold text-muted tracking-wider uppercase font-mono border-b border-white/[.05] bg-navy-mid">Fix</div>
 
-      <div class="px-4 py-3 text-xs border-b border-white/[.05]">401 / Invalid key</div>
-      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Check base URL is <code class="text-gold">api.theoddsapi.com</code> and key is in the <code class="text-gold">x-api-key</code> header</div>
+      <div class="px-4 py-3 text-xs border-b border-white/[.05]">401 / Missing key</div>
+      <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Pass your key as a header (<code class="text-gold">x-api-key: YOUR_KEY</code>) or query param (<code class="text-gold">?x-api-key=YOUR_KEY</code>). Check base URL is <code class="text-gold">api.theoddsapi.com</code></div>
 
       <div class="px-4 py-3 text-xs border-b border-white/[.05]">403 on a sport</div>
       <div class="px-4 py-3 text-xs text-muted border-b border-white/[.05]">Free tier only gets NBA + MLB. Upgrade to Pro for all sports.</div>
@@ -320,6 +357,8 @@
     <a href="/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Home</a>
     <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
     <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
     <a href="mailto:hello@theoddsapi.com" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
   </div>
 </footer>
