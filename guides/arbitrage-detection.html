@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arbitrage Detection API — Scan 50 Sportsbooks in Real Time | TheOddsAPI</title>
+  <meta name="description" content="Detect arbitrage opportunities across 50 sportsbooks in one API call. Pre-computed edges, Pinnacle-anchored baselines, 30-second refresh. Built for operators." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/arbitrage-detection" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/arbitrage-detection" />
+  <meta property="og:title" content="Arbitrage Detection API — Scan 50 Sportsbooks in Real Time | TheOddsAPI" />
+  <meta property="og:description" content="Detect arbitrage opportunities across 50 sportsbooks in one API call. Pre-computed edges, Pinnacle-anchored baselines, 30-second refresh." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Arbitrage Detection API — Scan 50 Sportsbooks | TheOddsAPI" />
+  <meta name="twitter:description" content="Detect arbitrage opportunities across 50 sportsbooks in one API call. Pre-computed edges, Pinnacle-anchored baselines, 30-second refresh." />
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is sports arbitrage betting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sports arbitrage is a strategy where you place bets on all possible outcomes of an event across different sportsbooks, exploiting price disagreements to guarantee a profit regardless of the result. When one book offers Team A at +150 and another offers Team B at -130 on a two-way market, and the combined implied probability is less than 100%, an arbitrage opportunity exists. Typical arbs yield 0.5–3% profit per trade and last seconds to minutes before books adjust."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How many sportsbooks does TheOddsAPI scan for arbitrage?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI scans 50 sportsbooks simultaneously including DraftKings, FanDuel, BetMGM, Caesars, Pinnacle, Betfair Exchange, Bovada, BetRivers, William Hill, Marathonbet, and 40 others. All odds are normalized into a single API response and refreshed every 30 seconds. The intelligence layer pre-computes arbitrage opportunities so you receive them directly without calculating implied probabilities yourself."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does Pinnacle-anchored edge detection work for arbitrage?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pinnacle is the sharpest sportsbook globally — they accept unlimited action, charge under 2% vig, and their closing lines are considered the most efficient price in the market. TheOddsAPI uses Pinnacle as the baseline anchor and compares all 49 other books against it. When a soft book (DraftKings, FanDuel, Caesars, etc.) disagrees with Pinnacle by more than the vig margin, that's a detected edge. Cross-book arbitrage is a special case where the disagreement is large enough to cover both sides profitably."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the minimum profit percentage for a real arbitrage opportunity?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Real arbitrage opportunities typically yield 0.5–3% profit per trade. Anything above 5% is almost always a stale line, a book error that will be voided, or a limit-restricted market. TheOddsAPI flags arbs above 5% as likely_stale automatically. Professional arbers target the 0.5–2% range and rely on volume (hundreds of trades per week) rather than large individual returns."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How fast do arbitrage opportunities disappear?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Most arbitrage windows close within 30 seconds to 2 minutes. Sharp books like Pinnacle adjust almost instantly when new information enters the market. Soft books (DraftKings, FanDuel, Caesars) lag by seconds to minutes, creating the window. TheOddsAPI refreshes odds every 30 seconds across all 50 books, making it possible to detect and act on opportunities before they close. Manual scanning across browser tabs takes 5–10 minutes per check — by then, the arb is gone."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://theoddsapi.com/guides"},
+      {"@type": "ListItem", "position": 3, "name": "Arbitrage Detection", "item": "https://theoddsapi.com/guides/arbitrage-detection"}
+    ]
+  }
+  </script>
+
+  <!-- Structured data: Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Arbitrage Detection API — Scan 50 Sportsbooks in Real Time",
+    "description": "Detect arbitrage opportunities across 50 sportsbooks in one API call. Pre-computed edges, Pinnacle-anchored baselines, 30-second refresh.",
+    "author": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "publisher": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "datePublished": "2026-04-30",
+    "dateModified": "2026-04-30",
+    "mainEntityOfPage": "https://theoddsapi.com/guides/arbitrage-detection"
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    .live-dot { animation: pulse-live 2s ease-in-out infinite; }
+  </style>
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/arbitrage-detection" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide
+              hover:bg-gold-dark transition-all">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════ BREADCRUMB ═══════════════ -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a>
+  <span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a>
+  <span class="mx-2">/</span>
+  <span class="text-muted">Arbitrage Detection</span>
+</div>
+
+<!-- ═══════════════ HERO: LEAD WITH OUTPUT ═══════════════ -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+    <!-- Left: headline + proof -->
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Arbitrage Detection<br/>
+        <span class="text-gold">Across 50 Sportsbooks</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        One API call returns pre-computed arbitrage opportunities with stake allocation,
+        profit percentage, and staleness flags. Pinnacle-anchored. Refreshed every 30 seconds.
+      </p>
+
+      <!-- Proof metrics -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Sportsbooks scanned</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">30s</p>
+          <p class="text-xs text-muted mt-1">Refresh cycle</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">0.5–3%</p>
+          <p class="text-xs text-muted mt-1">Typical edge range</p>
+        </div>
+      </div>
+
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key — Free Tier Available
+      </a>
+    </div>
+
+    <!-- Right: LIVE EXAMPLE OUTPUT -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Sample Response — /intelligence/arbitrage</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="tc">"sport_key"</span>: <span class="ts">"basketball_nba"</span>,
+  <span class="tc">"event"</span>: <span class="ts">"Lakers vs Celtics"</span>,
+  <span class="tc">"market"</span>: <span class="ts">"h2h"</span>,
+  <span class="tc">"profit_pct"</span>: <span class="tn">1.8</span>,
+  <span class="tc">"likely_stale"</span>: <span class="tk">false</span>,
+  <span class="tc">"legs"</span>: [
+    {
+      <span class="tc">"outcome"</span>: <span class="ts">"Lakers"</span>,
+      <span class="tc">"bookmaker"</span>: <span class="ts">"draftkings"</span>,
+      <span class="tc">"price"</span>: <span class="tn">+155</span>,
+      <span class="tc">"stake_pct"</span>: <span class="tn">39.2</span>
+    },
+    {
+      <span class="tc">"outcome"</span>: <span class="ts">"Celtics"</span>,
+      <span class="tc">"bookmaker"</span>: <span class="ts">"pinnacle"</span>,
+      <span class="tc">"price"</span>: <span class="tn">-148</span>,
+      <span class="tc">"stake_pct"</span>: <span class="tn">60.8</span>
+    }
+  ],
+  <span class="tc">"detected_at"</span>: <span class="ts">"2026-04-30T02:14:07Z"</span>,
+  <span class="tc">"age_seconds"</span>: <span class="tn">12</span>
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOW IT WORKS (3-step) ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">How It Works</h2>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Step 1 -->
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">01</p>
+        <h3 class="text-sm font-semibold mb-2">50-Book Scan</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Every 30 seconds, odds from DraftKings, FanDuel, BetMGM, Pinnacle, Betfair,
+          and 45 other books are pulled, normalized, and compared pairwise across all outcomes.
+        </p>
+      </div>
+      <!-- Step 2 -->
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">02</p>
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Computed</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          When combined implied probability across books drops below 100%, the arb is flagged.
+          Stake allocation and profit percentage are pre-calculated. Arbs above 5% are
+          flagged as <code class="text-gold/80">likely_stale</code> — almost always a book error.
+        </p>
+      </div>
+      <!-- Step 3 -->
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">03</p>
+        <h3 class="text-sm font-semibold mb-2">You Act</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Pull <code class="text-gold/80">GET /intelligence/arbitrage?sport_key=basketball_nba</code>
+          and receive ready-to-execute opportunities with book, price, and stake per leg.
+          No calculation required on your end.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CODE EXAMPLE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Three lines to detect arbitrage. No odds math required.</p>
+
+    <!-- Python -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/intelligence/arbitrage"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
+    params={<span class="ts">"sport_key"</span>: <span class="ts">"basketball_nba"</span>}
+)
+
+arbs = response.json()[<span class="ts">"data"</span>]
+<span class="tk">for</span> arb <span class="tk">in</span> arbs:
+    <span class="tk">if not</span> arb[<span class="ts">"likely_stale"</span>]:
+        <span class="tk">print</span>(f<span class="ts">"</span>{arb[<span class="ts">'event'</span>]}<span class="ts"> — </span>{arb[<span class="ts">'profit_pct'</span>]}<span class="ts">% edge"</span>)
+        <span class="tk">for</span> leg <span class="tk">in</span> arb[<span class="ts">"legs"</span>]:
+            <span class="tk">print</span>(f<span class="ts">"  </span>{leg[<span class="ts">'bookmaker'</span>]}<span class="ts">: </span>{leg[<span class="ts">'outcome'</span>]}<span class="ts"> @ </span>{leg[<span class="ts">'price'</span>]}<span class="ts"> — stake </span>{leg[<span class="ts">'stake_pct'</span>]}<span class="ts">%"</span>)</code></pre>
+    </div>
+
+    <!-- JavaScript -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
+  <span class="ts">"https://api.theoddsapi.com/v4/intelligence/arbitrage?sport_key=basketball_nba"</span>,
+  { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
+);
+
+<span class="tk">const</span> { data: arbs } = <span class="tk">await</span> res.json();
+arbs
+  .filter(a => !a.likely_stale)
+  .forEach(a => console.log(<span class="ts">`</span>${a.event}<span class="ts"> — </span>${a.profit_pct}<span class="ts">% profit`</span>));</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WHY AUTOMATION MATTERS ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Manual vs. Automated Detection</h2>
+
+    <div class="rounded-lg border border-gold/20 overflow-hidden">
+      <table class="w-full text-xs">
+        <thead class="bg-navy-mid border-b border-gold/10">
+          <tr>
+            <th class="text-left px-4 py-3 text-muted font-medium"></th>
+            <th class="text-left px-4 py-3 text-muted font-medium">Manual (Browser Tabs)</th>
+            <th class="text-left px-4 py-3 text-gold font-semibold">TheOddsAPI</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gold/[.06]">
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Books scanned</td>
+            <td class="px-4 py-3 text-muted">3–5 (open tabs)</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">50 simultaneously</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Time per scan</td>
+            <td class="px-4 py-3 text-muted">5–10 minutes</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">30 seconds (continuous)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Stake calculation</td>
+            <td class="px-4 py-3 text-muted">Spreadsheet / mental math</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Pre-computed per leg</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Stale detection</td>
+            <td class="px-4 py-3 text-muted">None — you eat the void</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">likely_stale flag on 5%+ arbs</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Sports coverage</td>
+            <td class="px-4 py-3 text-muted">1 sport at a time</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">24 sports, all markets</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Sharp anchor</td>
+            <td class="px-4 py-3 text-muted">None — comparing retail to retail</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Pinnacle baseline included</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WHAT MAKES AN ARB REAL ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Separating Real Edges from Noise</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Not every price disagreement is a real arbitrage. The difference between 1.8% profit
+      and a voided bet depends on detection quality.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-6">
+        <h3 class="text-sm font-semibold text-gold mb-3">Real Arbs (0.5–3%)</h3>
+        <ul class="text-xs text-muted leading-relaxed space-y-2">
+          <li>Cross-book disagreement on h2h or spread markets</li>
+          <li>Both books are active and accepting bets at posted limits</li>
+          <li>Detected within 30 seconds of odds change</li>
+          <li>Age under 2 minutes — window is still open</li>
+          <li>Pinnacle on one side (confirms the sharp anchor)</li>
+        </ul>
+      </div>
+      <div class="rounded-lg border border-red-500/20 bg-navy-card p-6">
+        <h3 class="text-sm font-semibold text-red-400 mb-3">False Signals (5%+)</h3>
+        <ul class="text-xs text-muted leading-relaxed space-y-2">
+          <li>Book pricing error — will void the bet post-settlement</li>
+          <li>Limit-restricted market — you can't get the posted price</li>
+          <li>Stale line from a slow book — already corrected</li>
+          <li>Regional book not accepting bets (closed market)</li>
+          <li>TheOddsAPI flags these as <code class="text-gold/80">likely_stale: true</code> automatically</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PINNACLE ANCHOR EXPLANATION ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Pinnacle as the Sharp Anchor</h2>
+    <p class="text-muted text-sm mb-6 max-w-2xl">
+      Pinnacle accepts unlimited action at under 2% margin. Their closing line is the most
+      efficient price in the market. When a soft book disagrees with Pinnacle,
+      that disagreement is signal — not noise.
+    </p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card p-5">
+      <p class="text-xs font-mono text-muted mb-3">Example: NFL Week 8 — Chiefs vs Ravens</p>
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div>
+          <p class="text-xs text-muted mb-1">Pinnacle</p>
+          <p class="text-sm font-mono font-bold text-[#E8EEF7]">Chiefs -148</p>
+          <p class="text-2xs text-muted mt-0.5">Sharp line (baseline)</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">DraftKings</p>
+          <p class="text-sm font-mono font-bold text-gold">Chiefs -155</p>
+          <p class="text-2xs text-muted mt-0.5">7pt gap — soft book lagging</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">FanDuel</p>
+          <p class="text-sm font-mono font-bold text-[#E8EEF7]">Chiefs -150</p>
+          <p class="text-2xs text-muted mt-0.5">2pt gap — already adjusted</p>
+        </div>
+      </div>
+      <p class="text-xs text-muted mt-4 pt-3 border-t border-gold/10">
+        The DraftKings line is 7 points off Pinnacle. On the other side, if Ravens are +160 on another book
+        while Pinnacle has them at +140, that's a cross-book arbitrage candidate.
+        TheOddsAPI detects these automatically across all 50 books.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SPORTS COVERAGE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Arbitrage Across 24 Sports</h2>
+    <p class="text-muted text-sm mb-8">
+      Intelligence endpoints — including arbitrage — run on every sport the scheduler refreshes.
+      No hardcoded sport list.
+    </p>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">NBA</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">NFL</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">MLB</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">NHL</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">EPL</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">La Liga</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">Champions League</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">UFC / MMA</p>
+        <p class="text-muted text-2xs">h2h</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">Bundesliga</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">Serie A</p>
+        <p class="text-muted text-2xs">h2h, spreads, totals</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">Tennis</p>
+        <p class="text-muted text-2xs">h2h</p>
+      </div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2">
+        <p class="font-medium text-[#E8EEF7]">+ 13 more</p>
+        <p class="text-muted text-2xs">All markets</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ RISK & REALITY ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Risk and Reality</h2>
+    <p class="text-muted text-sm mb-6 max-w-2xl">
+      Arbitrage is not risk-free in practice. Knowing the limits protects your capital.
+    </p>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Account Limits</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Soft sportsbooks (DraftKings, FanDuel, Caesars) limit winning accounts.
+          Professional arbers rotate books, size bets below detection thresholds,
+          and diversify across sports to extend account lifetime.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Execution Speed</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          A 30-second refresh means you see opportunities within 30 seconds of detection.
+          The window may close before you execute. Latency matters — build your execution
+          pipeline to act within seconds of receiving the signal.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Voided Bets</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Books reserve the right to void bets on obvious pricing errors.
+          Arbs above 5% profit are almost always errors. The <code class="text-gold/80">likely_stale</code>
+          flag exists to protect you from these — filter them out.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ RELATED GUIDES ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Sharp Lines</h3>
+        <p class="text-xs text-muted">Why Pinnacle is the baseline for edge detection and how to use it.</p>
+      </a>
+      <a href="/guides/value-bets" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Value Bet Detection</h3>
+        <p class="text-xs text-muted">Find +EV overlay when books misprice against consensus.</p>
+      </a>
+      <a href="/guides/historical-odds-backtesting" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Historical Odds</h3>
+        <p class="text-xs text-muted">Backtest your arb strategy against 22 sports of historical data.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FINAL CTA ═══════════════ -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Detecting Arbitrage</h2>
+    <p class="text-muted text-sm mb-8">
+      Free tier includes 25 requests/day across NBA and MLB.
+      Pro tier unlocks 24 sports, 50 books, and all intelligence endpoints.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+      <a href="https://api.theoddsapi.com/docs"
+         class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">
+        Try in Swagger
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">
+      TheOdds<span class="text-gold/70">API</span>
+    </p>
+    <p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<!-- ═══════════════ GA4 EVENT TRACKING ═══════════════ -->
+<script>
+(function() {
+  function track(event, params) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', event, params || {});
+    }
+  }
+  // Track CTA clicks
+  document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el => {
+    el.addEventListener('click', () => track('get_key_click', { page: 'arbitrage_guide' }));
+  });
+  document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el => {
+    el.addEventListener('click', () => track('docs_click', { page: 'arbitrage_guide' }));
+  });
+})();
+</script>
+
+</body>
+</html>
