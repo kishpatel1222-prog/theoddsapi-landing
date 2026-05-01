@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historical Odds API — Backtest Betting Strategies | TheOddsAPI</title>
+  <meta name="description" content="Historical odds snapshots across 22 sports and 50 sportsbooks. Backtest models against real closing lines, measure CLV, validate edge strategies before going live." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/historical-odds-backtesting" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/historical-odds-backtesting" />
+  <meta property="og:title" content="Historical Odds API — Backtest Betting Strategies | TheOddsAPI" />
+  <meta property="og:description" content="Historical odds snapshots across 22 sports and 50 sportsbooks. Backtest models against real closing lines, measure CLV, validate edge strategies." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Historical Odds API — Backtest Betting Strategies | TheOddsAPI" />
+  <meta name="twitter:description" content="Historical odds snapshots across 22 sports and 50 sportsbooks. Backtest models against real closing lines." />
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is closing line value (CLV) in sports betting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Closing line value (CLV) measures whether the odds you bet were better than the final odds at market close. If you consistently bet at prices that are better than where the line closes, you have positive CLV — the strongest indicator of long-term profitability in sports betting. Professional bettors track CLV across thousands of bets to validate their edge. TheOddsAPI's historical odds data lets you calculate CLV retroactively by comparing your bet timestamps against archived closing lines from 50 sportsbooks."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How far back does TheOddsAPI historical data go?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI historical odds data begins April 16, 2026 and expands daily. The archive covers 22 sports including NBA, MLB, NHL, NFL, EPL, Champions League, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, EFL Championship, Liga MX, Euroleague, MLS, Tennis, Cricket, Boxing, MMA, NCAAF, WNBA, and NCAAB (seasonal). Markets include h2h (moneyline), spreads, and totals from 50 sportsbooks. Each snapshot captures odds at the time of collection with timestamps for time-series reconstruction."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I backtest an arbitrage or value betting strategy with historical odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. TheOddsAPI historical endpoint returns timestamped odds snapshots from 50 books across 22 sports. You can reconstruct what odds were available at any point in time, simulate your model's decisions at those prices, and measure outcomes. For arbitrage backtesting, query multi-book snapshots and calculate cross-book implied probability at each timestamp. For value betting, compare your model's probability against the consensus or Pinnacle line at decision time. The key advantage over competitors is multi-bookmaker snapshots — most historical data providers only archive 1–3 books."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is backtesting against opening lines unreliable?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Opening lines reflect the market before sharp money arrives. By game time, lines have moved 2–5 points on average as professional bettors correct inefficiencies. Backtesting against opening lines overstates your edge because those prices were never available when you would have actually bet (they moved before your model triggered). Backtesting against timestamped snapshots — odds that were actually live at the moment your model would have signaled — gives realistic performance estimates. TheOddsAPI archives odds with timestamps so you can simulate execution at real available prices."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How many sportsbooks are included in TheOddsAPI historical data?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI historical data includes odds from 50 sportsbooks simultaneously: US books (DraftKings, FanDuel, BetMGM, Caesars, BetRivers, Bovada), sharp books (Pinnacle, Betfair Exchange), and international books (William Hill, Marathonbet, Unibet, and 40+ others). This multi-bookmaker coverage is critical for backtesting because strategies that work on one book's data often fail when tested against the broader market. Single-book backtests overfit to that book's pricing patterns."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://theoddsapi.com/guides"},
+      {"@type": "ListItem", "position": 3, "name": "Historical Odds & Backtesting", "item": "https://theoddsapi.com/guides/historical-odds-backtesting"}
+    ]
+  }
+  </script>
+
+  <!-- Structured data: Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Historical Odds API — Backtest Betting Strategies Across 22 Sports",
+    "description": "Historical odds snapshots across 22 sports and 50 sportsbooks. Backtest models against real closing lines, measure CLV, validate edge strategies.",
+    "author": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "publisher": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "datePublished": "2026-04-30",
+    "dateModified": "2026-04-30",
+    "mainEntityOfPage": "https://theoddsapi.com/guides/historical-odds-backtesting"
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    .live-dot { animation: pulse-live 2s ease-in-out infinite; }
+  </style>
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/arbitrage-detection" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide
+              hover:bg-gold-dark transition-all">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════ BREADCRUMB ═══════════════ -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a>
+  <span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a>
+  <span class="mx-2">/</span>
+  <span class="text-muted">Historical Odds & Backtesting</span>
+</div>
+
+<!-- ═══════════════ HERO: LEAD WITH OUTPUT ═══════════════ -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+    <!-- Left: headline + proof -->
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Historical Odds Data<br/>
+        <span class="text-gold">for Backtesting</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Timestamped odds snapshots from 50 sportsbooks across 22 sports.
+        Reconstruct what prices were available at any point in time.
+        Validate your model before risking capital.
+      </p>
+
+      <!-- Proof metrics -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">22</p>
+          <p class="text-xs text-muted mt-1">Sports archived</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Books per snapshot</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">380K+</p>
+          <p class="text-xs text-muted mt-1">Odds rows collected</p>
+        </div>
+      </div>
+
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key — Business Tier
+      </a>
+      <p class="text-2xs text-muted mt-2">Historical data available on Business plan ($99/mo)</p>
+    </div>
+
+    <!-- Right: LIVE EXAMPLE OUTPUT -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Sample — /historical/odds</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="tc">"sport_key"</span>: <span class="ts">"basketball_nba"</span>,
+  <span class="tc">"event"</span>: <span class="ts">"Knicks vs Heat"</span>,
+  <span class="tc">"commence_time"</span>: <span class="ts">"2026-04-28T23:30:00Z"</span>,
+  <span class="tc">"bookmakers"</span>: [
+    {
+      <span class="tc">"key"</span>: <span class="ts">"pinnacle"</span>,
+      <span class="tc">"markets"</span>: [{
+        <span class="tc">"key"</span>: <span class="ts">"h2h"</span>,
+        <span class="tc">"outcomes"</span>: [
+          {<span class="tc">"name"</span>: <span class="ts">"Knicks"</span>, <span class="tc">"price"</span>: <span class="tn">-135</span>},
+          {<span class="tc">"name"</span>: <span class="ts">"Heat"</span>, <span class="tc">"price"</span>: <span class="tn">+122</span>}
+        ]
+      }]
+    },
+    {
+      <span class="tc">"key"</span>: <span class="ts">"draftkings"</span>,
+      <span class="tc">"markets"</span>: [{
+        <span class="tc">"key"</span>: <span class="ts">"h2h"</span>,
+        <span class="tc">"outcomes"</span>: [
+          {<span class="tc">"name"</span>: <span class="ts">"Knicks"</span>, <span class="tc">"price"</span>: <span class="tn">-140</span>},
+          {<span class="tc">"name"</span>: <span class="ts">"Heat"</span>, <span class="tc">"price"</span>: <span class="tn">+120</span>}
+        ]
+      }]
+    }
+  ],
+  <span class="tc">"snapshot_time"</span>: <span class="ts">"2026-04-28T20:15:00Z"</span>
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WHY BACKTESTING MATTERS ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">Why Backtesting Against Real Odds Matters</h2>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">Problem</p>
+        <h3 class="text-sm font-semibold mb-2">Opening Lines Lie</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Opening lines move 2–5 points before game time as sharp money arrives.
+          Backtesting against openers overstates your edge because those prices
+          were gone before your model triggered.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">Problem</p>
+        <h3 class="text-sm font-semibold mb-2">Single-Book Overfitting</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Testing against one book's history overfits to that book's pricing patterns.
+          A model that "works" on DraftKings data may fail entirely on the broader market.
+          Multi-book data exposes this immediately.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">Solution</p>
+        <h3 class="text-sm font-semibold mb-2">Timestamped Snapshots</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          TheOddsAPI archives odds with timestamps from 50 books. Simulate execution
+          at the price that was actually available when your model signaled.
+          Realistic backtests, realistic expectations.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CLV EXPLANATION ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Closing Line Value (CLV)</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      The single strongest predictor of long-term profitability.
+      If you consistently beat the closing line, you have an edge. Period.
+    </p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card p-6">
+      <p class="text-xs font-mono text-muted mb-4">Example: NBA — Knicks vs Heat</p>
+
+      <div class="grid grid-cols-3 gap-6 text-center mb-6">
+        <div>
+          <p class="text-xs text-muted mb-1">Your Bet (3hrs pre-game)</p>
+          <p class="text-lg font-mono font-bold text-gold">Knicks -130</p>
+          <p class="text-2xs text-muted mt-0.5">Implied: 56.5%</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">Closing Line</p>
+          <p class="text-lg font-mono font-bold text-[#E8EEF7]">Knicks -145</p>
+          <p class="text-2xs text-muted mt-0.5">Implied: 59.2%</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">Your CLV</p>
+          <p class="text-lg font-mono font-bold text-alive">+2.7%</p>
+          <p class="text-2xs text-muted mt-0.5">You beat the close</p>
+        </div>
+      </div>
+
+      <div class="border-t border-gold/10 pt-4">
+        <p class="text-xs text-muted leading-relaxed">
+          You bet Knicks -130 three hours before game time. The line closed at -145.
+          That means the market agreed your bet was underpriced — you got 2.7% more value
+          than the final efficient price. Track this over 1,000+ bets. Positive CLV = edge confirmed.
+          Negative CLV = your model is behind the market.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ DATA COVERAGE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">What's in the Archive</h2>
+    <p class="text-muted text-sm mb-8">Multi-bookmaker historical odds. Not a single-source feed.</p>
+
+    <div class="rounded-lg border border-gold/20 overflow-hidden">
+      <table class="w-full text-xs">
+        <thead class="bg-navy-mid border-b border-gold/10">
+          <tr>
+            <th class="text-left px-4 py-3 text-muted font-medium">Dimension</th>
+            <th class="text-left px-4 py-3 text-[#E8EEF7] font-medium">Coverage</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gold/[.06]">
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Sports</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">22 (NBA, MLB, NHL, NFL, EPL, La Liga, Bundesliga, Serie A, Champions League, and 13 more)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Markets</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">h2h (moneyline), spreads, totals</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Sportsbooks</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">50 per snapshot (DraftKings, FanDuel, Pinnacle, Betfair, BetMGM, and 45 more)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Data start</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">April 16, 2026 (expanding daily)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Snapshot frequency</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Timestamped with each odds refresh</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Credit cost</td>
+            <td class="px-4 py-3 text-gold font-medium">Zero additional — included in Business tier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CODE EXAMPLE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Pull historical snapshots and calculate CLV in a few lines.</p>
+
+    <!-- Python -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python — Backtest CLV</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+<span class="tm"># Pull historical odds for NBA</span>
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/historical/odds"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
+    params={
+        <span class="ts">"sport_key"</span>: <span class="ts">"basketball_nba"</span>,
+        <span class="ts">"date"</span>: <span class="ts">"2026-04-28"</span>,
+        <span class="ts">"bookmakers"</span>: <span class="ts">"pinnacle,draftkings,fanduel"</span>
+    }
+)
+
+events = response.json()[<span class="ts">"data"</span>]
+
+<span class="tm"># Calculate CLV for each event</span>
+<span class="tk">for</span> event <span class="tk">in</span> events:
+    <span class="tm"># Compare your bet price vs closing snapshot</span>
+    my_bet_price = get_my_bet(event[<span class="ts">"event_id"</span>])  <span class="tm"># your records</span>
+    closing_price = event[<span class="ts">"bookmakers"</span>][<span class="tn">0</span>][<span class="ts">"markets"</span>][<span class="tn">0</span>][<span class="ts">"outcomes"</span>][<span class="tn">0</span>][<span class="ts">"price"</span>]
+
+    <span class="tm"># Positive CLV = you beat the market</span>
+    clv = implied_prob(closing_price) - implied_prob(my_bet_price)
+    <span class="tk">print</span>(f<span class="ts">"</span>{event[<span class="ts">'event'</span>]}<span class="ts">: CLV </span>{clv:+.1%}<span class="ts">"</span>)</code></pre>
+    </div>
+
+    <!-- JavaScript -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript — Fetch Historical Odds</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
+  <span class="ts">"https://api.theoddsapi.com/v4/historical/odds?sport_key=basketball_nba&date=2026-04-28"</span>,
+  { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
+);
+
+<span class="tk">const</span> { data: events } = <span class="tk">await</span> res.json();
+
+<span class="tm">// Reconstruct what odds were available at any timestamp</span>
+events.forEach(event => {
+  <span class="tk">const</span> pinnacle = event.bookmakers.find(b => b.key === <span class="ts">"pinnacle"</span>);
+  <span class="tk">const</span> dk = event.bookmakers.find(b => b.key === <span class="ts">"draftkings"</span>);
+  console.log(<span class="ts">`</span>${event.event}<span class="ts">: Pinnacle </span>${pinnacle?.markets[0].outcomes[0].price}<span class="ts"> vs DK </span>${dk?.markets[0].outcomes[0].price}<span class="ts">`</span>);
+});</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ BACKTESTING METHODOLOGY ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Backtesting Methodology</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      A rigorous backtest answers one question: would your model have made money
+      if executed at prices that were actually available?
+    </p>
+
+    <div class="space-y-6">
+      <div class="flex gap-4">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center">
+          <span class="text-xs font-mono text-gold font-bold">1</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold mb-1">Define Your Signal</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            ML model, consensus fade, sharp-follows, or any system that generates
+            a bet decision with a timestamp. The timestamp is critical — it determines
+            which historical snapshot to compare against.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center">
+          <span class="text-xs font-mono text-gold font-bold">2</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold mb-1">Pull Odds at Decision Time</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            Query <code class="text-gold/80">/historical/odds</code> for the snapshot closest to when
+            your model would have triggered. This gives you the actual price
+            available — not an opening or closing approximation.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center">
+          <span class="text-xs font-mono text-gold font-bold">3</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold mb-1">Simulate Execution</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            For each signal, record the best available price across 50 books at that timestamp.
+            Apply your staking strategy (flat, Kelly, fractional Kelly).
+            Account for vig — don't backtest against mid-market prices you can't actually get.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center">
+          <span class="text-xs font-mono text-gold font-bold">4</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold mb-1">Measure CLV & ROI</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            Compare your execution price against the closing line. Calculate CLV
+            across all bets. Positive CLV over 500+ bets = confirmed edge.
+            Track ROI, drawdown, and Sharpe ratio to determine if it's capital-deployable.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center">
+          <span class="text-xs font-mono text-gold font-bold">5</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold mb-1">Out-of-Sample Validation</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            Split your data. Train on one period, test on another.
+            If CLV disappears out-of-sample, your model overfit the training data.
+            This is where most "winning" systems fail.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ COMMON PITFALLS ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Common Backtesting Pitfalls</h2>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="rounded-lg border border-red-500/20 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-red-400 mb-3">Survivorship Bias</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Only testing on events that completed normally. Cancelled games, postponements,
+          and voided markets get excluded — inflating your results.
+          Include all events in your sample.
+        </p>
+      </div>
+      <div class="rounded-lg border border-red-500/20 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-red-400 mb-3">Ignoring Execution Lag</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Your model signals at T=0, but you execute at T=30s.
+          In that window, the line may have moved. Use the snapshot closest to
+          your realistic execution time, not the signal time.
+        </p>
+      </div>
+      <div class="rounded-lg border border-red-500/20 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-red-400 mb-3">Vig-Free Backtesting</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Testing against mid-market or vig-removed prices that you can't actually bet.
+          Always backtest against the real offered price from specific books.
+          Multi-book data lets you find the best available line — that's your realistic execution price.
+        </p>
+      </div>
+      <div class="rounded-lg border border-red-500/20 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-red-400 mb-3">Data Snooping</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Running 50 model variations and picking the one that worked best.
+          Each parameter you tune increases overfitting risk.
+          Out-of-sample testing on held-out data is mandatory, not optional.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ USE CASES ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">What Operators Build with Historical Data</h2>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">CLV Tracking Systems</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Compare every bet placed against the closing line across all books.
+          Automated CLV calculation tells you if your edge is real or if you're
+          just getting lucky in small samples.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Model Validation Pipelines</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Before deploying a new model live, backtest against 50-book historical data.
+          If it shows +CLV against Pinnacle closing lines over 500+ events, deploy.
+          If not, iterate without burning capital.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Strategy Replay</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Reconstruct historical cross-book disagreements to measure how often arbs
+          appeared, how long they lasted, and what profit range was realistic.
+          Size your arb operation based on empirical data, not assumptions.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Market Efficiency Research</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Study how quickly soft books converge to Pinnacle's line.
+          Measure the half-life of edges by sport, market, and time-to-kickoff.
+          Build timing models that tell you when to bet for maximum CLV.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ RELATED GUIDES ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/arbitrage-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Detection</h3>
+        <p class="text-xs text-muted">Real-time arb scanning across 50 books with pre-computed stakes.</p>
+      </a>
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Sharp Lines</h3>
+        <p class="text-xs text-muted">Why Pinnacle is the baseline and how to use it for CLV measurement.</p>
+      </a>
+      <a href="/guides/value-bets" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Value Bet Detection</h3>
+        <p class="text-xs text-muted">Find +EV overlay using consensus as your probability baseline.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FINAL CTA ═══════════════ -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Backtesting</h2>
+    <p class="text-muted text-sm mb-8">
+      Historical odds are available on the Business plan ($99/mo).
+      Zero additional credit cost. 22 sports. 50 books per snapshot.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+      <a href="https://api.theoddsapi.com/docs"
+         class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">
+        Try in Swagger
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">
+      TheOdds<span class="text-gold/70">API</span>
+    </p>
+    <p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/arbitrage-detection" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<!-- ═══════════════ GA4 EVENT TRACKING ═══════════════ -->
+<script>
+(function() {
+  function track(event, params) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', event, params || {});
+    }
+  }
+  document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el => {
+    el.addEventListener('click', () => track('get_key_click', { page: 'historical_guide' }));
+  });
+  document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el => {
+    el.addEventListener('click', () => track('docs_click', { page: 'historical_guide' }));
+  });
+})();
+</script>
+
+</body>
+</html>
