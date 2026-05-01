@@ -1,14 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Guides — TheOddsAPI</title>
-  <meta name="description" content="Guides for sports betting operators: arbitrage detection, Pinnacle sharp lines, value bet detection, player props, historical odds backtesting, and consensus analysis." />
+  <title>Guides — Sports Betting Edge Detection & Strategy | TheOddsAPI</title>
+  <meta name="description" content="Guides for sports betting operators: arbitrage detection, Pinnacle sharp lines, value bet detection, player props edge scanning, historical odds backtesting, consensus analysis, and multi-book odds comparison." />
   <link rel="canonical" href="https://theoddsapi.com/guides/" />
-  <meta http-equiv="refresh" content="0;url=/guides/arbitrage-detection" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/" />
+  <meta property="og:title" content="Guides — Sports Betting Edge Detection & Strategy | TheOddsAPI" />
+  <meta property="og:description" content="Guides for operators: arbitrage, Pinnacle edges, value bets, player props, backtesting, consensus, odds comparison." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"CollectionPage","name":"TheOddsAPI Guides","description":"Guides for sports betting operators covering arbitrage detection, edge detection, value betting, player props, historical odds backtesting, consensus analysis, and odds comparison.","url":"https://theoddsapi.com/guides/","publisher":{"@type":"Organization","name":"TheOddsAPI","url":"https://theoddsapi.com"}}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{gold:{DEFAULT:'#D4AF37',dark:'#C9A227'},navy:{DEFAULT:'#0B1426',mid:'#091325',card:'#0D1B30'},muted:'#8294B0',alive:'#4B9E5F'},fontFamily:{serif:['"Playfair Display"','Georgia','serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','"Fira Code"','monospace']}}}};</script>
+  <style>.top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37 50%,transparent)}</style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-V6023YJNQS');</script>
 </head>
-<body>
-  <p>Redirecting to <a href="/guides/arbitrage-detection">Arbitrage Detection Guide</a>...</p>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 flex items-center justify-between px-5 md:px-14 h-16 bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">TheOdds<span class="text-gold">API</span></a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded border border-gold/30 text-gold text-xs font-semibold tracking-wide hover:bg-gold/10 hover:border-gold transition-all">Swagger <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<section class="px-5 md:px-14 pt-12 pb-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="font-serif text-3xl md:text-4xl font-bold mb-4">Guides</h1>
+    <p class="text-muted text-base max-w-2xl">
+      Operational guides for sports betting edge detection, strategy, and API integration.
+      Each guide leads with real output examples, then covers methodology and code.
+    </p>
+  </div>
+</section>
+
+<!-- GUIDE CARDS -->
+<section class="px-5 md:px-14 pb-20">
+  <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-5">
+
+    <a href="/guides/arbitrage-detection" class="relative rounded-lg border border-gold/15 bg-navy-card p-6 hover:border-gold/40 hover:bg-[#0f1f38] transition-all block top-line">
+      <p class="text-gold font-mono text-2xs uppercase tracking-widest mb-2">Intelligence</p>
+      <h2 class="text-base font-semibold mb-2">Arbitrage Detection</h2>
+      <p class="text-xs text-muted leading-relaxed">
+        Pre-computed arbitrage opportunities across 50 sportsbooks. Stake allocation,
+        profit percentage, and staleness flags in one call.
+      </p>
+      <p class="text-2xs text-gold/60 mt-3">50 books · 30s refresh · 0.5–3% typical edge</p>
+    </a>
+
+    <a href="/guides/sharp-lines-pinnacle" class="relative rounded-lg border border-gold/15 bg-navy-card p-6 hover:border-gold/40 hover:bg-[#0f1f38] transition-all block top-line">
+      <p class="text-gold font-mono text-2xs uppercase tracking-widest mb-2">Intelligence</p>
+      <h2 class="text-base font-semibold mb-2">Pinnacle Sharp Lines</h2>
+      <p class="text-xs text-muted leading-relaxed">
+        Pinnacle as the sharp anchor. 49 soft books compared against the most efficient
+        line in the market. 2–7 point gaps detected automatically.
+      </p>
+      <p class="text-2xs text-gold/60 mt-3">Pinnacle baseline · Edge detection · CLV tracking</p>
+    </a>
+
+    <a href="/guides/value-bets" class="relative rounded-lg border border-gold/15 bg-navy-card p-6 hover:border-gold/40 hover:bg-[#0f1f38] transition-all block top-line">
+      <p class="text-gold font-mono text-2xs uppercase tracking-widest mb-2">Intelligence</p>
+      <h2 class="text-base font-semibold mb-2">Value Bet Detection</h2>
+      <p class="text-xs text-muted leading-relaxed">
+        +EV overlay detection using vig-removed consensus from 50 books as the fair price
+        baseline. When a book offers more than fair, that's value.
+      </p>
+      <p class="text-2xs text-gold/60 mt-3">Vig-removed fair odds · 2–5% typical edge · Volume play</p>
+    </a>
+
+    <a href="/guides/player-props" class="relative rounded-lg border border-gold/15 bg-navy-card p-6 hover:border-gold/40 hover:bg-[#0f1f38] transition-all block top-line">
+      <p class="text-gold font-mono text-2xs uppercase tracking-widest mb-2">Props</p>
+      <h2 class="text-base font-semibold mb-2">Player Props Edge Detection</h2>
+      <p class="text-xs text-muted leading-relaxed">
+        Prop markets are 2–4x softer than game lines. NBA, MLB, NHL props from 50 books
+        with Pinnacle included. Find where books disagree the most.
+      </p>
+      <p class="text-2xs text-gold/60 mt-3">NBA · MLB · NHL · Points, rebounds, strikeouts, goals</p>
+    </a>
+
+    <a href="/guides/historical-odds-backtesting" class="relative rounded-lg border border-gold/15 bg-navy-card p-6 hover:border-gold/40 hover:bg-[#0f1f38] transition-all block top-line">
+      <p class="text-gold font-mono text-2xs uppercase tracking-widest mb-2">Data</p>
+      <h2 class="text-base font-semibold mb-2">Historical Odds & Backtesting</h2>
+      <p class="text-xs text-muted leading-relaxed">
+        Timestamped odds snapshots from 50 books across 22 sports. Backtest models
+        against real prices, measure CLV, validate edge before risking capital.
+      </p>
+      <p class="text-2xs text-gold/60 mt-3">22 sports · 380K+ rows · Business tier</p>
+    </a>
+
+    <a href="/guides/consensus-picks" class="relative rounded-lg border border-gold/15 bg-navy-card p-6 hover:border-gold/40 hover:bg-[#0f1f38] transition-all block top-line">
+      <p class="text-gold font-mono text-2xs uppercase tracking-widest mb-2">Intelligence</p>
+      <h2 class="text-base font-semibold mb-2">Market Consensus</h2>
+      <p class="text-xs text-muted leading-relaxed">
+        Aggregate statistics from 50 books — median, mean, min, max, standard deviation.
+        See where books agree, where they disagree, and who the outliers are.
+      </p>
+      <p class="text-2xs text-gold/60 mt-3">Outlier detection · Model calibration · Fair odds proxy</p>
+    </a>
+
+    <a href="/guides/odds-comparison" class="relative rounded-lg border border-gold/15 bg-navy-card p-6 hover:border-gold/40 hover:bg-[#0f1f38] transition-all block md:col-span-2 md:max-w-[calc(50%-10px)]">
+      <p class="text-gold font-mono text-2xs uppercase tracking-widest mb-2">Core</p>
+      <h2 class="text-base font-semibold mb-2">Odds Comparison</h2>
+      <p class="text-xs text-muted leading-relaxed">
+        50 sportsbooks in one call. Best line identification for any outcome.
+        Line shopping adds 3–5% annual ROI. The foundation everything else builds on.
+      </p>
+      <p class="text-2xs text-gold/60 mt-3">Free tier available · 24 sports · All markets</p>
+    </a>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div><p class="font-serif text-lg font-bold text-muted/70">TheOdds<span class="text-gold/70">API</span></p><p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p></div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
 </body>
 </html>

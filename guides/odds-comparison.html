@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Odds Comparison API — Best Lines From 50 Sportsbooks | TheOddsAPI</title>
+  <meta name="description" content="Compare odds from 50 sportsbooks in one API call. Find the best line for any bet instantly. Line shopping adds 3-5% ROI annually. 30-second refresh." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/odds-comparison" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/odds-comparison" />
+  <meta property="og:title" content="Odds Comparison API — Best Lines From 50 Sportsbooks | TheOddsAPI" />
+  <meta property="og:description" content="Compare odds from 50 sportsbooks in one API call. Find best lines instantly. Line shopping adds 3-5% ROI." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How much does line shopping improve sports betting ROI?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Line shopping — consistently betting the best available odds across multiple sportsbooks — adds 3-5% to annual ROI for active bettors. On a standard -110 line, getting -108 instead saves you 0.9% per bet. Over 1,000 bets per year, that compounds to thousands of dollars in saved vig or additional edge. The impact is even larger on underdogs and props where book-to-book disagreement is wider. TheOddsAPI shows odds from 50 books in a single response, making it trivial to identify the best line before every bet."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How many sportsbooks does TheOddsAPI compare?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI compares odds from 50 sportsbooks simultaneously including US-regulated books (DraftKings, FanDuel, BetMGM, Caesars, BetRivers, Bovada), sharp international books (Pinnacle, Betfair Exchange), and 42 other global bookmakers. All odds are normalized into American and Decimal formats in a single API response. Odds refresh every 30 seconds across all books and 24 sports."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the best sportsbook for odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No single sportsbook has the best odds on every event. Pinnacle consistently offers the lowest margin (under 2% vig) but doesn't accept US bettors. Among US books, the best line rotates between DraftKings, FanDuel, BetMGM, Caesars, and BetRivers depending on the sport, market, and time. The winning strategy is to have accounts at multiple books and bet the best available line each time. TheOddsAPI surfaces the best line across all 50 books per outcome so you can always identify which book to bet at."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How fast do sportsbook odds change?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sportsbook odds change every few seconds on popular events, especially close to game time. Sharp books like Pinnacle adjust within seconds of new information (injury reports, sharp bets, line moves at other books). Soft books like DraftKings and FanDuel adjust within 1-5 minutes of sharp book moves. This lag between sharp and soft book adjustments is where line shopping edges exist. TheOddsAPI captures odds every 30 seconds from all 50 books, giving you near-real-time visibility into which books are lagging."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://theoddsapi.com"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://theoddsapi.com/guides"},{"@type":"ListItem","position":3,"name":"Odds Comparison","item":"https://theoddsapi.com/guides/odds-comparison"}]}
+  </script>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"Odds Comparison API — Best Lines From 50 Sportsbooks","author":{"@type":"Organization","name":"TheOddsAPI","url":"https://theoddsapi.com"},"publisher":{"@type":"Organization","name":"TheOddsAPI"},"datePublished":"2026-04-30","dateModified":"2026-04-30","mainEntityOfPage":"https://theoddsapi.com/guides/odds-comparison"}
+  </script>
+
+  <script>const LINKS={GET_KEY:'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',DOCS:'https://api.theoddsapi.com/docs'};</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{gold:{DEFAULT:'#D4AF37',dark:'#C9A227'},navy:{DEFAULT:'#0B1426',mid:'#091325',card:'#0D1B30'},muted:'#8294B0',alive:'#4B9E5F'},fontFamily:{serif:['"Playfair Display"','Georgia','serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','"Fira Code"','monospace']}}}};</script>
+  <style>.tk{color:#89b4fa}.ts{color:#a6e3a1}.tn{color:#fab387}.tc{color:#D4AF37}.tm{color:#6b7280;font-style:italic}.top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37 50%,transparent)}.thin-scroll::-webkit-scrollbar{width:4px;height:4px}.thin-scroll::-webkit-scrollbar-track{background:transparent}.thin-scroll::-webkit-scrollbar-thumb{background:rgba(212,175,55,.22);border-radius:4px}@keyframes pulse-live{0%,100%{opacity:1;box-shadow:0 0 8px #4B9E5F}50%{opacity:.35;box-shadow:none}}.live-dot{animation:pulse-live 2s ease-in-out infinite}</style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-V6023YJNQS');</script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<nav class="sticky top-0 z-50 flex items-center justify-between px-5 md:px-14 h-16 bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">TheOdds<span class="text-gold">API</span></a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/arbitrage-detection" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded border border-gold/30 text-gold text-xs font-semibold tracking-wide hover:bg-gold/10 hover:border-gold transition-all">Swagger <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key</a>
+  </div>
+</nav>
+
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a><span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a><span class="mx-2">/</span>
+  <span class="text-muted">Odds Comparison</span>
+</div>
+
+<!-- HERO -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Odds Comparison<br/><span class="text-gold">50 Books, One Call</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Every bet you place at worse-than-best odds costs you money. Across 1,000 bets,
+        that compounds to 3–5% annual ROI left on the table. One API call shows you
+        the best line from 50 books for any outcome.
+      </p>
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Books in one call</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">3–5%</p>
+          <p class="text-xs text-muted mt-1">Annual ROI from line shopping</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">30s</p>
+          <p class="text-xs text-muted mt-1">Refresh cycle</p>
+        </div>
+      </div>
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key — Free Tier Available</a>
+    </div>
+
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Sample — /odds (5 of 50 books shown)</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="tc">"event"</span>: <span class="ts">"Dodgers vs Yankees"</span>,
+  <span class="tc">"market"</span>: <span class="ts">"h2h"</span>,
+  <span class="tc">"bookmakers"</span>: [
+    {<span class="tc">"key"</span>: <span class="ts">"pinnacle"</span>,   <span class="tc">"home"</span>: <span class="tn">-128</span>, <span class="tc">"away"</span>: <span class="tn">+118</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"draftkings"</span>, <span class="tc">"home"</span>: <span class="tn">-135</span>, <span class="tc">"away"</span>: <span class="tn">+115</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"fanduel"</span>,    <span class="tc">"home"</span>: <span class="tn">-130</span>, <span class="tc">"away"</span>: <span class="tn">+112</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"betmgm"</span>,     <span class="tc">"home"</span>: <span class="tn">-132</span>, <span class="tc">"away"</span>: <span class="tn">+115</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"caesars"</span>,    <span class="tc">"home"</span>: <span class="tn">-125</span>, <span class="tc">"away"</span>: <span class="tn">+110</span>}
+  ],
+  <span class="tc">"best_home"</span>: {<span class="tc">"book"</span>: <span class="ts">"caesars"</span>, <span class="tc">"price"</span>: <span class="tn">-125</span>},
+  <span class="tc">"best_away"</span>: {<span class="tc">"book"</span>: <span class="ts">"pinnacle"</span>, <span class="tc">"price"</span>: <span class="tn">+118</span>}
+}</code></pre>
+      <div class="px-4 py-3 border-t border-gold/10 bg-navy-mid/50">
+        <p class="text-2xs text-muted">
+          <span class="text-gold">Best lines:</span> Betting Dodgers? Caesars -125 saves you 7–10pts vs other books.
+          Betting Yankees? Pinnacle +118 gives you 3–8pts more than US retail books.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LINE SHOPPING IMPACT -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">The Math of Line Shopping</h2>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card p-6">
+      <div class="grid md:grid-cols-3 gap-6 text-center mb-6">
+        <div>
+          <p class="text-xs text-muted mb-1">Worst Line (FanDuel)</p>
+          <p class="text-lg font-mono font-bold text-muted">Yankees +110</p>
+          <p class="text-2xs text-muted mt-0.5">Implied: 47.6%</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">Best Line (Pinnacle)</p>
+          <p class="text-lg font-mono font-bold text-gold">Yankees +118</p>
+          <p class="text-2xs text-muted mt-0.5">Implied: 45.9%</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">Savings Per Bet</p>
+          <p class="text-lg font-mono font-bold text-alive">1.7%</p>
+          <p class="text-2xs text-muted mt-0.5">Pure edge from shopping</p>
+        </div>
+      </div>
+      <div class="border-t border-gold/10 pt-4">
+        <p class="text-xs text-muted leading-relaxed">
+          Betting Yankees +110 instead of +118 costs you 1.7% per bet in expected value.
+          Over 500 bets/year at $100/bet, that's $850 in lost edge — just from not checking other books.
+          With 50 books in one API call, finding the best line takes milliseconds instead of 10 minutes of tab-switching.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Find the best line in one call.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python — Best Line Finder</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/sports/baseball_mlb/odds"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
+    params={<span class="ts">"markets"</span>: <span class="ts">"h2h"</span>}
+)
+
+<span class="tk">for</span> event <span class="tk">in</span> response.json():
+    <span class="tk">for</span> outcome_idx, outcome_name <span class="tk">in</span> enumerate(event[<span class="ts">"outcomes"</span>]):
+        prices = [(b[<span class="ts">"key"</span>], b[<span class="ts">"markets"</span>][<span class="tn">0</span>][<span class="ts">"outcomes"</span>][outcome_idx][<span class="ts">"price"</span>])
+                  <span class="tk">for</span> b <span class="tk">in</span> event[<span class="ts">"bookmakers"</span>]]
+        best_book, best_price = max(prices, key=<span class="tk">lambda</span> x: x[<span class="tn">1</span>])
+        worst_book, worst_price = min(prices, key=<span class="tk">lambda</span> x: x[<span class="tn">1</span>])
+
+        spread = best_price - worst_price
+        <span class="tk">if</span> spread > <span class="tn">5</span>:  <span class="tm"># Significant disagreement</span>
+            <span class="tk">print</span>(f<span class="ts">"</span>{event[<span class="ts">'event'</span>]}<span class="ts"> — </span>{outcome_name}<span class="ts">"</span>)
+            <span class="tk">print</span>(f<span class="ts">"  Best: </span>{best_book}<span class="ts"> </span>{best_price}<span class="ts"> | Worst: </span>{worst_book}<span class="ts"> </span>{worst_price}<span class="ts"> | Spread: </span>{spread}<span class="ts">pt"</span>)</code></pre>
+    </div>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
+  <span class="ts">"https://api.theoddsapi.com/v4/sports/baseball_mlb/odds?markets=h2h"</span>,
+  { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
+);
+<span class="tk">const</span> events = <span class="tk">await</span> res.json();
+
+events.forEach(event => {
+  <span class="tk">const</span> prices = event.bookmakers.map(b => ({
+    book: b.key,
+    home: b.markets[0].outcomes[0].price,
+    away: b.markets[0].outcomes[1].price
+  }));
+  <span class="tk">const</span> bestHome = prices.reduce((a, b) => a.home > b.home ? a : b);
+  <span class="tk">const</span> bestAway = prices.reduce((a, b) => a.away > b.away ? a : b);
+  console.log(<span class="ts">`</span>${event.event}<span class="ts">: Home→</span>${bestHome.book} ${bestHome.home}<span class="ts"> | Away→</span>${bestAway.book} ${bestAway.away}<span class="ts">`</span>);
+});</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKS COVERED -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">50 Sportsbooks Included</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">DraftKings</p><p class="text-muted text-2xs">US regulated</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">FanDuel</p><p class="text-muted text-2xs">US regulated</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">BetMGM</p><p class="text-muted text-2xs">US regulated</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">Caesars</p><p class="text-muted text-2xs">US regulated</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium text-gold">Pinnacle</p><p class="text-muted text-2xs">Sharp (intl)</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">Betfair</p><p class="text-muted text-2xs">Exchange (intl)</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">BetRivers</p><p class="text-muted text-2xs">US regulated</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">Bovada</p><p class="text-muted text-2xs">US offshore</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">William Hill</p><p class="text-muted text-2xs">UK/Intl</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">Marathonbet</p><p class="text-muted text-2xs">EU</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">Unibet</p><p class="text-muted text-2xs">EU</p></div>
+      <div class="rounded border border-gold/10 bg-navy-card px-3 py-2"><p class="font-medium">+ 39 more</p><p class="text-muted text-2xs">Global coverage</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/arbitrage-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Detection</h3>
+        <p class="text-xs text-muted">When line disagreements are large enough for cross-book arbs.</p>
+      </a>
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Sharp Lines</h3>
+        <p class="text-xs text-muted">Use Pinnacle as the benchmark when comparing lines.</p>
+      </a>
+      <a href="/guides/consensus-picks" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Market Consensus</h3>
+        <p class="text-xs text-muted">Aggregate statistics — median, mean, std dev across all books.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Comparing Odds</h2>
+    <p class="text-muted text-sm mb-8">Free tier includes odds comparison across NBA and MLB. Pro unlocks all 24 sports and 50 books.</p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key</a>
+      <a href="https://api.theoddsapi.com/docs" class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">Try in Swagger</a>
+    </div>
+  </div>
+</section>
+
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div><p class="font-serif text-lg font-bold text-muted/70">TheOdds<span class="text-gold/70">API</span></p><p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p></div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/arbitrage-detection" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<script>(function(){function track(e,p){if(typeof window.gtag==='function')window.gtag('event',e,p||{})}document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el=>{el.addEventListener('click',()=>track('get_key_click',{page:'odds_comparison_guide'}))});document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el=>{el.addEventListener('click',()=>track('docs_click',{page:'odds_comparison_guide'}))})})();</script>
+</body>
+</html>

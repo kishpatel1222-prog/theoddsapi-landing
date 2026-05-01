@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Betting Consensus API — Market Sentiment Across 50 Books | TheOddsAPI</title>
+  <meta name="description" content="Real-time betting consensus and market sentiment across 50 sportsbooks. Median/mean market center, book distribution, sharp vs public action inference." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/consensus-picks" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/consensus-picks" />
+  <meta property="og:title" content="Betting Consensus API — Market Sentiment Across 50 Books | TheOddsAPI" />
+  <meta property="og:description" content="Real-time betting consensus across 50 sportsbooks. Market center, book distribution, sharp action inference." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is betting consensus in sports betting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Betting consensus represents the aggregate market opinion on a sporting event — where the majority of sportsbooks and bettors have positioned their odds and money. Traditional consensus data shows what percentage of bets are on each side (public sentiment). TheOddsAPI's consensus endpoint goes deeper: it aggregates the actual odds from 50 sportsbooks to show the median and mean market center, how much books disagree, and which books are outliers. When a book's line diverges significantly from the 50-book consensus, that divergence is either an edge (the book is wrong) or information (the book knows something others don't)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you use consensus data to find betting edges?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Consensus data reveals edges in two ways. First, when an individual book's odds differ significantly from the 50-book median, that book is either mispriced (value bet opportunity) or reflecting sharp information not yet in the market. Second, the spread between books (how much they disagree) indicates market uncertainty — wider spreads mean more edge opportunities exist because books haven't converged on a consensus price. TheOddsAPI's /intelligence/consensus endpoint returns median, mean, min, max, and standard deviation of odds across all books for each outcome, making it trivial to identify outliers programmatically."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between public consensus and sharp consensus?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Public consensus reflects where recreational bettors are placing money — typically tracked as percentage of bets on each side. Sharp consensus reflects where professional money is positioned — inferred from line movement, especially at sharp books like Pinnacle. When public consensus is 70% on Team A but the line moves toward Team B, sharp money is loading Team B against public sentiment. TheOddsAPI provides odds-based consensus (what 50 books collectively price the event at) which incorporates both public and sharp action into the aggregate market price."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Should I always bet against the public consensus?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Blindly fading the public is a common misconception. The public is right roughly 50% of the time on average — only slightly worse than a coin flip after accounting for vig. The signal is not consensus alone, but consensus combined with line movement. When 70% of bets are on Team A and the line moves toward Team A, the money is aligned — no edge. When 70% of bets are on Team A but the line moves toward Team B, sharp money is on Team B — that's a potential edge. Use consensus as one input alongside Pinnacle anchoring and value detection, not as a standalone strategy."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://theoddsapi.com"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://theoddsapi.com/guides"},{"@type":"ListItem","position":3,"name":"Consensus Picks","item":"https://theoddsapi.com/guides/consensus-picks"}]}
+  </script>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"Betting Consensus API — Market Sentiment Across 50 Books","author":{"@type":"Organization","name":"TheOddsAPI","url":"https://theoddsapi.com"},"publisher":{"@type":"Organization","name":"TheOddsAPI"},"datePublished":"2026-04-30","dateModified":"2026-04-30","mainEntityOfPage":"https://theoddsapi.com/guides/consensus-picks"}
+  </script>
+
+  <script>const LINKS={GET_KEY:'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',DOCS:'https://api.theoddsapi.com/docs'};</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{gold:{DEFAULT:'#D4AF37',dark:'#C9A227'},navy:{DEFAULT:'#0B1426',mid:'#091325',card:'#0D1B30'},muted:'#8294B0',alive:'#4B9E5F'},fontFamily:{serif:['"Playfair Display"','Georgia','serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','"Fira Code"','monospace']}}}};</script>
+  <style>.tk{color:#89b4fa}.ts{color:#a6e3a1}.tn{color:#fab387}.tc{color:#D4AF37}.tm{color:#6b7280;font-style:italic}.top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37 50%,transparent)}.thin-scroll::-webkit-scrollbar{width:4px;height:4px}.thin-scroll::-webkit-scrollbar-track{background:transparent}.thin-scroll::-webkit-scrollbar-thumb{background:rgba(212,175,55,.22);border-radius:4px}@keyframes pulse-live{0%,100%{opacity:1;box-shadow:0 0 8px #4B9E5F}50%{opacity:.35;box-shadow:none}}.live-dot{animation:pulse-live 2s ease-in-out infinite}</style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-V6023YJNQS');</script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<nav class="sticky top-0 z-50 flex items-center justify-between px-5 md:px-14 h-16 bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">TheOdds<span class="text-gold">API</span></a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/arbitrage-detection" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded border border-gold/30 text-gold text-xs font-semibold tracking-wide hover:bg-gold/10 hover:border-gold transition-all">Swagger <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key</a>
+  </div>
+</nav>
+
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a><span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a><span class="mx-2">/</span>
+  <span class="text-muted">Consensus</span>
+</div>
+
+<!-- HERO -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Market Consensus<br/><span class="text-gold">Across 50 Sportsbooks</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Aggregate statistics from 50 books in one call. Median, mean, min, max, and
+        standard deviation for each outcome. See where books agree, where they disagree,
+        and who the outliers are.
+      </p>
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Books aggregated</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">Real-time</p>
+          <p class="text-xs text-muted mt-1">30s refresh</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">24</p>
+          <p class="text-xs text-muted mt-1">Sports covered</p>
+        </div>
+      </div>
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key — See Consensus</a>
+    </div>
+
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Sample — /intelligence/consensus</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="tc">"event"</span>: <span class="ts">"Lakers vs Warriors"</span>,
+  <span class="tc">"market"</span>: <span class="ts">"h2h"</span>,
+  <span class="tc">"outcomes"</span>: [
+    {
+      <span class="tc">"name"</span>: <span class="ts">"Lakers"</span>,
+      <span class="tc">"median_price"</span>: <span class="tn">-142</span>,
+      <span class="tc">"mean_price"</span>: <span class="tn">-140</span>,
+      <span class="tc">"min_price"</span>: <span class="tn">-155</span>,
+      <span class="tc">"max_price"</span>: <span class="tn">-130</span>,
+      <span class="tc">"std_dev"</span>: <span class="tn">5.8</span>,
+      <span class="tc">"books_reporting"</span>: <span class="tn">47</span>
+    },
+    {
+      <span class="tc">"name"</span>: <span class="ts">"Warriors"</span>,
+      <span class="tc">"median_price"</span>: <span class="tn">+120</span>,
+      <span class="tc">"mean_price"</span>: <span class="tn">+118</span>,
+      <span class="tc">"min_price"</span>: <span class="tn">+108</span>,
+      <span class="tc">"max_price"</span>: <span class="tn">+135</span>,
+      <span class="tc">"std_dev"</span>: <span class="tn">6.2</span>,
+      <span class="tc">"books_reporting"</span>: <span class="tn">47</span>
+    }
+  ]
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO USE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">What Consensus Tells You</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">Median</p>
+        <h3 class="text-sm font-semibold mb-2">The Market Center</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          The middle price across all 50 books. This is the market's best estimate of
+          the true line. If you're getting a price significantly better than median,
+          you're likely on the right side of value.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">Std Dev</p>
+        <h3 class="text-sm font-semibold mb-2">Market Disagreement</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          High standard deviation means books disagree on pricing. Disagreement = opportunity.
+          Low std dev means the market has converged — harder to find edges.
+          Sort by highest std dev to find the most inefficient markets.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">Min / Max</p>
+        <h3 class="text-sm font-semibold mb-2">The Outliers</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          The widest spread between min and max tells you where to bet and where to fade.
+          Max price = best available odds (bet here). Min price = worst odds (avoid this book).
+          A 25-point min/max spread on a two-way market is highly unusual — investigate.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Pull consensus and find disagreement.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python — Sort by Market Disagreement</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/intelligence/consensus"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
+    params={<span class="ts">"sport_key"</span>: <span class="ts">"basketball_nba"</span>}
+)
+
+events = response.json()[<span class="ts">"data"</span>]
+
+<span class="tm"># Sort by highest disagreement (std_dev) — most edge potential</span>
+<span class="tk">for</span> event <span class="tk">in</span> sorted(events, key=<span class="tk">lambda</span> e: max(o[<span class="ts">"std_dev"</span>] <span class="tk">for</span> o <span class="tk">in</span> e[<span class="ts">"outcomes"</span>]), reverse=True)[:5]:
+    <span class="tk">print</span>(f<span class="ts">"</span>{event[<span class="ts">'event'</span>]}<span class="ts">"</span>)
+    <span class="tk">for</span> o <span class="tk">in</span> event[<span class="ts">"outcomes"</span>]:
+        spread = o[<span class="ts">"max_price"</span>] - o[<span class="ts">"min_price"</span>]
+        <span class="tk">print</span>(f<span class="ts">"  </span>{o[<span class="ts">'name'</span>]}<span class="ts">: median </span>{o[<span class="ts">'median_price'</span>]}<span class="ts">, spread </span>{spread}<span class="ts">pt, σ=</span>{o[<span class="ts">'std_dev'</span>]}<span class="ts">"</span>)</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">How Operators Use Consensus</h2>
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Model Calibration</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Use the 50-book consensus as a benchmark. If your model disagrees with consensus
+          by more than 3%, investigate. Either your model sees something the market doesn't,
+          or your model is wrong. Consensus keeps you calibrated.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Outlier Detection</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Sort events by standard deviation. High σ = books disagree = edge opportunities.
+          Focus your energy on events where the market hasn't converged.
+          Low σ events are efficient — skip them.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Fair Odds Proxy</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          If you don't have a proprietary model, the 50-book median is your best proxy
+          for true probability. Bet any book offering significantly better than median.
+          Combined with /intelligence/fair-odds (vig-removed), you get two independent
+          fair-price signals.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/value-bets" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Value Bet Detection</h3>
+        <p class="text-xs text-muted">Uses vig-removed consensus as the fair price baseline.</p>
+      </a>
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Sharp Lines</h3>
+        <p class="text-xs text-muted">Pinnacle within the consensus = sharp anchor.</p>
+      </a>
+      <a href="/guides/arbitrage-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Detection</h3>
+        <p class="text-xs text-muted">When consensus outliers are extreme enough for cross-book arbs.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">See the Full Market Picture</h2>
+    <p class="text-muted text-sm mb-8">Business plan includes consensus, fair odds, value detection, edge scanning, and arbitrage across 24 sports.</p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key</a>
+      <a href="https://api.theoddsapi.com/docs" class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">Try in Swagger</a>
+    </div>
+  </div>
+</section>
+
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div><p class="font-serif text-lg font-bold text-muted/70">TheOdds<span class="text-gold/70">API</span></p><p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p></div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/arbitrage-detection" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<script>(function(){function track(e,p){if(typeof window.gtag==='function')window.gtag('event',e,p||{})}document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el=>{el.addEventListener('click',()=>track('get_key_click',{page:'consensus_guide'}))});document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el=>{el.addEventListener('click',()=>track('docs_click',{page:'consensus_guide'}))})})();</script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player Props API — Edge Detection Across NBA, MLB, NHL | TheOddsAPI</title>
+  <meta name="description" content="Player prop odds from 50 sportsbooks with edge detection. Points, rebounds, assists, strikeouts, goals. Prop markets are 2-4x softer than spreads." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/player-props" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/player-props" />
+  <meta property="og:title" content="Player Props API — Edge Detection Across NBA, MLB, NHL | TheOddsAPI" />
+  <meta property="og:description" content="Player prop odds from 50 sportsbooks with edge detection. Prop markets are 2-4x softer than spreads." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Player Props API — Edge Detection | TheOddsAPI" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why are player prop markets softer than game lines?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Player prop markets are softer (less efficient) than game lines for three reasons. First, sharp bettors focus their volume on spreads and totals where limits are higher, leaving props with less sharp money correcting them. Second, sportsbooks use simpler models for props — player projections vary widely between books, creating 5-10 point disagreements on the same prop. Third, limits on props are lower ($500-$2000 typical vs $10K+ on spreads), so books have less incentive to sharpen them quickly. This creates 2-4x more edge density in props compared to game lines."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which player prop markets does TheOddsAPI cover?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI covers player props for NBA (points, rebounds, assists, threes, PRA, steals, blocks, turnovers), MLB (pitcher strikeouts, batter hits, home runs, RBIs, total bases, runs), and NHL (goals, assists, shots on goal, saves). Props are pulled from 50 sportsbooks including Pinnacle, DraftKings, FanDuel, BetMGM, Caesars, and others. Each prop includes odds from all available books for cross-book comparison and edge detection."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I find edge in player props using an API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pull prop odds from multiple sportsbooks and compare. When one book offers significantly better odds than the consensus on the same prop (e.g., Over 24.5 points at +105 when most books have it at -115), that's a detected edge. TheOddsAPI normalizes prop odds from 50 books into a single response, making it possible to identify these disagreements programmatically. The key metrics: consensus implied probability vs. individual book implied probability. A 3%+ difference on a prop is a strong signal because prop markets are less efficient than game lines."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use Pinnacle lines for player prop edge detection?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Pinnacle offers player props on NBA, MLB, and NHL with their characteristically low margins. While Pinnacle's prop limits are lower than their game line limits, their prices still reflect sharp-book efficiency. TheOddsAPI includes Pinnacle prop lines alongside all other books, letting you use Pinnacle as the sharp baseline for prop edge detection — the same methodology that works on game lines works even better on the softer prop markets."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://theoddsapi.com"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://theoddsapi.com/guides"},{"@type":"ListItem","position":3,"name":"Player Props","item":"https://theoddsapi.com/guides/player-props"}]}
+  </script>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"Player Props API — Edge Detection Across NBA, MLB, NHL","author":{"@type":"Organization","name":"TheOddsAPI","url":"https://theoddsapi.com"},"publisher":{"@type":"Organization","name":"TheOddsAPI"},"datePublished":"2026-04-30","dateModified":"2026-04-30","mainEntityOfPage":"https://theoddsapi.com/guides/player-props"}
+  </script>
+
+  <script>const LINKS={GET_KEY:'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',DOCS:'https://api.theoddsapi.com/docs',API_BASE:'https://api.theoddsapi.com',DOMAIN:'https://theoddsapi.com'};</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{gold:{DEFAULT:'#D4AF37',dark:'#C9A227'},navy:{DEFAULT:'#0B1426',mid:'#091325',card:'#0D1B30'},muted:'#8294B0',alive:'#4B9E5F'},fontFamily:{serif:['"Playfair Display"','Georgia','serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','"Fira Code"','monospace']}}}};</script>
+  <style>
+    .tk{color:#89b4fa}.ts{color:#a6e3a1}.tn{color:#fab387}.tc{color:#D4AF37}.tm{color:#6b7280;font-style:italic}
+    .top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37 50%,transparent)}
+    .thin-scroll::-webkit-scrollbar{width:4px;height:4px}.thin-scroll::-webkit-scrollbar-track{background:transparent}.thin-scroll::-webkit-scrollbar-thumb{background:rgba(212,175,55,.22);border-radius:4px}
+    @keyframes pulse-live{0%,100%{opacity:1;box-shadow:0 0 8px #4B9E5F}50%{opacity:.35;box-shadow:none}}.live-dot{animation:pulse-live 2s ease-in-out infinite}
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-V6023YJNQS');</script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 flex items-center justify-between px-5 md:px-14 h-16 bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">TheOdds<span class="text-gold">API</span></a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/arbitrage-detection" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded border border-gold/30 text-gold text-xs font-semibold tracking-wide hover:bg-gold/10 hover:border-gold transition-all">Swagger <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key</a>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a><span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a><span class="mx-2">/</span>
+  <span class="text-muted">Player Props</span>
+</div>
+
+<!-- HERO -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Player Props<br/><span class="text-gold">Edge Detection</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Prop markets are 2–4x softer than game lines. Less sharp money, wider disagreements
+        between books, slower adjustments. We pull props from 50 books and surface where
+        they disagree the most.
+      </p>
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">3</p>
+          <p class="text-xs text-muted mt-1">Sports (NBA, MLB, NHL)</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Books compared</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">2–4x</p>
+          <p class="text-xs text-muted mt-1">Softer than spreads</p>
+        </div>
+      </div>
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key — Business Tier</a>
+      <p class="text-2xs text-muted mt-2">Player props available on Business plan ($99/mo)</p>
+    </div>
+
+    <!-- Sample output -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Sample — Player Prop Odds</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="tc">"event"</span>: <span class="ts">"Knicks vs Celtics"</span>,
+  <span class="tc">"player"</span>: <span class="ts">"Jalen Brunson"</span>,
+  <span class="tc">"prop"</span>: <span class="ts">"points"</span>,
+  <span class="tc">"line"</span>: <span class="tn">26.5</span>,
+  <span class="tc">"bookmakers"</span>: [
+    {<span class="tc">"key"</span>: <span class="ts">"pinnacle"</span>,   <span class="tc">"over"</span>: <span class="tn">-118</span>, <span class="tc">"under"</span>: <span class="tn">+102</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"draftkings"</span>, <span class="tc">"over"</span>: <span class="tn">-110</span>, <span class="tc">"under"</span>: <span class="tn">-110</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"fanduel"</span>,    <span class="tc">"over"</span>: <span class="tn">-105</span>, <span class="tc">"under"</span>: <span class="tn">-115</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"betmgm"</span>,     <span class="tc">"over"</span>: <span class="tn">-108</span>, <span class="tc">"under"</span>: <span class="tn">-112</span>},
+    {<span class="tc">"key"</span>: <span class="ts">"caesars"</span>,    <span class="tc">"over"</span>: <span class="tn">+100</span>, <span class="tc">"under"</span>: <span class="tn">-120</span>}
+  ]
+}</code></pre>
+      <div class="px-4 py-3 border-t border-gold/10 bg-navy-mid/50">
+        <p class="text-2xs text-muted">
+          <span class="text-gold">Edge detected:</span> Pinnacle has Over at -118 (implied 54.1%).
+          Caesars offering Over at +100 (implied 50.0%). That's a 4.1% gap — Caesars is underpricing the over relative to the sharp market.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY PROPS ARE SOFT -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">Why Prop Markets Have More Edge</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">01</p>
+        <h3 class="text-sm font-semibold mb-2">Less Sharp Money</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Sharp bettors focus volume on game lines where limits are $10K+.
+          Prop limits are typically $500–$2K. Less sharp correction = more inefficiency persists.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">02</p>
+        <h3 class="text-sm font-semibold mb-2">Model Disagreement</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Game lines converge — all books agree within 1–2 points. Props diverge — books disagree
+          by 5–10 points on the same player because each uses different projection models.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">03</p>
+        <h3 class="text-sm font-semibold mb-2">Slower Adjustment</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Injury news, lineup changes, and matchup data affect props heavily but books
+          adjust them 10–30 minutes slower than game lines. Information edge window is wider.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROP MARKETS COVERED -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Markets Available</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">NBA</h3>
+        <ul class="text-xs text-muted leading-relaxed space-y-1.5">
+          <li>Points</li>
+          <li>Rebounds</li>
+          <li>Assists</li>
+          <li>Three-pointers made</li>
+          <li>PRA (Points + Rebounds + Assists)</li>
+          <li>Steals, Blocks, Turnovers</li>
+        </ul>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">MLB</h3>
+        <ul class="text-xs text-muted leading-relaxed space-y-1.5">
+          <li>Pitcher strikeouts</li>
+          <li>Batter hits</li>
+          <li>Home runs</li>
+          <li>RBIs</li>
+          <li>Total bases</li>
+          <li>Runs scored</li>
+        </ul>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">NHL</h3>
+        <ul class="text-xs text-muted leading-relaxed space-y-1.5">
+          <li>Goals</li>
+          <li>Assists</li>
+          <li>Shots on goal</li>
+          <li>Saves (goalie)</li>
+          <li>Points (goals + assists)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE EXAMPLE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Pull prop odds and find where books disagree.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python — Find Prop Edges</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+<span class="tm"># Pull NBA player props</span>
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/sports/basketball_nba/events"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
+    params={<span class="ts">"markets"</span>: <span class="ts">"player_points,player_rebounds,player_assists"</span>}
+)
+
+events = response.json()
+
+<span class="tk">for</span> event <span class="tk">in</span> events:
+    <span class="tk">for</span> prop <span class="tk">in</span> event.get(<span class="ts">"props"</span>, []):
+        prices = [b[<span class="ts">"over"</span>] <span class="tk">for</span> b <span class="tk">in</span> prop[<span class="ts">"bookmakers"</span>]]
+        best_price = max(prices)
+        avg_price = sum(prices) / len(prices)
+
+        <span class="tm"># Flag if best book is 5+ pts better than average</span>
+        <span class="tk">if</span> best_price - avg_price > <span class="tn">5</span>:
+            <span class="tk">print</span>(f<span class="ts">"EDGE: </span>{prop[<span class="ts">'player'</span>]}<span class="ts"> </span>{prop[<span class="ts">'prop'</span>]}<span class="ts"> Over </span>{prop[<span class="ts">'line'</span>]}<span class="ts">"</span>)
+            <span class="tk">print</span>(f<span class="ts">"  Best: </span>{best_price}<span class="ts"> | Avg: </span>{avg_price:.0f}<span class="ts">"</span>)</code></pre>
+    </div>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
+  <span class="ts">"https://api.theoddsapi.com/v4/sports/basketball_nba/events?markets=player_points"</span>,
+  { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
+);
+<span class="tk">const</span> events = <span class="tk">await</span> res.json();
+
+events.flatMap(e => e.props || []).forEach(prop => {
+  <span class="tk">const</span> prices = prop.bookmakers.map(b => b.over);
+  <span class="tk">const</span> best = Math.max(...prices);
+  <span class="tk">const</span> avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+  <span class="tk">if</span> (best - avg > 5) console.log(<span class="ts">`</span>${prop.player}<span class="ts"> </span>${prop.prop}<span class="ts"> O</span>${prop.line}<span class="ts">: best </span>${best}<span class="ts"> vs avg </span>${avg.toFixed(0)}<span class="ts">`</span>);
+});</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- PROP EDGE STRATEGIES -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Prop-Specific Edge Strategies</h2>
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Injury Sensitivity</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          When a key player is ruled out, game lines adjust within minutes. Prop lines for
+          teammates (who absorb usage) adjust 10–30 minutes later. Early news = prop edge window.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Correlation Plays</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Game total moves down → player point props should follow but often lag.
+          Team blowout → bench minutes expand, starter props crash.
+          These correlations create predictable edge windows in prop markets.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle as Prop Baseline</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Pinnacle offers props with lower margins than DraftKings/FanDuel. Use Pinnacle's prop
+          price as your baseline — when US books disagree by 5+ points, that's a signal.
+          Same methodology as game-line edges, just higher frequency in props.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Volume Advantage</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          A typical NBA night has 10 games × 10 players × 5 prop types = 500 prop markets.
+          Even if only 5% show meaningful edges, that's 25 actionable opportunities per night.
+          Props are a volume game — scan everything, bet the outliers.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/value-bets" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Value Bet Detection</h3>
+        <p class="text-xs text-muted">Same +EV methodology applied to game lines.</p>
+      </a>
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Sharp Lines</h3>
+        <p class="text-xs text-muted">Use Pinnacle props as your sharp baseline.</p>
+      </a>
+      <a href="/guides/historical-odds-backtesting" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Historical Odds</h3>
+        <p class="text-xs text-muted">Backtest prop strategies against archived data.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Scanning Props</h2>
+    <p class="text-muted text-sm mb-8">Business plan includes player props, edge detection, and the full intelligence layer across 24 sports.</p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request" class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">Get API Key</a>
+      <a href="https://api.theoddsapi.com/docs" class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">Try in Swagger</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">TheOdds<span class="text-gold/70">API</span></p>
+    <p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/arbitrage-detection" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<script>
+(function(){function track(e,p){if(typeof window.gtag==='function')window.gtag('event',e,p||{})}
+document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el=>{el.addEventListener('click',()=>track('get_key_click',{page:'player_props_guide'}))});
+document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el=>{el.addEventListener('click',()=>track('docs_click',{page:'player_props_guide'}))});
+})();
+</script>
+</body>
+</html>
