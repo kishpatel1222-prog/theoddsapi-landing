@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pinnacle Sharp Lines — Edge Detection vs Soft Books | TheOddsAPI</title>
+  <meta name="description" content="Pinnacle sets the sharpest odds in sports betting. Use Pinnacle-anchored edge detection to find where soft sportsbooks lag. 50-book comparison, 30-second refresh." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/sharp-lines-pinnacle" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/sharp-lines-pinnacle" />
+  <meta property="og:title" content="Pinnacle Sharp Lines — Edge Detection vs Soft Books | TheOddsAPI" />
+  <meta property="og:description" content="Pinnacle sets the sharpest odds in sports betting. Use Pinnacle-anchored edge detection to find where soft sportsbooks lag." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pinnacle Sharp Lines — Edge Detection | TheOddsAPI" />
+  <meta name="twitter:description" content="Use Pinnacle-anchored edge detection to find where soft sportsbooks lag. 50-book comparison." />
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why is Pinnacle considered the sharpest sportsbook?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pinnacle operates a low-margin model (under 2% vig on major markets) and accepts unlimited bet sizes from all bettors, including professionals. This means their lines are constantly tested by the sharpest money in the world. When professional bettors disagree with Pinnacle's price, they bet until the line moves. The result: Pinnacle's closing line is the most efficient price in the market and the gold standard for measuring betting edge. By contrast, soft books like DraftKings, FanDuel, and Caesars charge 5–8% vig, limit winning bettors, and adjust lines more slowly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does Pinnacle-anchored edge detection mean?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pinnacle-anchored edge detection uses Pinnacle's line as the baseline (the 'true' price) and compares all other sportsbooks against it. When a soft book like DraftKings offers odds that differ from Pinnacle by more than the vig margin, that difference is a detected edge. TheOddsAPI compares 49 other books against Pinnacle automatically and surfaces these edges via the /intelligence/edges endpoint. A 3-point gap between Pinnacle and a soft book on a major market is a strong signal. A 1-point gap may be noise within the vig."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I bet on Pinnacle from the United States?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pinnacle does not accept US-based bettors directly. However, Pinnacle's lines are still the most valuable data point for US bettors. By comparing Pinnacle's sharp line against US-regulated books (DraftKings, FanDuel, BetMGM, Caesars, BetRivers), you can identify where US books are mispriced relative to the global efficient market. TheOddsAPI includes Pinnacle in every odds response alongside all US books, letting you use Pinnacle as your edge baseline even though you bet on US-legal platforms."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much edge is needed to profit long-term in sports betting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Professional sports bettors target 1–3% edge after vig on each bet. Over 1,000+ bets, even 1% consistent edge compounds into significant returns. The key metric is Closing Line Value (CLV): if you consistently bet at prices better than where Pinnacle closes, you have a verified edge. TheOddsAPI's edge detection identifies opportunities where soft books differ from Pinnacle by 2–7 points — representing 1–4% potential edge before execution costs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between sharp and soft sportsbooks?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sharp sportsbooks (Pinnacle, CRIS, Circa) accept large bets from professional bettors without limiting accounts. Their odds reflect the true market price because sharp money constantly corrects them. Soft sportsbooks (DraftKings, FanDuel, BetMGM, Caesars) target recreational bettors, charge higher margins (5–8% vig), limit or ban winning accounts, and adjust lines more slowly. The gap between sharp and soft book prices is where edges exist. TheOddsAPI includes both sharp and soft books in every response — Pinnacle as the anchor plus 49 others for comparison."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://theoddsapi.com/guides"},
+      {"@type": "ListItem", "position": 3, "name": "Pinnacle Sharp Lines", "item": "https://theoddsapi.com/guides/sharp-lines-pinnacle"}
+    ]
+  }
+  </script>
+
+  <!-- Structured data: Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Pinnacle Sharp Lines — Edge Detection vs Soft Books",
+    "description": "Pinnacle sets the sharpest odds in sports betting. Use Pinnacle-anchored edge detection to find where soft sportsbooks lag.",
+    "author": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "publisher": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "datePublished": "2026-04-30",
+    "dateModified": "2026-04-30",
+    "mainEntityOfPage": "https://theoddsapi.com/guides/sharp-lines-pinnacle"
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    .live-dot { animation: pulse-live 2s ease-in-out infinite; }
+  </style>
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/arbitrage-detection" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide
+              hover:bg-gold-dark transition-all">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════ BREADCRUMB ═══════════════ -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a>
+  <span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a>
+  <span class="mx-2">/</span>
+  <span class="text-muted">Pinnacle Sharp Lines</span>
+</div>
+
+<!-- ═══════════════ HERO: LEAD WITH OUTPUT ═══════════════ -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+    <!-- Left: headline + proof -->
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Pinnacle Sharp Lines<br/>
+        <span class="text-gold">as Your Edge Baseline</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Pinnacle charges under 2% vig and accepts unlimited sharp action.
+        Their line is the market's true price. Every soft book that disagrees
+        with Pinnacle is a potential edge. We surface those disagreements automatically.
+      </p>
+
+      <!-- Proof metrics -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">&lt;2%</p>
+          <p class="text-xs text-muted mt-1">Pinnacle vig</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">49</p>
+          <p class="text-xs text-muted mt-1">Books compared against</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">2–7pt</p>
+          <p class="text-xs text-muted mt-1">Typical soft book gap</p>
+        </div>
+      </div>
+
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key — See Pinnacle Edges
+      </a>
+    </div>
+
+    <!-- Right: LIVE EXAMPLE OUTPUT -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Sample — /intelligence/edges</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="tc">"sport_key"</span>: <span class="ts">"americanfootball_nfl"</span>,
+  <span class="tc">"event"</span>: <span class="ts">"Chiefs vs Ravens"</span>,
+  <span class="tc">"market"</span>: <span class="ts">"h2h"</span>,
+  <span class="tc">"outcome"</span>: <span class="ts">"Ravens"</span>,
+  <span class="tc">"pinnacle_price"</span>: <span class="tn">+138</span>,
+  <span class="tc">"best_soft_price"</span>: <span class="tn">+155</span>,
+  <span class="tc">"best_soft_book"</span>: <span class="ts">"caesars"</span>,
+  <span class="tc">"edge_points"</span>: <span class="tn">5.2</span>,
+  <span class="tc">"pinnacle_implied"</span>: <span class="tn">0.420</span>,
+  <span class="tc">"soft_implied"</span>: <span class="tn">0.392</span>,
+  <span class="tc">"edge_pct"</span>: <span class="tn">2.8</span>,
+  <span class="tc">"detected_at"</span>: <span class="ts">"2026-04-30T18:42:11Z"</span>
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SHARP VS SOFT EXPLAINED ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Sharp vs. Soft Books</h2>
+
+    <div class="rounded-lg border border-gold/20 overflow-hidden">
+      <table class="w-full text-xs">
+        <thead class="bg-navy-mid border-b border-gold/10">
+          <tr>
+            <th class="text-left px-4 py-3 text-muted font-medium"></th>
+            <th class="text-left px-4 py-3 text-gold font-semibold">Sharp (Pinnacle)</th>
+            <th class="text-left px-4 py-3 text-muted font-medium">Soft (DK, FD, BetMGM)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gold/[.06]">
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Vig (margin)</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">1.5–2%</td>
+            <td class="px-4 py-3 text-muted">5–8%</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Bet limits</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Unlimited (no account restrictions)</td>
+            <td class="px-4 py-3 text-muted">$500–$5K (winners limited/banned)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Line adjustment speed</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Seconds (sharp money corrects instantly)</td>
+            <td class="px-4 py-3 text-muted">Minutes to hours (retail audience, slow algos)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Closing line efficiency</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Gold standard — the true market price</td>
+            <td class="px-4 py-3 text-muted">Lagging — copies Pinnacle with delay</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Customer profile</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Professional bettors, syndicates</td>
+            <td class="px-4 py-3 text-muted">Recreational bettors, casual fans</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Your opportunity</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Use as baseline — this IS the price</td>
+            <td class="px-4 py-3 text-muted">Bet here when they lag Pinnacle</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOW EDGE DETECTION WORKS ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">How Pinnacle-Anchored Edge Detection Works</h2>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">01</p>
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Line Captured</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Every 30 seconds, Pinnacle's current price is captured as the sharp baseline.
+          This is the line that unlimited professional money has already priced correctly.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">02</p>
+        <h3 class="text-sm font-semibold mb-2">49 Books Compared</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Every other book in the feed is compared against the Pinnacle baseline.
+          The difference (in points) between Pinnacle and each soft book is the raw edge.
+          Edges above 2 points on major markets are signal.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">03</p>
+        <h3 class="text-sm font-semibold mb-2">Edges Surfaced</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          <code class="text-gold/80">GET /intelligence/edges</code> returns all detected edges
+          with Pinnacle price, soft book price, point gap, and implied probability difference.
+          Filter by sport, minimum edge, or specific books.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ REAL EXAMPLE: READING AN EDGE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Reading an Edge</h2>
+    <p class="text-muted text-sm mb-8">A concrete example of what Pinnacle-anchored detection looks like in practice.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card p-6">
+      <p class="text-xs font-mono text-muted mb-4">NBA — Knicks vs Celtics — Moneyline</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
+        <div>
+          <p class="text-xs text-muted mb-1">Pinnacle</p>
+          <p class="text-sm font-mono font-bold text-[#E8EEF7]">Knicks +142</p>
+          <p class="text-2xs text-muted mt-0.5">Implied: 41.3%</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">DraftKings</p>
+          <p class="text-sm font-mono font-bold text-[#E8EEF7]">Knicks +145</p>
+          <p class="text-2xs text-muted mt-0.5">3pt gap</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">Caesars</p>
+          <p class="text-sm font-mono font-bold text-gold">Knicks +155</p>
+          <p class="text-2xs text-muted mt-0.5">13pt gap — edge</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">BetMGM</p>
+          <p class="text-sm font-mono font-bold text-[#E8EEF7]">Knicks +140</p>
+          <p class="text-2xs text-muted mt-0.5">Already adjusted</p>
+        </div>
+      </div>
+
+      <div class="border-t border-gold/10 pt-4 space-y-3">
+        <p class="text-xs text-muted leading-relaxed">
+          <span class="text-gold font-semibold">Signal:</span> Caesars is offering Knicks +155 while Pinnacle has them at +142.
+          That's a 13-point gap. Caesars is pricing the Knicks as a 39.2% implied probability
+          while Pinnacle (the efficient market) says 41.3%. You're getting 2.1% more value at Caesars
+          than the true price suggests.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          <span class="text-gold font-semibold">Action:</span> Bet Knicks +155 at Caesars. If this type of edge
+          repeats over 500+ bets, you'll show positive CLV and long-term profit.
+          DraftKings at +145 is only 3 points off — noise, not signal. BetMGM already adjusted.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CODE EXAMPLE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Pull Pinnacle-anchored edges and filter for actionable signals.</p>
+
+    <!-- Python -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/intelligence/edges"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
+    params={<span class="ts">"sport_key"</span>: <span class="ts">"basketball_nba"</span>}
+)
+
+edges = response.json()[<span class="ts">"data"</span>]
+
+<span class="tm"># Filter for edges worth acting on (3+ points off Pinnacle)</span>
+<span class="tk">for</span> edge <span class="tk">in</span> edges:
+    <span class="tk">if</span> edge[<span class="ts">"edge_points"</span>] >= <span class="tn">3.0</span>:
+        <span class="tk">print</span>(f<span class="ts">"</span>{edge[<span class="ts">'event'</span>]}<span class="ts"> — </span>{edge[<span class="ts">'outcome'</span>]}<span class="ts">"</span>)
+        <span class="tk">print</span>(f<span class="ts">"  Pinnacle: </span>{edge[<span class="ts">'pinnacle_price'</span>]}<span class="ts">"</span>)
+        <span class="tk">print</span>(f<span class="ts">"  </span>{edge[<span class="ts">'best_soft_book'</span>]}<span class="ts">: </span>{edge[<span class="ts">'best_soft_price'</span>]}<span class="ts"> (+</span>{edge[<span class="ts">'edge_points'</span>]}<span class="ts">pt edge)"</span>)</code></pre>
+    </div>
+
+    <!-- JavaScript -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
+  <span class="ts">"https://api.theoddsapi.com/v4/intelligence/edges?sport_key=basketball_nba"</span>,
+  { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
+);
+
+<span class="tk">const</span> { data: edges } = <span class="tk">await</span> res.json();
+
+<span class="tm">// Only show edges 3+ points off Pinnacle</span>
+edges
+  .filter(e => e.edge_points >= <span class="tn">3.0</span>)
+  .forEach(e => console.log(
+    <span class="ts">`</span>${e.event}<span class="ts">: </span>${e.outcome}<span class="ts"> @ </span>${e.best_soft_price}<span class="ts"> (</span>${e.best_soft_book}<span class="ts">) — </span>${e.edge_points}<span class="ts">pt vs Pinnacle`</span>
+  ));</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WHEN EDGES ARE REAL ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">When Is an Edge Real</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Not every Pinnacle gap is actionable. Context determines whether the
+      disagreement is signal or noise.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">Strong Signals</h3>
+        <ul class="text-xs text-muted leading-relaxed space-y-2">
+          <li>3+ point gap on h2h or spread markets (major sports)</li>
+          <li>Pinnacle line has been stable for 30+ minutes (not mid-move)</li>
+          <li>Soft book hasn't adjusted in last 2 refreshes (confirmed lag)</li>
+          <li>Multiple soft books show similar gap (market-wide mispricing)</li>
+          <li>Game is 12+ hours away (more time for soft books to be wrong)</li>
+        </ul>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-muted mb-3">Noise</h3>
+        <ul class="text-xs text-muted leading-relaxed space-y-2">
+          <li>1–2 point gap (within normal vig variation)</li>
+          <li>Pinnacle line just moved (soft books will catch up in minutes)</li>
+          <li>Prop or alternate market (lower limits, wider spreads normal)</li>
+          <li>Single book outlier (could be limit-restricted or closed market)</li>
+          <li>Game starts in under 30 minutes (limits drop, lines tighten)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CLV CONNECTION ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Pinnacle Closing Line = Your Scorecard</h2>
+    <p class="text-muted text-sm mb-6 max-w-2xl">
+      The ultimate measure of whether you have an edge: did you consistently bet at
+      prices better than where Pinnacle closed?
+    </p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card p-6">
+      <div class="grid md:grid-cols-3 gap-6 text-center">
+        <div>
+          <p class="text-xs text-muted mb-2">Your Average Bet Price</p>
+          <p class="text-xl font-mono font-bold text-[#E8EEF7]">+148</p>
+          <p class="text-2xs text-muted mt-1">Across 500 bets</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-2">Pinnacle Closing Average</p>
+          <p class="text-xl font-mono font-bold text-[#E8EEF7]">+140</p>
+          <p class="text-2xs text-muted mt-1">Market-efficient close</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-2">Your CLV</p>
+          <p class="text-xl font-mono font-bold text-alive">+1.8%</p>
+          <p class="text-2xs text-muted mt-1">Verified edge</p>
+        </div>
+      </div>
+      <p class="text-xs text-muted mt-6 pt-4 border-t border-gold/10 leading-relaxed">
+        If your average bet price is consistently better than Pinnacle's close across
+        500+ bets, you have a verified edge. This is the standard professional bettors
+        and syndicates use. It's not about win rate — it's about consistently getting
+        better-than-efficient prices.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PRACTICAL DISCIPLINE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Operational Reality</h2>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Account Management</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Soft books limit winning accounts. Professional edge bettors rotate across
+          multiple books, size bets below detection thresholds, mix recreational and
+          sharp action, and diversify across sports. Expect to get limited —
+          the question is how long you can operate before it happens.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Volume Over Size</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          A 2% edge on one bet is noise. A 2% edge across 1,000 bets is signal.
+          Use Pinnacle edges to identify volume opportunities — many small +EV bets
+          across multiple books and sports compound into consistent returns.
+          Don't oversize any single position.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Timing Matters</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Edges are widest when Pinnacle moves first and soft books haven't adjusted.
+          This window is typically 30 seconds to 5 minutes. TheOddsAPI refreshes every
+          30 seconds — act on edges within 1–2 minutes of detection for best execution.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ RELATED GUIDES ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/arbitrage-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Detection</h3>
+        <p class="text-xs text-muted">When Pinnacle edges are large enough to cover both sides profitably.</p>
+      </a>
+      <a href="/guides/value-bets" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Value Bet Detection</h3>
+        <p class="text-xs text-muted">Consensus-based +EV detection — a complementary signal to Pinnacle edges.</p>
+      </a>
+      <a href="/guides/historical-odds-backtesting" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Historical Odds</h3>
+        <p class="text-xs text-muted">Backtest your Pinnacle edge strategy against real historical data.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FINAL CTA ═══════════════ -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Detecting Pinnacle Edges</h2>
+    <p class="text-muted text-sm mb-8">
+      Business plan includes the full intelligence layer — edge detection,
+      fair odds, consensus, and arbitrage across 24 sports.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+      <a href="https://api.theoddsapi.com/docs"
+         class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">
+        Try in Swagger
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">
+      TheOdds<span class="text-gold/70">API</span>
+    </p>
+    <p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/arbitrage-detection" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<!-- ═══════════════ GA4 EVENT TRACKING ═══════════════ -->
+<script>
+(function() {
+  function track(event, params) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', event, params || {});
+    }
+  }
+  document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el => {
+    el.addEventListener('click', () => track('get_key_click', { page: 'sharp_lines_guide' }));
+  });
+  document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el => {
+    el.addEventListener('click', () => track('docs_click', { page: 'sharp_lines_guide' }));
+  });
+})();
+</script>
+
+</body>
+</html>

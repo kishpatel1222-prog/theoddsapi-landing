@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Value Bet Detection — Find +EV Overlay Across 50 Books | TheOddsAPI</title>
+  <meta name="description" content="Detect value bets where sportsbook odds exceed true probability. Consensus-based +EV detection across 50 books. Vig-removed fair odds as your baseline." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/value-bets" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/value-bets" />
+  <meta property="og:title" content="Value Bet Detection — Find +EV Overlay Across 50 Books | TheOddsAPI" />
+  <meta property="og:description" content="Detect value bets where sportsbook odds exceed true probability. Consensus-based +EV detection across 50 books." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="TheOddsAPI" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Value Bet Detection — +EV Across 50 Books | TheOddsAPI" />
+  <meta name="twitter:description" content="Detect value bets where sportsbook odds exceed true probability. Consensus-based detection." />
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a value bet in sports betting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A value bet exists when a sportsbook offers odds that imply a lower probability than the true probability of an outcome occurring. For example, if the true probability of Team A winning is 55% but a book offers odds implying only 50% (even money), that's a +5% value overlay. Over hundreds of bets, consistently finding and betting +EV (positive expected value) opportunities compounds into long-term profit regardless of individual bet outcomes. The challenge is determining 'true probability' — TheOddsAPI uses vig-removed consensus across 50 books including Pinnacle as a proxy for the true market probability."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does TheOddsAPI detect value bets?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI calculates vig-removed fair odds by aggregating prices from 50 sportsbooks including Pinnacle and other sharp books. This consensus becomes the 'true probability' baseline. When any individual book offers odds that are better than this fair price, the /intelligence/value endpoint flags it as a value bet. The endpoint returns the fair probability, the offered price, the edge percentage, and which book is offering the value. This approach works because the consensus of 50 books (especially including sharp books) is a strong estimator of true probability."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between value betting and arbitrage betting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Arbitrage betting covers all outcomes across different books to guarantee profit regardless of result — it's risk-free but opportunities are rare and close in seconds. Value betting identifies single bets where the offered price exceeds the true probability — you bet one side and accept variance on individual bets, but profit over large samples. Arbitrage requires speed and capital on both sides. Value betting requires an accurate probability model and volume. TheOddsAPI supports both: /intelligence/arbitrage for risk-free arbs, and /intelligence/value for +EV overlay detection."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much edge do you need for value betting to be profitable?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Professional value bettors target 2–5% edge above the vig-removed fair price. At 2% edge with flat staking, you need roughly 500–1000 bets to confirm your edge is real (not variance). At 5% edge, 200–300 bets is sufficient. The key is sample size — individual bets lose 40–50% of the time even with +EV. Kelly criterion or fractional Kelly staking (typically 25–50% Kelly) optimizes bankroll growth while managing drawdown risk. TheOddsAPI's /intelligence/value endpoint surfaces opportunities with edge percentages so you can filter by minimum threshold."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are vig-removed fair odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Vig-removed fair odds represent the true probability of an outcome without the sportsbook's margin (vig/juice) built in. A standard h2h market might have both sides priced at -110, implying 52.4% probability each — but that totals 104.8%, not 100%. The extra 4.8% is the vig. Removing vig gives you the fair probability: roughly 50% each side. TheOddsAPI computes vig-removed fair odds across 50 books via the /intelligence/fair-odds endpoint, giving you the market's best estimate of true probability without any individual book's margin inflating it."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://theoddsapi.com/guides"},
+      {"@type": "ListItem", "position": 3, "name": "Value Bet Detection", "item": "https://theoddsapi.com/guides/value-bets"}
+    ]
+  }
+  </script>
+
+  <!-- Structured data: Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Value Bet Detection — Find +EV Overlay Across 50 Books",
+    "description": "Detect value bets where sportsbook odds exceed true probability. Consensus-based +EV detection across 50 books.",
+    "author": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "publisher": {"@type": "Organization", "name": "TheOddsAPI", "url": "https://theoddsapi.com"},
+    "datePublished": "2026-04-30",
+    "dateModified": "2026-04-30",
+    "mainEntityOfPage": "https://theoddsapi.com/guides/value-bets"
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    .live-dot { animation: pulse-live 2s ease-in-out infinite; }
+  </style>
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/arbitrage-detection" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide
+              hover:bg-gold-dark transition-all">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════ BREADCRUMB ═══════════════ -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a>
+  <span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a>
+  <span class="mx-2">/</span>
+  <span class="text-muted">Value Bet Detection</span>
+</div>
+
+<!-- ═══════════════ HERO: LEAD WITH OUTPUT ═══════════════ -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+    <!-- Left: headline + proof -->
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Value Bet Detection<br/>
+        <span class="text-gold">+EV Across 50 Books</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        When a sportsbook offers odds better than the vig-removed market consensus,
+        that's a value bet. We compute the fair price from 50 books including Pinnacle,
+        then flag every book that's offering more than they should.
+      </p>
+
+      <!-- Proof metrics -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Books in consensus</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">Vig-free</p>
+          <p class="text-xs text-muted mt-1">Fair odds baseline</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">2–5%</p>
+          <p class="text-xs text-muted mt-1">Typical value range</p>
+        </div>
+      </div>
+
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key — Detect Value Bets
+      </a>
+    </div>
+
+    <!-- Right: LIVE EXAMPLE OUTPUT -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Sample — /intelligence/value</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="tc">"sport_key"</span>: <span class="ts">"basketball_nba"</span>,
+  <span class="tc">"event"</span>: <span class="ts">"76ers vs Bucks"</span>,
+  <span class="tc">"market"</span>: <span class="ts">"h2h"</span>,
+  <span class="tc">"outcome"</span>: <span class="ts">"76ers"</span>,
+  <span class="tc">"fair_probability"</span>: <span class="tn">0.428</span>,
+  <span class="tc">"fair_price_american"</span>: <span class="tn">+134</span>,
+  <span class="tc">"offered_price"</span>: <span class="tn">+155</span>,
+  <span class="tc">"offered_book"</span>: <span class="ts">"betrivers"</span>,
+  <span class="tc">"edge_pct"</span>: <span class="tn">3.4</span>,
+  <span class="tc">"method"</span>: <span class="ts">"vs_market_average"</span>,
+  <span class="tc">"method_note"</span>: <span class="ts">"Vig-removed across 50 books including Pinnacle"</span>,
+  <span class="tc">"detected_at"</span>: <span class="ts">"2026-04-30T19:08:33Z"</span>
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOW VALUE DETECTION WORKS ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">How Value Detection Works</h2>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">01</p>
+        <h3 class="text-sm font-semibold mb-2">Fair Price Computed</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Odds from 50 books (including Pinnacle and EU sharp books) are aggregated.
+          Vig is removed to produce the true market probability for each outcome.
+          This is your baseline — the price the efficient market agrees on.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">02</p>
+        <h3 class="text-sm font-semibold mb-2">Each Book Compared</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Every individual book's offered price is compared against the vig-removed fair price.
+          When the offered odds imply a lower probability than fair (book is giving too much),
+          that's detected value.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">03</p>
+        <h3 class="text-sm font-semibold mb-2">Value Flagged</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          <code class="text-gold/80">GET /intelligence/value</code> returns all detected +EV opportunities
+          with fair probability, offered price, edge percentage, and the book offering it.
+          Filter for your minimum edge threshold.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CONCRETE EXAMPLE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Reading a Value Bet</h2>
+    <p class="text-muted text-sm mb-8">The math behind a detected value opportunity.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card p-6">
+      <p class="text-xs font-mono text-muted mb-4">NBA — 76ers vs Bucks — Moneyline</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
+        <div>
+          <p class="text-xs text-muted mb-1">Fair Probability</p>
+          <p class="text-lg font-mono font-bold text-[#E8EEF7]">42.8%</p>
+          <p class="text-2xs text-muted mt-0.5">Vig-removed consensus</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">Fair Price</p>
+          <p class="text-lg font-mono font-bold text-[#E8EEF7]">+134</p>
+          <p class="text-2xs text-muted mt-0.5">What it should be</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">BetRivers Offering</p>
+          <p class="text-lg font-mono font-bold text-gold">+155</p>
+          <p class="text-2xs text-muted mt-0.5">Better than fair</p>
+        </div>
+        <div>
+          <p class="text-xs text-muted mb-1">Your Edge</p>
+          <p class="text-lg font-mono font-bold text-alive">+3.4%</p>
+          <p class="text-2xs text-muted mt-0.5">Above fair value</p>
+        </div>
+      </div>
+
+      <div class="border-t border-gold/10 pt-4 space-y-3">
+        <p class="text-xs text-muted leading-relaxed">
+          <span class="text-gold font-semibold">What happened:</span> The 50-book consensus (vig-removed) says 76ers have a 42.8% chance of winning.
+          That maps to a fair price of +134. BetRivers is offering +155 — implying only 39.2%.
+          They're underestimating the 76ers by 3.4 percentage points.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          <span class="text-gold font-semibold">What you do:</span> Bet 76ers +155 at BetRivers. You're getting paid as if
+          they have a 39.2% chance when the market says 42.8%. Over hundreds of similar bets,
+          this 3.4% edge compounds into consistent profit.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ VALUE VS ARBITRAGE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Value Betting vs. Arbitrage</h2>
+
+    <div class="rounded-lg border border-gold/20 overflow-hidden">
+      <table class="w-full text-xs">
+        <thead class="bg-navy-mid border-b border-gold/10">
+          <tr>
+            <th class="text-left px-4 py-3 text-muted font-medium"></th>
+            <th class="text-left px-4 py-3 text-gold font-semibold">Value Betting</th>
+            <th class="text-left px-4 py-3 text-muted font-medium">Arbitrage</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gold/[.06]">
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Risk per bet</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">You can lose individual bets (variance)</td>
+            <td class="px-4 py-3 text-muted">Risk-free (all outcomes covered)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Frequency</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">10–50+ opportunities per day</td>
+            <td class="px-4 py-3 text-muted">1–5 per day (rare, fast-closing)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Edge per bet</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">2–5% typical</td>
+            <td class="px-4 py-3 text-muted">0.5–3% typical</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Capital required</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Moderate (one-sided bets)</td>
+            <td class="px-4 py-3 text-muted">High (capital on both sides)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Bets to confirm edge</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">500–1000 bets</td>
+            <td class="px-4 py-3 text-muted">Immediate (guaranteed per trade)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Account longevity</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Longer (mixed win/loss pattern)</td>
+            <td class="px-4 py-3 text-muted">Shorter (obvious to books)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-xs text-muted mt-4">
+      Most professional bettors use both. Arbitrage for risk-free capital growth,
+      value betting for higher-volume edge exploitation. TheOddsAPI provides
+      both via <code class="text-gold/80">/intelligence/arbitrage</code> and <code class="text-gold/80">/intelligence/value</code>.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════ CODE EXAMPLE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Pull value bets and filter by your minimum edge threshold.</p>
+
+    <!-- Python -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/intelligence/value"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
+    params={<span class="ts">"sport_key"</span>: <span class="ts">"basketball_nba"</span>}
+)
+
+value_bets = response.json()[<span class="ts">"data"</span>]
+
+<span class="tm"># Filter for 3%+ edge — your threshold for action</span>
+<span class="tk">for</span> vb <span class="tk">in</span> value_bets:
+    <span class="tk">if</span> vb[<span class="ts">"edge_pct"</span>] >= <span class="tn">3.0</span>:
+        <span class="tk">print</span>(f<span class="ts">"</span>{vb[<span class="ts">'event'</span>]}<span class="ts"> — </span>{vb[<span class="ts">'outcome'</span>]}<span class="ts">"</span>)
+        <span class="tk">print</span>(f<span class="ts">"  Fair: </span>{vb[<span class="ts">'fair_price_american'</span>]}<span class="ts"> | Offered: </span>{vb[<span class="ts">'offered_price'</span>]}<span class="ts"> @ </span>{vb[<span class="ts">'offered_book'</span>]}<span class="ts">"</span>)
+        <span class="tk">print</span>(f<span class="ts">"  Edge: +</span>{vb[<span class="ts">'edge_pct'</span>]}<span class="ts">%"</span>)</code></pre>
+    </div>
+
+    <!-- JavaScript -->
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
+  <span class="ts">"https://api.theoddsapi.com/v4/intelligence/value?sport_key=basketball_nba"</span>,
+  { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
+);
+
+<span class="tk">const</span> { data: valueBets } = <span class="tk">await</span> res.json();
+
+<span class="tm">// Surface 3%+ edges</span>
+valueBets
+  .filter(vb => vb.edge_pct >= <span class="tn">3.0</span>)
+  .forEach(vb => console.log(
+    <span class="ts">`</span>${vb.event}<span class="ts">: </span>${vb.outcome}<span class="ts"> +</span>${vb.edge_pct}<span class="ts">% @ </span>${vb.offered_book}<span class="ts"> (</span>${vb.offered_price}<span class="ts"> vs fair </span>${vb.fair_price_american}<span class="ts">)`</span>
+  ));</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ BANKROLL MANAGEMENT ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Bankroll and Staking</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Value betting is variance-heavy. Individual bets lose regularly.
+      Proper staking turns a mathematical edge into actual profit.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">Kelly Criterion</h3>
+        <p class="text-xs text-muted leading-relaxed mb-3">
+          Optimal stake = (edge / odds). A 3% edge at +150 suggests staking 2% of bankroll.
+          Full Kelly maximizes growth but produces large swings.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          <span class="font-medium text-[#E8EEF7]">Most operators use 25–50% Kelly</span> — slower growth
+          but dramatically reduced drawdown risk. A 30% drawdown on full Kelly becomes
+          8–15% on quarter Kelly.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">Flat Staking</h3>
+        <p class="text-xs text-muted leading-relaxed mb-3">
+          Fixed 1–2% of bankroll per bet regardless of edge size.
+          Simpler, more conservative, easier to track.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          <span class="font-medium text-[#E8EEF7]">Best for operators still validating their edge.</span>
+          Once you've confirmed +CLV over 500+ bets, graduate to fractional Kelly
+          for faster compounding.
+        </p>
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-gold/10 bg-navy-card p-5 mt-6">
+      <h3 class="text-sm font-semibold mb-3">Expected Drawdowns</h3>
+      <p class="text-xs text-muted leading-relaxed">
+        Even with a 3% edge, expect losing streaks of 10–15 bets.
+        At 1% staking, that's a 10–15% drawdown — completely normal.
+        The edge reveals itself over 200+ bets. If you're checking results
+        after 20 bets, you're looking at noise, not signal.
+        Minimum viable sample: 500 bets before concluding anything.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SPORTS WITH MOST VALUE ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Where Value Appears Most</h2>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">NBA & NHL</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          High game volume (82-game seasons) means soft books adjust lines more slowly.
+          Daily slates of 5–15 games create dozens of value opportunities per night.
+          Best sport for volume-based value strategies.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">MLB</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          162-game season with daily slates of 10–15 games. Pitcher changes,
+          weather, and lineup decisions create inefficiency that soft books are slow to price.
+          Historically the most profitable sport for value bettors at scale.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">European Soccer (EPL, La Liga, Bundesliga)</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Three-way markets (home/draw/away) create more pricing disagreement than two-way markets.
+          Geographic differences between UK, EU, and US books mean value surfaces from
+          regional information asymmetry. International books are included in TheOddsAPI's consensus.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ RELATED GUIDES ═══════════════ -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/arbitrage-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Detection</h3>
+        <p class="text-xs text-muted">Risk-free version of value betting — cover all outcomes across books.</p>
+      </a>
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Sharp Lines</h3>
+        <p class="text-xs text-muted">Use Pinnacle as an alternative baseline for value detection.</p>
+      </a>
+      <a href="/guides/historical-odds-backtesting" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Historical Odds</h3>
+        <p class="text-xs text-muted">Backtest your value betting model against real historical data.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FINAL CTA ═══════════════ -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Detecting Value</h2>
+    <p class="text-muted text-sm mb-8">
+      Business plan includes value detection, fair odds, consensus,
+      edge detection, and arbitrage — the full intelligence layer across 24 sports.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+      <a href="https://api.theoddsapi.com/docs"
+         class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">
+        Try in Swagger
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">
+      TheOdds<span class="text-gold/70">API</span>
+    </p>
+    <p class="text-xs text-muted/40 mt-1">© 2026 TheOddsAPI · theoddsapi.com · All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/arbitrage-detection" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<!-- ═══════════════ GA4 EVENT TRACKING ═══════════════ -->
+<script>
+(function() {
+  function track(event, params) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', event, params || {});
+    }
+  }
+  document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el => {
+    el.addEventListener('click', () => track('get_key_click', { page: 'value_bets_guide' }));
+  });
+  document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el => {
+    el.addEventListener('click', () => track('docs_click', { page: 'value_bets_guide' }));
+  });
+})();
+</script>
+
+</body>
+</html>
