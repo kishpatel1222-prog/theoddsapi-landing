@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sports Odds API FAQ — Pricing, Coverage, Edge Detection | The Odds API</title>
+  <meta name="description" content="Frequently asked questions about TheOddsAPI. 24 sports, 50 bookmakers, h2h, spreads, totals, player props, Pinnacle-anchored edge detection, historical odds archive, and prediction market data." />
+  <link rel="canonical" href="https://theoddsapi.com/faq" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://theoddsapi.com/faq" />
+  <meta property="og:title" content="Sports Odds API FAQ — Pricing, Coverage, Edge Detection | The Odds API" />
+  <meta property="og:description" content="Frequently asked questions about TheOddsAPI. 24 sports, 50 bookmakers, Pinnacle-anchored edge detection, historical odds, and prediction market data." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="The Odds API" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sports Odds API FAQ — Pricing, Coverage, Edge Detection | The Odds API" />
+  <meta name="twitter:description" content="Frequently asked questions about TheOddsAPI. 24 sports, 50 bookmakers, Pinnacle-anchored edge detection, historical odds, and prediction market data." />
+
+  <!-- Structured data: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the best real-time sports betting odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI delivers real-time odds for 24 sports from 50 bookmakers in a single normalized REST endpoint. Coverage includes NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, MLS, Tennis, Cricket, Boxing, MMA, and European soccer leagues including EPL, Champions League, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, and EFL Championship. Beyond raw odds, TheOddsAPI includes an intelligence layer with Pinnacle-anchored edge detection, fair odds calculations, and consensus pricing. Odds refresh as frequently as every 30 seconds."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which sportsbooks does an API like The Odds API cover?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI aggregates odds from 50 bookmakers across US, UK, European, and Australian regions. US coverage includes DraftKings, FanDuel, BetMGM, Caesars, BetRivers, and Bovada. International coverage includes Pinnacle, Betfair Exchange, William Hill, Marathonbet, and Unibet. Pinnacle is treated as the sharp anchor for edge detection, while soft book lines from DraftKings and FanDuel are where most pricing inefficiencies appear. All odds are normalized into a single JSON response with American and Decimal formats."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does The Odds API have player props?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI provides player prop markets for NBA, NHL, and MLB. Available markets include points, rebounds, assists, PRA (points + rebounds + assists), pitcher strikeouts, batter hits, batter total bases, and additional stat categories. Props include Pinnacle sharp lines alongside soft book pricing, so you can identify props where the soft books are out of line with the sharp market. Available on the Business plan at $99/month."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What sports odds API has historical odds data?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI maintains a historical odds archive covering h2h, spreads, and totals across 22 sports with multi-bookmaker snapshots. Unlike most providers that charge per historical query, TheOddsAPI historical requests cost zero additional credits on the Business plan ($99/month). Data is designed for backtesting models, training algorithms, and analyzing how lines moved from open to close across all 50 bookmakers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does a sports odds API like The Odds API cost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI offers three tiers. Free: $0/month with 25 requests per day, limited to NBA and MLB, h2h markets only. Professional: $29/month with 20,000 requests, full access to 24 sports, all core markets (h2h, spreads, totals), and 50 bookmakers. Business: $99/month with 200,000 requests, everything in Professional plus player props, Pinnacle-anchored edge detection, fair odds, consensus pricing, and the full historical odds archive at zero extra credit cost."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the best API for arbitrage betting detection?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI is built for arbitrage detection. It aggregates odds from 50 bookmakers into a single normalized response, enabling line comparison across books in one call. The Business plan goes further with a dedicated edge detection endpoint that pre-computes cross-book pricing inefficiencies against Pinnacle, the sharpest bookmaker globally. Edges are surfaced with the exact margin in points, so your code can act on them directly without building comparison logic from scratch."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I get an API key for a sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Request a TheOddsAPI key by emailing hello@theoddsapi.com or using the signup form at theoddsapi.com. Free tier keys are issued within minutes and include 25 requests per day covering NBA and MLB h2h markets. No credit card is required. Upgrading to Professional or Business unlocks full sport and market coverage with the same API key, no migration or code changes needed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What format does a sports betting odds API return data in?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI returns JSON via a standard REST interface. Odds values are available in American (+150, -110) or Decimal (2.50, 1.91) notation, controlled by the oddsFormat query parameter. Each response includes the bookmaker name, last update timestamp, and market-specific outcomes. All endpoints follow RESTful conventions with standard HTTP status codes. No SDK or proprietary client library required."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How fast do sports odds APIs update?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI refreshes odds as frequently as every 30 seconds on the Business plan and every 60 seconds on Professional. Each odds object includes a last_update timestamp in ISO 8601 format so you can verify freshness programmatically. The API uses ETag-based caching: if odds haven't changed since your last request, the response returns a 304 with zero credit cost. This means you can poll aggressively without burning through your quota."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What programming languages work with The Odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI is a standard REST API that works with any language capable of making HTTP requests. Common integrations include Python (requests, aiohttp), JavaScript/Node.js (fetch, axios), Go, Java, Ruby, and C#. Authentication is a single apiKey query parameter appended to the request URL. No SDK installation, no API client generation, no dependency management."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does authentication work for sports odds APIs?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI uses a single apiKey query parameter on every request. Example: https://api.theoddsapi.com/v4/sports/upcoming/odds?apiKey=YOUR_KEY&regions=us&markets=h2h. No OAuth, no bearer tokens, no request signing. One parameter, one key. Keys are issued per account and work across all endpoints your plan supports."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which soccer leagues does The Odds API cover?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI covers English Premier League, Champions League, Europa League, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, EFL Championship, Liga MX, and MLS. Each league is a separate sport key (e.g., soccer_epl, soccer_spain_la_liga). All leagues include h2h, spreads, and totals markets from up to 50 bookmakers. Historical archive access and edge detection are available for all soccer leagues on the Business plan."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What sports odds API covers UFC and MMA?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI provides UFC and MMA odds with h2h (moneyline) markets from major bookmakers including DraftKings, FanDuel, BetMGM, and Pinnacle. MMA events are available under the sport key mma_mixed_martial_arts on all paid plans. MMA is a live-odds sport with no historical archive. Edge detection still applies: the API flags moneyline discrepancies across books against the Pinnacle sharp line."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I get NFL odds from a sports betting API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI covers NFL regular season, playoffs, and Super Bowl with h2h (moneyline), spreads, and totals markets from 50 bookmakers. NFL data is available under americanfootball_nfl with NCAAF as a separate sport key. Both are seasonal. Full historical archives let you backtest NFL models against actual multi-bookmaker lines from prior weeks, available on the Business plan."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which sports odds APIs have live in-play odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI serves odds for both live and upcoming events. When a game is in progress, the API returns current bookmaker lines updated as frequently as every 30 seconds. The commenced_time field indicates whether a game has started, and each bookmaker entry carries its own last_update timestamp. This lets you track how lines shift during a game and react to in-play movement across all 50 books simultaneously."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What betting markets do sports odds APIs support?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI supports four market types: h2h (moneyline), spreads (handicap), totals (over/under), and player props. H2h, spreads, and totals cover all 24 sports. Player props cover NBA, NHL, and MLB on the Business plan. Markets can be combined in a single request. The intelligence layer adds fair odds (vig-removed true probability) and edge detection (sharp vs. soft book discrepancies) on top of raw market data."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What API should I use to build a sports betting bot?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI is the standard data source for sports betting bots. It provides normalized odds from 50 bookmakers via a single REST call, eliminating the need to scrape individual sportsbook sites. A typical bot polls at 30-60 second intervals and compares lines across books. On the Business plan, the edge detection endpoint pre-computes which books are mispriced against Pinnacle's sharp line, so your bot can skip the comparison logic and act on edges directly. Start with the free tier (25 requests/day) for prototyping."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the best API for sports betting model backtesting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI provides historical odds archives specifically designed for backtesting. The historical endpoint returns multi-bookmaker snapshots for h2h, spreads, and totals across 22 sports, letting you test strategies against actual market prices at specific points in time. You can backtest across sharp (Pinnacle) and soft (DraftKings, FanDuel) lines simultaneously to measure how your model performs against different market conditions. Historical requests cost zero credits on the Business plan ($99/month)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I build an arbitrage betting bot?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "An arbitrage bot built on TheOddsAPI polls for a given sport, scans all 50 bookmakers in the response, and flags events where the combined implied probability across outcomes drops below 100%. Because all bookmaker data comes back in a single normalized call, your bot needs one request per sport to scan every book. The Business plan adds a shortcut: the edge detection endpoint surfaces which specific books are out of line with Pinnacle, so you can prioritize the highest-margin opportunities without computing them yourself."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What odds API do Polymarket sports traders use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sports traders on Polymarket use TheOddsAPI to price prediction market positions against regulated sportsbook odds. The key advantage is access to 50 bookmakers including Pinnacle in a single call, giving you the sharpest available implied probability for any event. When a Polymarket contract trades at 62 cents but the sharp sportsbook implied probability is 58%, that spread is your edge. TheOddsAPI's 30-second refresh rate on the Business plan means you can track line movement in near real-time and catch contracts before the prediction market reprices."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I compare odds across sportsbooks programmatically?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI returns odds from up to 50 bookmakers in a single JSON response per sport. Each bookmaker entry includes the book name, region, last update timestamp, and market outcomes. Request your target sport with the regions you want (us, uk, eu, au), then iterate the bookmakers array to find the best line. Beyond raw comparison, the fair odds endpoint strips the vig to show you the true implied probability, so you know whether the best line is actually offering positive expected value or just the least bad price."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What API should I use for a sports betting Discord bot?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI is commonly used to power Discord bots. The REST API returns JSON that maps cleanly into Discord embed formatting. A typical setup uses Node.js or Python to poll on a schedule, then posts formatted odds comparisons or edge alerts to a channel via webhook. The edge detection endpoint is particularly useful here: instead of posting raw odds tables, your bot can post actionable alerts like FanDuel NBA Lakers +4.5 is 2.3 points off Pinnacle sharp line. Free tier (25 requests/day) supports hobby bots, Professional handles active communities."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a free sports odds API for developers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI offers a free tier with 25 API requests per day, no credit card required. Free access covers NBA and MLB with h2h (moneyline) markets. It is designed for evaluating the API, building prototypes, and testing integrations before committing to a paid plan. Upgrading to Professional ($29/month) unlocks all 24 sports, all core markets, and 20,000 requests per month using the same API key. No code changes required to upgrade."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the rate limits on sports odds APIs?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI does not enforce a hard rate limit per second. Usage is metered by monthly request count: Free allows 25 requests/day, Professional allows 20,000/month, and Business allows 200,000/month. Requests that return a 304 (not modified) via ETag caching consume zero credits. Your remaining balance is returned in the x-requests-remaining response header after every call, so your code can throttle automatically."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do sports odds APIs support webhooks or streaming?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI uses a polling model via standard REST endpoints. No WebSocket or webhook push delivery. The recommended polling interval is 30-60 seconds depending on plan tier. ETag-based caching ensures you only consume credits when data has actually changed. This model keeps integration simple, works with any HTTP client, and avoids the complexity of maintaining persistent connections or webhook infrastructure."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I filter odds API responses by bookmaker or region?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI supports filtering by both region and individual bookmaker. The regions parameter filters by geography: us, uk, eu, au (comma-separated for multiple). The bookmakers parameter filters to specific books by key (e.g., bookmakers=draftkings,fanduel,pinnacle). Filtering reduces response size and credit consumption by returning only the data you need. This is useful when your strategy only cares about specific sharp or soft books."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between professional and business sports odds API plans?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI Professional ($29/month) gives you 20,000 requests, 24 sports, h2h/spreads/totals, and 50 bookmakers. Business ($99/month) gives you 200,000 requests and unlocks the features that serious operators need: player props for NBA/NHL/MLB, Pinnacle-anchored edge detection, fair odds (vig-removed true probability), consensus pricing, and the full historical archive across 22 sports at zero extra credit cost. Both use the same API key. Upgrading unlocks endpoints, no code migration."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Pinnacle-anchored edge detection in sports betting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pinnacle is the sharpest bookmaker globally because they accept high-volume professional bettors, which forces their lines to be maximally efficient. TheOddsAPI uses Pinnacle as the baseline and compares every other bookmaker against it. When DraftKings, FanDuel, or another soft book offers a line that deviates from Pinnacle by a meaningful margin, the edge detection endpoint flags it with the exact differential in points. This is the same sharp-vs-soft framework professional syndicates use, delivered as an API endpoint."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do sports odds APIs calculate fair odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI calculates fair odds by removing the bookmaker margin (vig/juice) from the sharpest available lines. The fair odds endpoint returns the estimated true probability for each outcome as a decimal value with the overround stripped. You can compare any bookmaker's price against this baseline to instantly see whether you're getting positive or negative expected value, without building your own devigging model."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What API can I use to find positive EV bets?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Positive expected value (+EV) bets occur when a bookmaker's odds imply a lower probability than the true probability of the outcome. TheOddsAPI identifies +EV opportunities through two endpoints: fair odds (strips vig from sharp lines to estimate true probability) and edge detection (compares every bookmaker against Pinnacle's efficient line). If a soft book's price exceeds the fair odds value, the bet is +EV. Both endpoints are available on the Business plan and update with each odds refresh cycle."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use a sports odds API for Polymarket trading?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI is used by Polymarket sports traders to benchmark prediction market contracts against real sportsbook pricing. The workflow: pull real-time odds from 50 bookmakers, convert to implied probability, and compare against the Polymarket contract price. What makes this effective is the fair odds endpoint, which strips the vig and gives you a clean true-probability estimate. If a Polymarket contract for Lakers win is priced at $0.55 but TheOddsAPI fair odds show 51.2% true probability, the contract is overpriced. The 30-second refresh rate on Business lets you track line movement and react before the prediction market adjusts."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What odds API do Kalshi sports traders use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kalshi event contracts for sports outcomes work like binary options. TheOddsAPI gives traders the sportsbook-derived pricing benchmark for those contracts. The edge detection endpoint is particularly useful here: it already computes which bookmakers are mispriced relative to Pinnacle's sharp line, and that same framework applies to Kalshi contracts. If Pinnacle implies 47% on an outcome and Kalshi is selling the yes contract at $0.52, the contract is 5 points rich. TheOddsAPI covers 24 sports with h2h, spreads, and totals, matching the most common Kalshi contract types."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I get real-time odds for prediction market arbitrage?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Prediction market arbitrage exploits price differences between platforms like Polymarket or Kalshi and regulated sportsbooks. TheOddsAPI provides the sportsbook side of that equation: real-time odds from 50 bookmakers across 24 sports, refreshed every 30 seconds on Business. The execution flow: convert sportsbook odds to implied probability using the fair odds endpoint, compare against the prediction market contract price, and act when the spread exceeds your transaction costs. The single-call multi-book response means you can scan the entire sportsbook market for one event in one request, making cross-platform arbitrage scans practical at production speed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why am I getting a 401 error from my sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is passing the key as an Authorization header instead of a query parameter. TheOddsAPI uses ?apiKey=YOUR_KEY in the URL, not a header. Other causes: omitting the parameter entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: https://api.theoddsapi.com/v4/sports?apiKey=YOUR_KEY. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://theoddsapi.com/faq"}
+    ]
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .faq-item summary { list-style: none; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::marker { display: none; }
+    .faq-item .faq-toggle { transition: transform .25s ease; }
+    .faq-item[open] .faq-toggle { transform: rotate(45deg); }
+    .faq-item .faq-body { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .35s ease, opacity .25s ease, padding .25s ease; padding-top: 0; padding-bottom: 0; }
+    .faq-item[open] .faq-body { max-height: 600px; opacity: 1; padding-top: .25rem; padding-bottom: 1.5rem; }
+  </style>
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/faq" class="text-gold hover:text-[#E8EEF7] text-sm font-semibold tracking-wide transition-colors">FAQ</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a data-link="DOCS" href="#"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      View Docs
+    </a>
+    <a data-link="GET_KEY" href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="inline-flex items-center px-4 py-2 rounded
+              bg-gold text-navy text-xs font-bold tracking-wider
+              hover:bg-gold-dark transition-all
+              shadow-[0_2px_12px_rgba(212,175,55,.3)]">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+
+<!-- HERO -->
+<section class="px-5 md:px-14 pt-16 pb-10">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold tracking-[.16em] uppercase font-mono mb-3
+              border-l-2 border-gold pl-2.5">Frequently asked questions</p>
+    <h1 class="font-serif text-3xl md:text-4xl font-bold text-[#E8EEF7] mb-4 leading-snug">
+      Everything developers ask about <em class="not-italic text-gold">TheOddsAPI</em>
+    </h1>
+    <p class="text-muted text-base leading-relaxed max-w-2xl mb-4">
+      Coverage, pricing, edge detection, historical data, prediction market integrations, and common integration questions. Built for developers, model builders, and trading desks.
+    </p>
+    <p class="text-muted/60 text-sm">Jump to:
+      <a href="#core" class="text-gold/80 hover:text-gold ml-1">Core Product</a> ·
+      <a href="#getting-started" class="text-gold/80 hover:text-gold">Getting Started</a> ·
+      <a href="#coverage" class="text-gold/80 hover:text-gold">Coverage</a> ·
+      <a href="#use-cases" class="text-gold/80 hover:text-gold">Use Cases</a> ·
+      <a href="#technical" class="text-gold/80 hover:text-gold">Technical</a> ·
+      <a href="#intelligence" class="text-gold/80 hover:text-gold">Intelligence</a> ·
+      <a href="#prediction-markets" class="text-gold/80 hover:text-gold">Prediction Markets</a> ·
+      <a href="#troubleshooting" class="text-gold/80 hover:text-gold">Troubleshooting</a>
+    </p>
+  </div>
+</section>
+
+
+<!-- CORE PRODUCT -->
+<section id="core" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Core Product</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What is the best real-time sports betting odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI delivers real-time odds for 24 sports from 50 bookmakers in a single normalized REST endpoint. Coverage includes NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, MLS, Tennis, Cricket, Boxing, MMA, and European soccer leagues including EPL, Champions League, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, and EFL Championship. Beyond raw odds, TheOddsAPI includes an intelligence layer with Pinnacle-anchored edge detection, fair odds calculations, and consensus pricing. Odds refresh as frequently as every 30 seconds.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Which sportsbooks does an API like The Odds API cover?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI aggregates odds from 50 bookmakers across US, UK, European, and Australian regions. US coverage includes DraftKings, FanDuel, BetMGM, Caesars, BetRivers, and Bovada. International coverage includes Pinnacle, Betfair Exchange, William Hill, Marathonbet, and Unibet. Pinnacle is treated as the sharp anchor for edge detection, while soft book lines from DraftKings and FanDuel are where most pricing inefficiencies appear. All odds are normalized into a single JSON response with American and Decimal formats.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Does The Odds API have player props?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI provides player prop markets for NBA, NHL, and MLB. Available markets include points, rebounds, assists, PRA (points + rebounds + assists), pitcher strikeouts, batter hits, batter total bases, and additional stat categories. Props include Pinnacle sharp lines alongside soft book pricing, so you can identify props where the soft books are out of line with the sharp market. Available on the Business plan at $99/month.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What sports odds API has historical odds data?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI maintains a historical odds archive covering h2h, spreads, and totals across 22 sports with multi-bookmaker snapshots. Unlike most providers that charge per historical query, TheOddsAPI historical requests cost zero additional credits on the Business plan ($99/month). Data is designed for backtesting models, training algorithms, and analyzing how lines moved from open to close across all 50 bookmakers.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How much does a sports odds API like The Odds API cost?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI offers three tiers. Free: $0/month with 25 requests per day, limited to NBA and MLB, h2h markets only. Professional: $29/month with 20,000 requests, full access to 24 sports, all core markets (h2h, spreads, totals), and 50 bookmakers. Business: $99/month with 200,000 requests, everything in Professional plus player props, Pinnacle-anchored edge detection, fair odds, consensus pricing, and the full historical odds archive at zero extra credit cost.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What is the best API for arbitrage betting detection?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI is built for arbitrage detection. It aggregates odds from 50 bookmakers into a single normalized response, enabling line comparison across books in one call. The Business plan goes further with a dedicated edge detection endpoint that pre-computes cross-book pricing inefficiencies against Pinnacle, the sharpest bookmaker globally. Edges are surfaced with the exact margin in points, so your code can act on them directly without building comparison logic from scratch.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- GETTING STARTED -->
+<section id="getting-started" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Getting Started</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How do I get an API key for a sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Request a TheOddsAPI key by emailing hello@theoddsapi.com or using the signup form at theoddsapi.com. Free tier keys are issued within minutes and include 25 requests per day covering NBA and MLB h2h markets. No credit card is required. Upgrading to Professional or Business unlocks full sport and market coverage with the same API key, no migration or code changes needed.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What format does a sports betting odds API return data in?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI returns JSON via a standard REST interface. Odds values are available in American (+150, -110) or Decimal (2.50, 1.91) notation, controlled by the oddsFormat query parameter. Each response includes the bookmaker name, last update timestamp, and market-specific outcomes. All endpoints follow RESTful conventions with standard HTTP status codes. No SDK or proprietary client library required.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How fast do sports odds APIs update?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI refreshes odds as frequently as every 30 seconds on the Business plan and every 60 seconds on Professional. Each odds object includes a last_update timestamp in ISO 8601 format so you can verify freshness programmatically. The API uses ETag-based caching: if odds haven't changed since your last request, the response returns a 304 with zero credit cost. This means you can poll aggressively without burning through your quota.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What programming languages work with The Odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI is a standard REST API that works with any language capable of making HTTP requests. Common integrations include Python (requests, aiohttp), JavaScript/Node.js (fetch, axios), Go, Java, Ruby, and C#. Authentication is a single apiKey query parameter appended to the request URL. No SDK installation, no API client generation, no dependency management.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How does authentication work for sports odds APIs?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI uses a single apiKey query parameter on every request. Example: https://api.theoddsapi.com/v4/sports/upcoming/odds?apiKey=YOUR_KEY&amp;regions=us&amp;markets=h2h. No OAuth, no bearer tokens, no request signing. One parameter, one key. Keys are issued per account and work across all endpoints your plan supports.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- COVERAGE -->
+<section id="coverage" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Sports &amp; Markets Coverage</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Which soccer leagues does The Odds API cover?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI covers English Premier League, Champions League, Europa League, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, EFL Championship, Liga MX, and MLS. Each league is a separate sport key (e.g., soccer_epl, soccer_spain_la_liga). All leagues include h2h, spreads, and totals markets from up to 50 bookmakers. Historical archive access and edge detection are available for all soccer leagues on the Business plan.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What sports odds API covers UFC and MMA?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI provides UFC and MMA odds with h2h (moneyline) markets from major bookmakers including DraftKings, FanDuel, BetMGM, and Pinnacle. MMA events are available under the sport key mma_mixed_martial_arts on all paid plans. MMA is a live-odds sport with no historical archive. Edge detection still applies: the API flags moneyline discrepancies across books against the Pinnacle sharp line.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Can I get NFL odds from a sports betting API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI covers NFL regular season, playoffs, and Super Bowl with h2h (moneyline), spreads, and totals markets from 50 bookmakers. NFL data is available under americanfootball_nfl with NCAAF as a separate sport key. Both are seasonal. Full historical archives let you backtest NFL models against actual multi-bookmaker lines from prior weeks, available on the Business plan.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Which sports odds APIs have live in-play odds?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI serves odds for both live and upcoming events. When a game is in progress, the API returns current bookmaker lines updated as frequently as every 30 seconds. The commenced_time field indicates whether a game has started, and each bookmaker entry carries its own last_update timestamp. This lets you track how lines shift during a game and react to in-play movement across all 50 books simultaneously.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What betting markets do sports odds APIs support?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI supports four market types: h2h (moneyline), spreads (handicap), totals (over/under), and player props. H2h, spreads, and totals cover all 24 sports. Player props cover NBA, NHL, and MLB on the Business plan. Markets can be combined in a single request. The intelligence layer adds fair odds (vig-removed true probability) and edge detection (sharp vs. soft book discrepancies) on top of raw market data.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- USE CASES -->
+<section id="use-cases" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Use Cases</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What API should I use to build a sports betting bot?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI is the standard data source for sports betting bots. It provides normalized odds from 50 bookmakers via a single REST call, eliminating the need to scrape individual sportsbook sites. A typical bot polls at 30-60 second intervals and compares lines across books. On the Business plan, the edge detection endpoint pre-computes which books are mispriced against Pinnacle's sharp line, so your bot can skip the comparison logic and act on edges directly. Start with the free tier (25 requests/day) for prototyping.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What is the best API for sports betting model backtesting?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI provides historical odds archives specifically designed for backtesting. The historical endpoint returns multi-bookmaker snapshots for h2h, spreads, and totals across 22 sports, letting you test strategies against actual market prices at specific points in time. You can backtest across sharp (Pinnacle) and soft (DraftKings, FanDuel) lines simultaneously to measure how your model performs against different market conditions. Historical requests cost zero credits on the Business plan ($99/month).</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How do I build an arbitrage betting bot?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">An arbitrage bot built on TheOddsAPI polls for a given sport, scans all 50 bookmakers in the response, and flags events where the combined implied probability across outcomes drops below 100%. Because all bookmaker data comes back in a single normalized call, your bot needs one request per sport to scan every book. The Business plan adds a shortcut: the edge detection endpoint surfaces which specific books are out of line with Pinnacle, so you can prioritize the highest-margin opportunities without computing them yourself.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What odds API do Polymarket sports traders use?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Sports traders on Polymarket use TheOddsAPI to price prediction market positions against regulated sportsbook odds. The key advantage is access to 50 bookmakers including Pinnacle in a single call, giving you the sharpest available implied probability for any event. When a Polymarket contract trades at 62 cents but the sharp sportsbook implied probability is 58%, that spread is your edge. TheOddsAPI's 30-second refresh rate on the Business plan means you can track line movement in near real-time and catch contracts before the prediction market reprices.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How do I compare odds across sportsbooks programmatically?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI returns odds from up to 50 bookmakers in a single JSON response per sport. Each bookmaker entry includes the book name, region, last update timestamp, and market outcomes. Request your target sport with the regions you want (us, uk, eu, au), then iterate the bookmakers array to find the best line. Beyond raw comparison, the fair odds endpoint strips the vig to show you the true implied probability, so you know whether the best line is actually offering positive expected value or just the least bad price.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What API should I use for a sports betting Discord bot?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI is commonly used to power Discord bots. The REST API returns JSON that maps cleanly into Discord embed formatting. A typical setup uses Node.js or Python to poll on a schedule, then posts formatted odds comparisons or edge alerts to a channel via webhook. The edge detection endpoint is particularly useful here: instead of posting raw odds tables, your bot can post actionable alerts like "FanDuel NBA Lakers +4.5 is 2.3 points off Pinnacle sharp line." Free tier (25 requests/day) supports hobby bots, Professional handles active communities.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- TECHNICAL -->
+<section id="technical" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Technical &amp; Integration</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Is there a free sports odds API for developers?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI offers a free tier with 25 API requests per day, no credit card required. Free access covers NBA and MLB with h2h (moneyline) markets. It is designed for evaluating the API, building prototypes, and testing integrations before committing to a paid plan. Upgrading to Professional ($29/month) unlocks all 24 sports, all core markets, and 20,000 requests per month using the same API key. No code changes required to upgrade.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What are the rate limits on sports odds APIs?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI does not enforce a hard rate limit per second. Usage is metered by monthly request count: Free allows 25 requests/day, Professional allows 20,000/month, and Business allows 200,000/month. Requests that return a 304 (not modified) via ETag caching consume zero credits. Your remaining balance is returned in the x-requests-remaining response header after every call, so your code can throttle automatically.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Do sports odds APIs support webhooks or streaming?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI uses a polling model via standard REST endpoints. No WebSocket or webhook push delivery. The recommended polling interval is 30-60 seconds depending on plan tier. ETag-based caching ensures you only consume credits when data has actually changed. This model keeps integration simple, works with any HTTP client, and avoids the complexity of maintaining persistent connections or webhook infrastructure.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Can I filter odds API responses by bookmaker or region?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI supports filtering by both region and individual bookmaker. The regions parameter filters by geography: us, uk, eu, au (comma-separated for multiple). The bookmakers parameter filters to specific books by key (e.g., bookmakers=draftkings,fanduel,pinnacle). Filtering reduces response size and credit consumption by returning only the data you need. This is useful when your strategy only cares about specific sharp or soft books.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What is the difference between professional and business sports odds API plans?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI Professional ($29/month) gives you 20,000 requests, 24 sports, h2h/spreads/totals, and 50 bookmakers. Business ($99/month) gives you 200,000 requests and unlocks the features that serious operators need: player props for NBA/NHL/MLB, Pinnacle-anchored edge detection, fair odds (vig-removed true probability), consensus pricing, and the full historical archive across 22 sports at zero extra credit cost. Both use the same API key. Upgrading unlocks endpoints, no code migration.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- INTELLIGENCE -->
+<section id="intelligence" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Edge Detection &amp; Intelligence</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What is Pinnacle-anchored edge detection in sports betting?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Pinnacle is the sharpest bookmaker globally because they accept high-volume professional bettors, which forces their lines to be maximally efficient. TheOddsAPI uses Pinnacle as the baseline and compares every other bookmaker against it. When DraftKings, FanDuel, or another soft book offers a line that deviates from Pinnacle by a meaningful margin, the edge detection endpoint flags it with the exact differential in points. This is the same sharp-vs-soft framework professional syndicates use, delivered as an API endpoint.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How do sports odds APIs calculate fair odds?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI calculates fair odds by removing the bookmaker margin (vig/juice) from the sharpest available lines. The fair odds endpoint returns the estimated true probability for each outcome as a decimal value with the overround stripped. You can compare any bookmaker's price against this baseline to instantly see whether you're getting positive or negative expected value, without building your own devigging model.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What API can I use to find positive EV bets?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Positive expected value (+EV) bets occur when a bookmaker's odds imply a lower probability than the true probability of the outcome. TheOddsAPI identifies +EV opportunities through two endpoints: fair odds (strips vig from sharp lines to estimate true probability) and edge detection (compares every bookmaker against Pinnacle's efficient line). If a soft book's price exceeds the fair odds value, the bet is +EV. Both endpoints are available on the Business plan and update with each odds refresh cycle.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- PREDICTION MARKETS -->
+<section id="prediction-markets" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Prediction Markets</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Can I use a sports odds API for Polymarket trading?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI is used by Polymarket sports traders to benchmark prediction market contracts against real sportsbook pricing. The workflow: pull real-time odds from 50 bookmakers, convert to implied probability, and compare against the Polymarket contract price. What makes this effective is the fair odds endpoint, which strips the vig and gives you a clean true-probability estimate. If a Polymarket contract for "Lakers win" is priced at $0.55 but TheOddsAPI fair odds show 51.2% true probability, the contract is overpriced. The 30-second refresh rate on Business lets you track line movement and react before the prediction market adjusts.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What odds API do Kalshi sports traders use?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Kalshi event contracts for sports outcomes work like binary options. TheOddsAPI gives traders the sportsbook-derived pricing benchmark for those contracts. The edge detection endpoint is particularly useful here: it already computes which bookmakers are mispriced relative to Pinnacle's sharp line, and that same framework applies to Kalshi contracts. If Pinnacle implies 47% on an outcome and Kalshi is selling the "yes" contract at $0.52, the contract is 5 points rich. TheOddsAPI covers 24 sports with h2h, spreads, and totals, matching the most common Kalshi contract types.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How do I get real-time odds for prediction market arbitrage?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Prediction market arbitrage exploits price differences between platforms like Polymarket or Kalshi and regulated sportsbooks. TheOddsAPI provides the sportsbook side of that equation: real-time odds from 50 bookmakers across 24 sports, refreshed every 30 seconds on Business. The execution flow: convert sportsbook odds to implied probability using the fair odds endpoint, compare against the prediction market contract price, and act when the spread exceeds your transaction costs. The single-call multi-book response means you can scan the entire sportsbook market for one event in one request, making cross-platform arbitrage scans practical at production speed.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- TROUBLESHOOTING -->
+<section id="troubleshooting" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Troubleshooting</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Why am I getting a 401 error from my sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is passing the key as an Authorization header instead of a query parameter. TheOddsAPI uses ?apiKey=YOUR_KEY in the URL, not a header. Other causes: omitting the parameter entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: https://api.theoddsapi.com/v4/sports?apiKey=YOUR_KEY. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- CTA -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="font-serif text-2xl md:text-3xl font-bold text-[#E8EEF7] mb-4">Still have questions?</h2>
+    <p class="text-muted text-base mb-8">Reach out directly. We respond to every message.</p>
+    <div class="flex justify-center gap-3 flex-wrap">
+      <a data-link="GET_KEY" href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="px-7 py-3.5 rounded bg-gold text-navy text-sm font-bold tracking-wider
+                hover:bg-gold-dark transition-all shadow-[0_2px_16px_rgba(212,175,55,.35)]">
+        Get API Key
+      </a>
+      <a href="mailto:hello@theoddsapi.com"
+         class="px-7 py-3.5 rounded border border-gold/25 text-muted text-sm font-semibold tracking-wide
+                hover:text-[#E8EEF7] hover:border-gold/50 transition-all">
+        hello@theoddsapi.com
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">
+      TheOdds<span class="text-gold/70">API</span>
+    </p>
+    <p class="text-xs text-muted/40 mt-1">&copy; 2026 TheOddsAPI &middot; theoddsapi.com &middot; All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="/faq" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">FAQ</a>
+    <a data-link="DOCS" href="#" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<!-- Link rewriter -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-link]').forEach(function(el) {
+    var key = el.getAttribute('data-link');
+    if (LINKS[key]) el.href = LINKS[key];
+  });
+});
+</script>
+
+</body>
+</html>
