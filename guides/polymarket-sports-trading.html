@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polymarket Sports Trading Bot — Real-Time Odds for Prediction Markets | The Odds API</title>
+  <meta name="description" content="Build a Polymarket sports trading bot with real-time sportsbook odds from TheOddsAPI. Convert 50-bookmaker odds to implied probability, compare against Polymarket contract prices, and identify mispriced contracts." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/polymarket-sports-trading" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/polymarket-sports-trading" />
+  <meta property="og:title" content="Polymarket Sports Trading Bot — Real-Time Odds for Prediction Markets | The Odds API" />
+  <meta property="og:description" content="Build a Polymarket sports trading bot with real-time sportsbook odds. 50 bookmakers, Pinnacle-anchored fair odds, 30-second refresh." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="The Odds API" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Polymarket Sports Trading Bot — Real-Time Odds | The Odds API" />
+  <meta name="twitter:description" content="Build a Polymarket sports trading bot with real-time sportsbook odds. 50 bookmakers, Pinnacle-anchored fair odds, 30-second refresh." />
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do Polymarket sports traders use sportsbook odds data?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Polymarket sports traders use TheOddsAPI to pull real-time odds from 50 regulated sportsbooks, convert them to implied probabilities, and compare against Polymarket contract prices. When a Polymarket contract trades above or below the sportsbook-derived fair probability, that gap represents a trading opportunity. The fair odds endpoint strips the bookmaker vig to give a clean probability estimate, and the 30-second refresh rate allows traders to track line movement and react before the prediction market adjusts."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the edge between sportsbook odds and Polymarket prices?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The edge comes from information asymmetry and market structure differences. Sportsbooks employ professional oddsmakers and accept sharp action from syndicates, making their lines highly efficient. Polymarket sports markets are newer, thinner, and slower to incorporate sharp pricing. When Pinnacle moves a line, Polymarket contracts often lag by minutes to hours. TheOddsAPI surfaces this gap by providing Pinnacle-anchored fair odds that traders compare against contract prices in real time."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What sports can I trade on Polymarket with sportsbook odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Polymarket offers sports contracts for NBA, NFL, NHL, MLB, UFC, soccer (EPL, Champions League), college football, tennis, golf, and Formula 1. TheOddsAPI covers 24 sports including all of these with h2h (moneyline), spreads, and totals markets from 50 bookmakers. The overlap is comprehensive: nearly every Polymarket sports contract has a corresponding sportsbook market that can serve as a pricing benchmark."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I convert sportsbook odds to Polymarket contract prices?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sportsbook odds contain a built-in margin (vig). To compare against Polymarket, you need vig-free probabilities. TheOddsAPI fair odds endpoint does this automatically: it strips the bookmaker margin from the sharpest available lines and returns the estimated true probability as a decimal value. A fair odds value of 0.58 means the true probability is 58%, which corresponds to a fair Polymarket contract price of $0.58. If the actual contract trades at $0.63, the contract is 5 cents overpriced."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How fast do Polymarket sports contracts reprice after sportsbook line moves?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sportsbook lines move within seconds of new information. Polymarket contracts typically lag by 1 to 15 minutes for liquid markets and up to hours for thinner markets. This repricing delay is the core arbitrage window. TheOddsAPI refreshes odds every 30 seconds on the Business plan, which means you can detect a sportsbook line move and check Polymarket before the contract price adjusts. The window is widest on lower-volume contracts and narrows as Polymarket sports markets mature."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://theoddsapi.com/guides"},
+      {"@type": "ListItem", "position": 3, "name": "Polymarket Sports Trading", "item": "https://theoddsapi.com/guides/polymarket-sports-trading"}
+    ]
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    .live-dot { animation: pulse-live 2s ease-in-out infinite; }
+  </style>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/faq.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">FAQ</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide
+              hover:bg-gold-dark transition-all">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a>
+  <span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a>
+  <span class="mx-2">/</span>
+  <span class="text-muted">Polymarket Sports Trading</span>
+</div>
+
+<!-- HERO -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Polymarket Sports Trading<br/>
+        <span class="text-gold">with Real-Time Odds Data</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Polymarket sports contracts settle based on game outcomes. Regulated sportsbooks
+        price those same outcomes with decades of oddsmaking infrastructure. TheOddsAPI
+        bridges the gap: 50 bookmakers, vig-free fair odds, and 30-second refresh rates
+        so you can price contracts before the prediction market catches up.
+      </p>
+
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Sportsbooks as pricing anchors</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">30s</p>
+          <p class="text-xs text-muted mt-1">Odds refresh cycle</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">24</p>
+          <p class="text-xs text-muted mt-1">Sports covered</p>
+        </div>
+      </div>
+
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+    </div>
+
+    <!-- SAMPLE: Fair odds vs Polymarket contract -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Polymarket vs Sportsbook Implied Probability</span>
+      </div>
+      <div class="p-5">
+        <p class="text-xs font-mono text-muted mb-4">NBA Western Conference Finals, Game 5</p>
+        <div class="space-y-4">
+          <div class="rounded border border-gold/10 bg-navy-mid p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-medium">Lakers Win</span>
+              <span class="text-xs text-muted">Polymarket: <span class="text-[#E8EEF7] font-bold">$0.62</span></span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">Pinnacle implied</span>
+              <span class="text-xs text-gold font-bold">56.8%</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">TheOddsAPI fair odds</span>
+              <span class="text-xs text-gold font-bold">57.2%</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gold/10 flex justify-between items-center">
+              <span class="text-xs text-muted">Contract premium</span>
+              <span class="text-xs font-bold text-red-400">+4.8 cents overpriced</span>
+            </div>
+          </div>
+          <div class="rounded border border-gold/10 bg-navy-mid p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-medium">Nuggets Win</span>
+              <span class="text-xs text-muted">Polymarket: <span class="text-[#E8EEF7] font-bold">$0.38</span></span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">Pinnacle implied</span>
+              <span class="text-xs text-gold font-bold">43.2%</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">TheOddsAPI fair odds</span>
+              <span class="text-xs text-gold font-bold">42.8%</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gold/10 flex justify-between items-center">
+              <span class="text-xs text-muted">Contract discount</span>
+              <span class="text-xs font-bold text-alive">-4.8 cents underpriced</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-2xs text-muted/60 mt-3 italic">The Nuggets contract is underpriced relative to sharp sportsbook probability. A trader buying "Nuggets Yes" at $0.38 when fair value is $0.428 has 4.8 cents of expected edge per contract.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SPORTSBOOK ODDS MATTER FOR POLYMARKET -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Why Sportsbook Odds Are the Pricing Benchmark</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Sportsbooks have priced game outcomes for decades. Polymarket has priced them for months.
+      The information gap between these two markets is where the edge lives.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-6">
+        <h3 class="text-sm font-semibold text-gold mb-3">Sportsbook Market (Mature)</h3>
+        <p class="text-xs text-muted leading-relaxed mb-3">
+          Pinnacle alone processes billions in annual handle. Their lines are shaped by
+          professional syndicates, quantitative models, and unlimited liability. When Pinnacle
+          moves a line, it reflects genuine information entering the market.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          50 bookmakers competing on the same events means the consensus price
+          is highly efficient. The vig is the only friction.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-6">
+        <h3 class="text-sm font-semibold text-gold mb-3">Polymarket Sports (Emerging)</h3>
+        <p class="text-xs text-muted leading-relaxed mb-3">
+          Polymarket sports markets are growing rapidly but are still thinner than regulated
+          sportsbooks. Contract prices are set by market makers and retail flow rather than
+          professional oddsmakers. This means prices can drift from fair value, especially
+          on lower-volume contracts and during fast-moving news.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          The 0.75% fee on sports trades is lower than typical sportsbook vig (3-5%),
+          making Polymarket attractive for execution once you identify the edge.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">The Trading Pipeline</h2>
+
+    <div class="grid md:grid-cols-4 gap-6">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">01</p>
+        <h3 class="text-sm font-semibold mb-2">Pull Fair Odds</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Call the TheOddsAPI fair odds endpoint for your target sport. Returns vig-free
+          true probability for each outcome based on the sharpest available lines.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">02</p>
+        <h3 class="text-sm font-semibold mb-2">Read Contract Price</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Check the Polymarket contract price for the same event. A "Lakers Win" contract
+          at $0.62 implies the market believes there is a 62% chance of that outcome.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">03</p>
+        <h3 class="text-sm font-semibold mb-2">Measure the Gap</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Compare fair probability against contract price. If fair odds say 57% but the
+          contract trades at $0.62, the contract is 5 cents overpriced. If it trades at $0.52,
+          it is 5 cents underpriced.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">04</p>
+        <h3 class="text-sm font-semibold mb-2">Execute or Wait</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          If the gap exceeds your transaction costs (Polymarket fees + slippage), execute.
+          If not, monitor. TheOddsAPI refreshes every 30 seconds, so you can track line
+          movement and wait for the gap to widen.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE EXAMPLE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Pull fair odds, compare against your Polymarket position targets.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python — Fair Odds to Contract Pricing</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+<span class="tm"># Step 1: Get fair odds (vig-removed) from TheOddsAPI</span>
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/v4/sports/basketball_nba/odds"</span>,
+    params={
+        <span class="ts">"apiKey"</span>: <span class="ts">"YOUR_KEY"</span>,
+        <span class="ts">"regions"</span>: <span class="ts">"us,eu"</span>,
+        <span class="ts">"markets"</span>: <span class="ts">"h2h"</span>,
+        <span class="ts">"oddsFormat"</span>: <span class="ts">"decimal"</span>
+    }
+)
+
+<span class="tk">for</span> event <span class="tk">in</span> response.json():
+    <span class="tm"># Step 2: Find Pinnacle line (sharpest available)</span>
+    pinnacle = <span class="tk">next</span>(
+        (b <span class="tk">for</span> b <span class="tk">in</span> event[<span class="ts">"bookmakers"</span>] <span class="tk">if</span> b[<span class="ts">"key"</span>] == <span class="ts">"pinnacle"</span>), <span class="tk">None</span>
+    )
+    <span class="tk">if not</span> pinnacle:
+        <span class="tk">continue</span>
+
+    <span class="tm"># Step 3: Convert to implied probability (strip vig)</span>
+    outcomes = pinnacle[<span class="ts">"markets"</span>][<span class="tn">0</span>][<span class="ts">"outcomes"</span>]
+    raw_probs = [<span class="tn">1</span> / o[<span class="ts">"price"</span>] <span class="tk">for</span> o <span class="tk">in</span> outcomes]
+    overround = <span class="tk">sum</span>(raw_probs)
+    fair_probs = [p / overround <span class="tk">for</span> p <span class="tk">in</span> raw_probs]
+
+    <span class="tm"># Step 4: Compare against Polymarket contract price</span>
+    <span class="tk">for</span> outcome, fair_prob <span class="tk">in</span> <span class="tk">zip</span>(outcomes, fair_probs):
+        polymarket_price = <span class="tn">0.62</span>  <span class="tm"># replace with actual contract price</span>
+        edge = fair_prob - polymarket_price
+        <span class="tk">if</span> <span class="tk">abs</span>(edge) > <span class="tn">0.03</span>:  <span class="tm"># 3-cent threshold</span>
+            <span class="tk">print</span>(f<span class="ts">"</span>{event[<span class="ts">'away_team'</span>]}<span class="ts"> vs </span>{event[<span class="ts">'home_team'</span>]}<span class="ts">"</span>)
+            <span class="tk">print</span>(f<span class="ts">"  </span>{outcome[<span class="ts">'name'</span>]}<span class="ts">: fair=</span>{fair_prob:<span class="tn">.1%</span>}<span class="ts">, contract=$</span>{polymarket_price}<span class="ts">, edge=</span>{edge:+<span class="tn">.1%</span>}<span class="ts">"</span>)</code></pre>
+    </div>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript — Polling Loop</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tm">// Poll every 60 seconds, compare against Polymarket positions</span>
+<span class="tk">async function</span> scanForEdge(sportKey, contractPrices) {
+  <span class="tk">const</span> res = <span class="tk">await</span> fetch(
+    <span class="ts">`https://api.theoddsapi.com/v4/sports/</span>${sportKey}<span class="ts">/odds?apiKey=YOUR_KEY&regions=us,eu&markets=h2h&oddsFormat=decimal`</span>
+  );
+  <span class="tk">const</span> events = <span class="tk">await</span> res.json();
+
+  <span class="tk">for</span> (<span class="tk">const</span> event <span class="tk">of</span> events) {
+    <span class="tk">const</span> pinnacle = event.bookmakers.find(b => b.key === <span class="ts">"pinnacle"</span>);
+    <span class="tk">if</span> (!pinnacle) <span class="tk">continue</span>;
+
+    <span class="tk">const</span> outcomes = pinnacle.markets[<span class="tn">0</span>].outcomes;
+    <span class="tk">const</span> rawProbs = outcomes.map(o => <span class="tn">1</span> / o.price);
+    <span class="tk">const</span> overround = rawProbs.reduce((a, b) => a + b, <span class="tn">0</span>);
+    <span class="tk">const</span> fairProbs = rawProbs.map(p => p / overround);
+
+    fairProbs.forEach((prob, i) => {
+      <span class="tk">const</span> contractPrice = contractPrices[outcomes[i].name] || <span class="tn">0</span>;
+      <span class="tk">const</span> edge = prob - contractPrice;
+      <span class="tk">if</span> (Math.abs(edge) > <span class="tn">0.03</span>) {
+        console.log(<span class="ts">`EDGE: </span>${outcomes[i].name}<span class="ts"> fair=</span>${(prob * <span class="tn">100</span>).toFixed(<span class="tn">1</span>)}<span class="ts">% contract=$</span>${contractPrice}<span class="ts"> edge=</span>${(edge * <span class="tn">100</span>).toFixed(<span class="tn">1</span>)}<span class="ts">c`</span>);
+      }
+    });
+  }
+}
+
+setInterval(() => scanForEdge(<span class="ts">"basketball_nba"</span>, { <span class="ts">"Lakers"</span>: <span class="tn">0.62</span>, <span class="ts">"Nuggets"</span>: <span class="tn">0.38</span> }), <span class="tn">60000</span>);</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT CREATES THE EDGE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Where the Edge Comes From</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Polymarket sports contracts are not mispriced by accident. Structural differences
+      between prediction markets and regulated sportsbooks create persistent opportunities.
+    </p>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Repricing Lag</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          When a key player is ruled out or a line moves sharply on Pinnacle, sportsbooks
+          adjust within seconds. Polymarket contracts take minutes to hours to reflect the same
+          information. The window is widest during breaking injury news, lineup announcements,
+          and weather changes that affect totals.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Thin Liquidity on Lower-Volume Contracts</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Major markets like NFL Sunday games or NBA playoffs have deeper Polymarket order books.
+          Mid-week MLB, regular season NHL, and soccer league matches are thinner. Thinner markets
+          mean larger spreads between contract price and fair value, which means larger edges
+          for traders using sharp sportsbook data as the benchmark.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Retail Flow Bias</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Polymarket sports markets attract retail traders who bet on teams they follow, not
+          on mathematical edge. This creates systematic biases: favorites and popular teams are
+          often overpriced (too expensive to buy "Yes"), while underdogs and less popular markets
+          are underpriced. Sportsbook fair odds cut through this bias with pure probability.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Cross-Market Arbitrage</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Some Polymarket contracts map directly to sportsbook spreads and totals, not just
+          moneylines. When a Polymarket "Over 220.5 Points" contract trades at $0.55 but the
+          sportsbook consensus totals line implies 48% for the over, the 7-cent gap is a pure
+          cross-market arbitrage. TheOddsAPI provides h2h, spreads, and totals so you can scan
+          all contract types.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Polymarket vs Sportsbook Pricing</h2>
+
+    <div class="rounded-lg border border-gold/20 overflow-hidden">
+      <table class="w-full text-xs">
+        <thead class="bg-navy-mid border-b border-gold/10">
+          <tr>
+            <th class="text-left px-4 py-3 text-muted font-medium"></th>
+            <th class="text-left px-4 py-3 text-muted font-medium">Polymarket</th>
+            <th class="text-left px-4 py-3 text-gold font-semibold">Sportsbooks (via TheOddsAPI)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gold/[.06]">
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Price discovery</td>
+            <td class="px-4 py-3 text-muted">Retail order flow + market makers</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Professional oddsmakers + sharp syndicates</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Market efficiency</td>
+            <td class="px-4 py-3 text-muted">Improving but still thin on many events</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Decades of competition, Pinnacle as anchor</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Repricing speed</td>
+            <td class="px-4 py-3 text-muted">Minutes to hours</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Seconds (30s refresh via API)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Fee structure</td>
+            <td class="px-4 py-3 text-muted">0.75% on sports trades</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">3-5% vig embedded in odds (stripped by fair odds endpoint)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Sports coverage</td>
+            <td class="px-4 py-3 text-muted">NBA, NFL, MLB, NHL, UFC, soccer, more</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">24 sports, all markets, 50 bookmakers</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Data access</td>
+            <td class="px-4 py-3 text-muted">Polymarket API (contract prices)</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">REST API, JSON, any language</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- RISK AND REALITY -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Risk and Reality</h2>
+    <p class="text-muted text-sm mb-6 max-w-2xl">
+      Prediction market trading is not risk-free. Understanding the limits protects your capital.
+    </p>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Settlement Differences</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Polymarket settles sports contracts based on regulation time results only. Overtime,
+          penalty shootouts, and extra time are excluded for soccer markets. If your sportsbook
+          odds include overtime outcomes, the implied probability will differ from a
+          regulation-only Polymarket contract. Account for this when comparing.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Execution Slippage</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Polymarket contract prices move when you place orders. On thin markets, the price
+          you see is not the price you get. Factor in slippage when calculating whether an edge
+          exceeds your transaction costs. Larger orders on lower-volume contracts will experience
+          more slippage.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Edge Decay</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          As Polymarket sports markets mature, the repricing lag will shrink. Edges that exist
+          today at 5+ cents may narrow to 1-2 cents over time. This is expected. The traders
+          who build the infrastructure now will have the execution advantage when margins tighten.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED GUIDES -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/kalshi-sports-trading" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Kalshi Sports Trading</h3>
+        <p class="text-xs text-muted">Price CFTC-regulated sports event contracts against sportsbook odds.</p>
+      </a>
+      <a href="/guides/arbitrage-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Detection</h3>
+        <p class="text-xs text-muted">Scan 50 sportsbooks for cross-book pricing inefficiencies.</p>
+      </a>
+      <a href="/guides/value-bets" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Value Bet Detection</h3>
+        <p class="text-xs text-muted">Find +EV overlay when books misprice against consensus.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Trading with Real-Time Odds</h2>
+    <p class="text-muted text-sm mb-8">
+      Free tier includes 25 requests/day. Business plan unlocks fair odds, edge detection,
+      and 30-second refresh for production trading.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+      <a href="https://api.theoddsapi.com/docs"
+         class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">
+        Try in Swagger
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">TheOdds<span class="text-gold/70">API</span></p>
+    <p class="text-xs text-muted/40 mt-1">&copy; 2026 TheOddsAPI &middot; theoddsapi.com &middot; All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="/faq.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">FAQ</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<script>
+(function() {
+  function track(event, params) {
+    if (typeof window.gtag === 'function') window.gtag('event', event, params || {});
+  }
+  document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el => {
+    el.addEventListener('click', () => track('get_key_click', { page: 'polymarket_guide' }));
+  });
+  document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el => {
+    el.addEventListener('click', () => track('docs_click', { page: 'polymarket_guide' }));
+  });
+})();
+</script>
+
+</body>
+</html>

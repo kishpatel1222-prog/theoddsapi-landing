@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalshi Sports Event Contracts — Regulated Prediction Market Pricing | The Odds API</title>
+  <meta name="description" content="Price Kalshi sports event contracts with real-time sportsbook odds from TheOddsAPI. CFTC-regulated binary contracts mapped against 50-bookmaker fair odds for systematic contract mispricing detection." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/kalshi-sports-trading" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/kalshi-sports-trading" />
+  <meta property="og:title" content="Kalshi Sports Event Contracts — Regulated Prediction Market Pricing | The Odds API" />
+  <meta property="og:description" content="Price CFTC-regulated Kalshi sports contracts against 50-bookmaker fair odds. Edge detection for binary event contracts." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="The Odds API" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Kalshi Sports Event Contracts — Regulated Pricing | The Odds API" />
+  <meta name="twitter:description" content="Price CFTC-regulated Kalshi sports contracts against 50-bookmaker fair odds. Edge detection for binary event contracts." />
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do traders price Kalshi sports event contracts using sportsbook odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kalshi sports event contracts are binary outcomes: yes or no. Sportsbook moneyline odds represent the same binary outcome with decades of pricing efficiency behind them. TheOddsAPI converts 50-bookmaker odds into vig-free fair probabilities that traders compare directly against Kalshi contract prices. If the fair probability is 45% but the Kalshi 'Yes' contract trades at $0.52, the contract is 7 cents overpriced relative to the sharpest available sportsbook pricing."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What makes Kalshi different from Polymarket for sports trading?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kalshi is regulated by the CFTC as a designated contract market (DCM). This means US-based traders can participate legally with full regulatory protection. Kalshi contracts go through a formal approval process before listing, which creates slower market availability but higher trust in settlement rules. Kalshi also uses a traditional exchange order book rather than an AMM, and fees are typically $0.01 per contract per side with no fee on losing positions."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which Kalshi sports contracts can be priced with TheOddsAPI data?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kalshi lists event contracts for NFL, NBA, MLB, NHL, college football, college basketball, soccer, UFC, tennis, and golf. TheOddsAPI covers all of these sports with h2h (moneyline), spreads, and totals markets from 50 bookmakers including Pinnacle. Any Kalshi contract that maps to a moneyline, spread, or total can be priced against sportsbook fair odds. Series winner and tournament outright contracts can be mapped to futures markets."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you detect mispriced Kalshi contracts with the edge detection endpoint?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI edge detection endpoint compares each bookmaker's odds against a Pinnacle-anchored baseline. When a Kalshi contract price deviates from this baseline by more than your cost threshold, that is a detectable mispricing. The endpoint returns the gap in probability points, so you can filter for contracts where the edge exceeds Kalshi's $0.01 per-contract fee plus your expected slippage."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the settlement rules for Kalshi sports contracts?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kalshi settles at $1.00 for yes and $0.00 for no based on the official result from a designated data source (typically the league itself or a major wire service). Settlement rules vary by contract: some include overtime, some do not. Always check the specific contract rules against your sportsbook odds source. TheOddsAPI provides both regulation-time and full-game odds depending on the sport and market type."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://theoddsapi.com/guides"},
+      {"@type": "ListItem", "position": 3, "name": "Kalshi Sports Trading", "item": "https://theoddsapi.com/guides/kalshi-sports-trading"}
+    ]
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    .live-dot { animation: pulse-live 2s ease-in-out infinite; }
+  </style>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/faq.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">FAQ</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide
+              hover:bg-gold-dark transition-all">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a>
+  <span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a>
+  <span class="mx-2">/</span>
+  <span class="text-muted">Kalshi Sports Trading</span>
+</div>
+
+<!-- HERO -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        Kalshi Sports Event Contracts<br/>
+        <span class="text-gold">Priced Against Sharp Odds</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Kalshi is the first CFTC-regulated exchange listing sports event contracts in the US.
+        Binary outcomes. Regulated settlement. But contract prices are still set by order flow,
+        not oddsmakers. TheOddsAPI gives you the oddsmaker-grade benchmark: Pinnacle-anchored
+        fair odds from 50 sportsbooks that tell you exactly when a Kalshi contract is mispriced.
+      </p>
+
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">CFTC</p>
+          <p class="text-xs text-muted mt-1">Regulated exchange</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">$0.01</p>
+          <p class="text-xs text-muted mt-1">Per-contract fee</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Sportsbook pricing anchors</p>
+        </div>
+      </div>
+
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+    </div>
+
+    <!-- SAMPLE: Edge detection on Kalshi contract -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">Kalshi Contract vs Sportsbook Fair Value</span>
+      </div>
+      <div class="p-5">
+        <p class="text-xs font-mono text-muted mb-4">NFL Week 14 — Sunday 1:00 PM ET</p>
+        <div class="space-y-4">
+          <div class="rounded border border-gold/10 bg-navy-mid p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-medium">Bills to beat Dolphins</span>
+              <span class="text-xs text-muted">Kalshi "Yes": <span class="text-[#E8EEF7] font-bold">$0.71</span></span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">Pinnacle implied (vig-free)</span>
+              <span class="text-xs text-gold font-bold">64.3%</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">TheOddsAPI fair odds</span>
+              <span class="text-xs text-gold font-bold">64.7%</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gold/10 flex justify-between items-center">
+              <span class="text-xs text-muted">Contract premium</span>
+              <span class="text-xs font-bold text-red-400">+6.3 cents overpriced</span>
+            </div>
+          </div>
+          <div class="rounded border border-gold/10 bg-navy-mid p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-medium">Dolphins to beat Bills</span>
+              <span class="text-xs text-muted">Kalshi "Yes": <span class="text-[#E8EEF7] font-bold">$0.29</span></span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">Pinnacle implied (vig-free)</span>
+              <span class="text-xs text-gold font-bold">35.7%</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-muted">TheOddsAPI fair odds</span>
+              <span class="text-xs text-gold font-bold">35.3%</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gold/10 flex justify-between items-center">
+              <span class="text-xs text-muted">Contract discount</span>
+              <span class="text-xs font-bold text-alive">-6.3 cents underpriced</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-2xs text-muted/60 mt-3 italic">The "Dolphins Yes" contract is underpriced. A buyer at $0.29 when fair value is $0.353 captures 6.3 cents of expected value per contract. At $0.01 per-side fee, net edge is 5.3 cents.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY KALSHI CONTRACTS GET MISPRICED -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Why Kalshi Sports Contracts Get Mispriced</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Kalshi is a regulated exchange, not a sportsbook. The contracts are priced by participants,
+      not by professional oddsmakers. That structural gap creates systematic mispricing.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-6">
+        <h3 class="text-sm font-semibold text-gold mb-3">Approval Lag Creates Stale Pricing</h3>
+        <p class="text-xs text-muted leading-relaxed mb-3">
+          Every Kalshi contract must pass CFTC review before listing. By the time a sports event
+          contract goes live, the sportsbook market has already been pricing it for days or weeks.
+          Early Kalshi contract prices often reflect where sportsbook odds were at listing time,
+          not where they are now.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          TheOddsAPI shows you the current sportsbook consensus so you can identify contracts
+          still trading at stale prices.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-6">
+        <h3 class="text-sm font-semibold text-gold mb-3">Thin Order Books on Non-Headline Events</h3>
+        <p class="text-xs text-muted leading-relaxed mb-3">
+          NFL playoff games and NBA Finals get deep order books on Kalshi. Regular season MLB,
+          mid-week NHL, and early-round tennis matches are much thinner. Fewer participants means
+          wider bid-ask spreads and more room for contract prices to deviate from fair value.
+        </p>
+        <p class="text-xs text-muted leading-relaxed">
+          These are the events where sportsbook fair odds give you the clearest signal of where
+          the contract should trade.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KALSHI vs SPORTSBOOKS STRUCTURE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">How Kalshi Contracts Map to Sportsbook Markets</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Every Kalshi sports contract corresponds to a market type that sportsbooks have priced for years.
+      Understanding the mapping is the foundation for systematic pricing.
+    </p>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Game Winner Contracts = Moneyline (h2h)</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          "Will the Chiefs beat the Raiders?" is a moneyline bet expressed as a binary contract.
+          TheOddsAPI h2h market gives you the same outcome priced by 50 bookmakers. Strip the vig
+          with the fair odds endpoint and you have the benchmark probability for the Kalshi contract.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Margin of Victory Contracts = Spreads</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          "Will the Lakers win by 7+ points?" maps to a spread market. Sportsbooks price spreads
+          at various lines (3.5, 7.5, 10.5). TheOddsAPI spreads market shows you where the sharp
+          consensus sits for each line. If Kalshi lists a margin contract that aligns with a common
+          spread number, you have direct pricing comparison.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Total Points Contracts = Totals (Over/Under)</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          "Will the combined score exceed 45.5?" is an over/under that sportsbooks have priced
+          since the markets opened. TheOddsAPI totals market returns the exact same structure:
+          the line number and odds for over/under from 50 books. Converting to implied probability
+          and comparing against the Kalshi contract price identifies mispricings.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Series and Tournament Winners = Outrights</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          "Will the Yankees win the World Series?" corresponds to sportsbook futures markets.
+          TheOddsAPI outrights market covers championship and tournament winners across major sports.
+          These contracts often have the widest mispricings because futures markets on Kalshi attract
+          less sophisticated flow than game-level contracts.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE PRICING WORKFLOW -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">Systematic Pricing Workflow</h2>
+
+    <div class="grid md:grid-cols-4 gap-6">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">01</p>
+        <h3 class="text-sm font-semibold mb-2">Identify Contract Type</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Determine if the Kalshi contract maps to h2h, spreads, or totals. Check the settlement
+          rules for overtime inclusion. This tells you which TheOddsAPI market to query.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">02</p>
+        <h3 class="text-sm font-semibold mb-2">Pull Fair Probability</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Call TheOddsAPI with the matching sport and market type. Use the fair odds endpoint
+          to get Pinnacle-anchored vig-free probability for the exact outcome the contract covers.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">03</p>
+        <h3 class="text-sm font-semibold mb-2">Compare and Score</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Subtract the Kalshi contract price from fair probability. Positive difference means
+          the "No" side is underpriced. Negative means "Yes" is underpriced. Score the edge
+          in cents per contract.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">04</p>
+        <h3 class="text-sm font-semibold mb-2">Filter by Net Edge</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Subtract Kalshi fees ($0.01/side) and estimated slippage from the gross edge. Only
+          execute when net edge exceeds your minimum threshold. TheOddsAPI refreshes every 30
+          seconds so you can wait for wider gaps.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE EXAMPLES -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Map Kalshi contracts to sportsbook fair value with a few lines of code.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python — Kalshi Contract Mispricing Scanner</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+<span class="tm"># Configuration</span>
+API_KEY = <span class="ts">"YOUR_KEY"</span>
+SPORT = <span class="ts">"americanfootball_nfl"</span>
+MIN_EDGE_CENTS = <span class="tn">3</span>  <span class="tm"># minimum edge after fees</span>
+KALSHI_FEE = <span class="tn">0.01</span>  <span class="tm"># $0.01 per contract per side</span>
+
+<span class="tm"># Step 1: Pull odds from 50 bookmakers</span>
+response = requests.get(
+    f<span class="ts">"https://api.theoddsapi.com/v4/sports/</span>{SPORT}<span class="ts">/odds"</span>,
+    params={
+        <span class="ts">"apiKey"</span>: API_KEY,
+        <span class="ts">"regions"</span>: <span class="ts">"us,eu,uk,au"</span>,
+        <span class="ts">"markets"</span>: <span class="ts">"h2h"</span>,
+        <span class="ts">"oddsFormat"</span>: <span class="ts">"decimal"</span>
+    }
+)
+
+events = response.json()
+
+<span class="tk">for</span> event <span class="tk">in</span> events:
+    <span class="tm"># Step 2: Find Pinnacle (sharpest book) or use consensus</span>
+    pinnacle = <span class="tk">next</span>(
+        (b <span class="tk">for</span> b <span class="tk">in</span> event[<span class="ts">"bookmakers"</span>] <span class="tk">if</span> b[<span class="ts">"key"</span>] == <span class="ts">"pinnacle"</span>), <span class="tk">None</span>
+    )
+    <span class="tk">if not</span> pinnacle:
+        <span class="tk">continue</span>
+
+    outcomes = pinnacle[<span class="ts">"markets"</span>][<span class="tn">0</span>][<span class="ts">"outcomes"</span>]
+
+    <span class="tm"># Step 3: Strip vig to get true probability</span>
+    raw_probs = [<span class="tn">1</span> / o[<span class="ts">"price"</span>] <span class="tk">for</span> o <span class="tk">in</span> outcomes]
+    overround = <span class="tk">sum</span>(raw_probs)
+    fair_probs = [p / overround <span class="tk">for</span> p <span class="tk">in</span> raw_probs]
+
+    <span class="tm"># Step 4: Compare against Kalshi contract prices</span>
+    <span class="tm"># Replace with actual Kalshi API contract lookup</span>
+    kalshi_contracts = {
+        outcomes[<span class="tn">0</span>][<span class="ts">"name"</span>]: <span class="tn">0.71</span>,  <span class="tm"># "Yes" price for team A</span>
+        outcomes[<span class="tn">1</span>][<span class="ts">"name"</span>]: <span class="tn">0.29</span>,  <span class="tm"># "Yes" price for team B</span>
+    }
+
+    <span class="tk">for</span> outcome, fair_prob <span class="tk">in</span> <span class="tk">zip</span>(outcomes, fair_probs):
+        contract_price = kalshi_contracts.get(outcome[<span class="ts">"name"</span>], <span class="tn">0</span>)
+        <span class="tk">if not</span> contract_price:
+            <span class="tk">continue</span>
+
+        gross_edge = fair_prob - contract_price
+        net_edge = <span class="tk">abs</span>(gross_edge) - (KALSHI_FEE * <span class="tn">2</span>)  <span class="tm"># buy + sell fees</span>
+
+        <span class="tk">if</span> net_edge > (MIN_EDGE_CENTS / <span class="tn">100</span>):
+            side = <span class="ts">"SELL"</span> <span class="tk">if</span> gross_edge < <span class="tn">0</span> <span class="tk">else</span> <span class="ts">"BUY NO"</span>
+            <span class="tk">print</span>(f<span class="ts">"</span>{event[<span class="ts">'away_team'</span>]}<span class="ts"> @ </span>{event[<span class="ts">'home_team'</span>]}<span class="ts">"</span>)
+            <span class="tk">print</span>(f<span class="ts">"  Contract: </span>{outcome[<span class="ts">'name'</span>]}<span class="ts"> Yes @ $</span>{contract_price}<span class="ts">"</span>)
+            <span class="tk">print</span>(f<span class="ts">"  Fair value: </span>{fair_prob:<span class="tn">.1%</span>}<span class="ts"> | Edge: </span>{gross_edge*<span class="tn">100</span>:+<span class="tn">.1f</span>}<span class="ts">c gross, </span>{net_edge*<span class="tn">100</span>:<span class="tn">.1f</span>}<span class="ts">c net"</span>)
+            <span class="tk">print</span>(f<span class="ts">"  Action: </span>{side}<span class="ts">"</span>)</code></pre>
+    </div>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript — Multi-Sport Contract Monitor</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tm">// Monitor multiple sports for Kalshi mispricing opportunities</span>
+<span class="tk">const</span> SPORTS = [<span class="ts">"americanfootball_nfl"</span>, <span class="ts">"basketball_nba"</span>, <span class="ts">"baseball_mlb"</span>, <span class="ts">"icehockey_nhl"</span>];
+<span class="tk">const</span> MIN_NET_EDGE = <span class="tn">0.03</span>;  <span class="tm">// 3 cents minimum after fees</span>
+<span class="tk">const</span> KALSHI_FEE_PER_SIDE = <span class="tn">0.01</span>;
+
+<span class="tk">async function</span> scanKalshiEdges(kalshiPositions) {
+  <span class="tk">const</span> opportunities = [];
+
+  <span class="tk">for</span> (<span class="tk">const</span> sport <span class="tk">of</span> SPORTS) {
+    <span class="tk">const</span> res = <span class="tk">await</span> fetch(
+      <span class="ts">`https://api.theoddsapi.com/v4/sports/</span>${sport}<span class="ts">/odds?apiKey=YOUR_KEY&regions=us,eu&markets=h2h&oddsFormat=decimal`</span>
+    );
+    <span class="tk">const</span> events = <span class="tk">await</span> res.json();
+
+    <span class="tk">for</span> (<span class="tk">const</span> event <span class="tk">of</span> events) {
+      <span class="tk">const</span> pinnacle = event.bookmakers.find(b => b.key === <span class="ts">"pinnacle"</span>);
+      <span class="tk">if</span> (!pinnacle) <span class="tk">continue</span>;
+
+      <span class="tk">const</span> outcomes = pinnacle.markets[<span class="tn">0</span>].outcomes;
+      <span class="tk">const</span> rawProbs = outcomes.map(o => <span class="tn">1</span> / o.price);
+      <span class="tk">const</span> overround = rawProbs.reduce((a, b) => a + b, <span class="tn">0</span>);
+      <span class="tk">const</span> fairProbs = rawProbs.map(p => p / overround);
+
+      fairProbs.forEach((prob, i) => {
+        <span class="tk">const</span> matchKey = <span class="ts">`</span>${event.home_team}<span class="ts"> vs </span>${event.away_team}<span class="ts"> - </span>${outcomes[i].name}<span class="ts">`</span>;
+        <span class="tk">const</span> contractPrice = kalshiPositions[matchKey];
+        <span class="tk">if</span> (!contractPrice) <span class="tk">return</span>;
+
+        <span class="tk">const</span> grossEdge = prob - contractPrice;
+        <span class="tk">const</span> netEdge = Math.abs(grossEdge) - (KALSHI_FEE_PER_SIDE * <span class="tn">2</span>);
+
+        <span class="tk">if</span> (netEdge > MIN_NET_EDGE) {
+          opportunities.push({
+            event: <span class="ts">`</span>${event.away_team}<span class="ts"> @ </span>${event.home_team}<span class="ts">`</span>,
+            outcome: outcomes[i].name,
+            fairProb: (prob * <span class="tn">100</span>).toFixed(<span class="tn">1</span>) + <span class="ts">"%"</span>,
+            contractPrice: <span class="ts">"$"</span> + contractPrice.toFixed(<span class="tn">2</span>),
+            netEdgeCents: (netEdge * <span class="tn">100</span>).toFixed(<span class="tn">1</span>),
+            side: grossEdge < <span class="tn">0</span> ? <span class="ts">"SELL YES"</span> : <span class="ts">"BUY YES"</span>,
+          });
+        }
+      });
+    }
+  }
+
+  <span class="tk">return</span> opportunities.sort((a, b) => b.netEdgeCents - a.netEdgeCents);
+}
+
+<span class="tm">// Run every 60 seconds</span>
+setInterval(<span class="tk">async</span> () => {
+  <span class="tk">const</span> edges = <span class="tk">await</span> scanKalshiEdges(myKalshiContractPrices);
+  edges.forEach(e => console.log(
+    <span class="ts">`</span>${e.side}<span class="ts"> </span>${e.outcome}<span class="ts"> (</span>${e.event}<span class="ts">) | Fair: </span>${e.fairProb}<span class="ts"> Contract: </span>${e.contractPrice}<span class="ts"> | Net edge: </span>${e.netEdgeCents}<span class="ts">c`</span>
+  ));
+}, <span class="tn">60000</span>);</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- KALSHI REGULATORY ADVANTAGE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">The Regulatory Dimension</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Kalshi's CFTC designation changes the risk profile compared to offshore prediction markets.
+      For systematic traders, this matters as much as the edge itself.
+    </p>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Counterparty Risk Eliminated</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          As a CFTC-regulated DCM, Kalshi holds customer funds in segregated accounts.
+          Settlement is guaranteed by the exchange. There is no counterparty risk on winning
+          positions. For traders running systematic strategies with larger capital, this
+          eliminates a category of risk that offshore platforms cannot.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Transparent Settlement Rules</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Every Kalshi contract has published settlement criteria before it goes live. The data
+          source, the timing, and the conditions are all defined upfront. This means you can
+          validate your sportsbook odds comparison against the exact settlement definition.
+          If Kalshi settles on regulation time only, make sure you are comparing against
+          regulation-time fair odds, not full-game including overtime.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">US Tax Reporting (1099-B)</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Kalshi issues 1099-B forms for US traders. Gains and losses are reported. For anyone
+          running a systematic trading operation, this is a feature: you have auditable records
+          of every contract trade. It also means you can potentially offset gains against losses,
+          depending on how your tax situation applies (consult a tax professional).
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDGE DETECTION MAPPING -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Using the Edge Detection Endpoint for Kalshi</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      TheOddsAPI edge detection endpoint returns pre-computed deviations from the Pinnacle-anchored
+      baseline. For Kalshi traders, this eliminates the need to compute fair odds yourself.
+    </p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Edge Detection Response (Simplified)</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>{
+  <span class="ts">"event"</span>: <span class="ts">"Bills vs Dolphins"</span>,
+  <span class="ts">"market"</span>: <span class="ts">"h2h"</span>,
+  <span class="ts">"edges"</span>: [
+    {
+      <span class="ts">"bookmaker"</span>: <span class="ts">"fanduel"</span>,
+      <span class="ts">"outcome"</span>: <span class="ts">"Buffalo Bills"</span>,
+      <span class="ts">"odds"</span>: <span class="tn">1.52</span>,
+      <span class="ts">"fair_odds"</span>: <span class="tn">1.55</span>,
+      <span class="ts">"edge_points"</span>: <span class="tn">1.3</span>,
+      <span class="ts">"implied_fair_prob"</span>: <span class="tn">0.645</span>
+    }
+  ]
+}</code></pre>
+    </div>
+
+    <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+      <h3 class="text-sm font-semibold mb-3">How to read this for Kalshi:</h3>
+      <p class="text-xs text-muted leading-relaxed mb-3">
+        The <code class="text-gold/80">implied_fair_prob</code> of 0.645 means sportsbook sharp consensus gives the Bills
+        a 64.5% chance. If the Kalshi "Bills Win" contract trades at $0.71, the contract is
+        6.5 cents overpriced. You would sell "Yes" (or buy "No") and pocket the difference
+        at settlement.
+      </p>
+      <p class="text-xs text-muted leading-relaxed">
+        The edge detection endpoint scans all active events across your subscribed sports every
+        30 seconds on Business tier. You do not need to poll individual events or do the vig
+        removal math yourself. Filter the response for edges above your threshold and cross-reference
+        against live Kalshi contract prices.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Kalshi vs Polymarket vs Sportsbooks</h2>
+
+    <div class="rounded-lg border border-gold/20 overflow-hidden">
+      <table class="w-full text-xs">
+        <thead class="bg-navy-mid border-b border-gold/10">
+          <tr>
+            <th class="text-left px-4 py-3 text-muted font-medium"></th>
+            <th class="text-left px-4 py-3 text-muted font-medium">Kalshi</th>
+            <th class="text-left px-4 py-3 text-muted font-medium">Polymarket</th>
+            <th class="text-left px-4 py-3 text-gold font-semibold">Sportsbooks (TheOddsAPI)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gold/[.06]">
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Regulation</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">CFTC-regulated DCM</td>
+            <td class="px-4 py-3 text-muted">Offshore, unregulated in US</td>
+            <td class="px-4 py-3 text-muted">Varies by jurisdiction</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">US access</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Legal for US residents</td>
+            <td class="px-4 py-3 text-muted">Restricted in US</td>
+            <td class="px-4 py-3 text-muted">State-by-state</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Fees</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">$0.01/contract/side, no fee on losses</td>
+            <td class="px-4 py-3 text-muted">0.75% on sports</td>
+            <td class="px-4 py-3 text-muted">3-5% vig (stripped by fair odds)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Listing speed</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Slow (CFTC approval required)</td>
+            <td class="px-4 py-3 text-muted">Fast (community-created)</td>
+            <td class="px-4 py-3 text-muted">Immediate (sportsbooks set lines)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Liquidity</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Growing, thin on non-headlines</td>
+            <td class="px-4 py-3 text-muted">Deeper on major events</td>
+            <td class="px-4 py-3 text-gold font-medium">Deep (billions in annual handle)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Settlement</td>
+            <td class="px-4 py-3 text-[#E8EEF7]">Published rules, exchange-guaranteed</td>
+            <td class="px-4 py-3 text-muted">Resolution oracle</td>
+            <td class="px-4 py-3 text-muted">N/A (pricing source only)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- RISK SECTION -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Risk Considerations</h2>
+    <p class="text-muted text-sm mb-6 max-w-2xl">
+      Regulated does not mean risk-free. Understanding the structural risks protects capital.
+    </p>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Settlement Rule Mismatch</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Some Kalshi contracts include overtime in settlement. Some do not. Sportsbook moneyline
+          odds typically include overtime for basketball and football but not for soccer. If your
+          sportsbook fair odds include overtime but the Kalshi contract settles on regulation only,
+          your edge calculation is wrong. Always read the contract specification and match it to
+          the correct odds source.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Liquidity Limits on Execution</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          An edge only matters if you can execute at the displayed price. Thin Kalshi order books
+          mean your order may move the market. For contracts with less than $10K in available
+          liquidity at the desired price, size your position accordingly. The theoretical edge
+          from TheOddsAPI pricing is your upper bound, not your guaranteed return.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Position Limits</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Kalshi enforces position limits per contract. For sports events, these limits cap your
+          maximum exposure. Even with a large edge, you cannot concentrate unlimited capital into
+          a single contract. Systematic traders need to spread across many events to deploy
+          meaningful size. TheOddsAPI covers 24 sports and hundreds of daily events, giving you
+          a large universe to scan.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED GUIDES -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/polymarket-sports-trading" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Polymarket Sports Trading</h3>
+        <p class="text-xs text-muted">Reprice Polymarket contracts using sportsbook fair odds and 30-second refresh.</p>
+      </a>
+      <a href="/guides/arbitrage-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Arbitrage Detection</h3>
+        <p class="text-xs text-muted">Scan 50 sportsbooks for cross-book pricing inefficiencies.</p>
+      </a>
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Pinnacle Sharp Lines</h3>
+        <p class="text-xs text-muted">Pinnacle as the sharp anchor. 49 soft books compared against the most efficient line.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Price Kalshi Contracts with Sharp Data</h2>
+    <p class="text-muted text-sm mb-8">
+      Free tier includes 25 requests/day. Business plan unlocks fair odds, edge detection,
+      and 30-second refresh for production contract pricing.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+      <a href="https://api.theoddsapi.com/docs"
+         class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">
+        Try in Swagger
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">TheOdds<span class="text-gold/70">API</span></p>
+    <p class="text-xs text-muted/40 mt-1">&copy; 2026 TheOddsAPI &middot; theoddsapi.com &middot; All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="/faq.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">FAQ</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<script>
+(function() {
+  function track(event, params) {
+    if (typeof window.gtag === 'function') window.gtag('event', event, params || {});
+  }
+  document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el => {
+    el.addEventListener('click', () => track('get_key_click', { page: 'kalshi_guide' }));
+  });
+  document.querySelectorAll('a[href*="theoddsapi.com/docs"]').forEach(el => {
+    el.addEventListener('click', () => track('docs_click', { page: 'kalshi_guide' }));
+  });
+})();
+</script>
+
+</body>
+</html>
