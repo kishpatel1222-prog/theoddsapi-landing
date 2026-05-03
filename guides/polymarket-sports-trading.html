@@ -493,6 +493,69 @@ setInterval(() => scanForEdge(<span class="ts">"basketball_nba"</span>, { <span 
   </div>
 </section>
 
+<!-- CASE STUDY: REAL DATA -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Case Study: NHL Playoffs, May 2 2026</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Real edge detected by TheOddsAPI 30 minutes before puck drop. This is not a hypothetical.
+    </p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">TheOddsAPI Edge Snapshot &mdash; 2026-05-02 19:40 ET</span>
+      </div>
+      <div class="p-5">
+        <p class="text-sm font-medium mb-4">Carolina Hurricanes vs Philadelphia Flyers</p>
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">Pinnacle (sharp anchor)</span>
+            <span class="text-gold font-bold">Hurricanes -233 / 70.0% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">Marathonbet</span>
+            <span class="text-[#E8EEF7]">Hurricanes -137 / 57.8% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">Coolbet</span>
+            <span class="text-[#E8EEF7]">Hurricanes -143 / 58.9% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">Unibet</span>
+            <span class="text-[#E8EEF7]">Hurricanes -148 / 59.7% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">William Hill</span>
+            <span class="text-[#E8EEF7]">Hurricanes -188 / 65.3% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 mt-2">
+            <span class="font-medium">Probability gap (Pinnacle vs soft consensus)</span>
+            <span class="text-gold font-bold">+10.3 percentage points</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-alive/30 bg-navy-card p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-2 h-2 rounded-full bg-alive"></span>
+        <h3 class="text-sm font-semibold text-alive">Result: Hurricanes Won</h3>
+      </div>
+      <p class="text-xs text-muted leading-relaxed mb-3">
+        If a Polymarket "Hurricanes Win" contract was priced at $0.60 (matching the soft book
+        consensus of ~60%), while TheOddsAPI fair odds showed 70% true probability, a trader buying
+        "Yes" at $0.60 captured 10 cents of expected edge per contract. The contract settled at $1.00.
+      </p>
+      <p class="text-xs text-muted leading-relaxed">
+        This gap existed because Pinnacle moved to -233 while European soft books (Marathonbet,
+        Coolbet, Unibet) had not yet adjusted their lines. TheOddsAPI detected this divergence
+        30 minutes before game time at the 19:40 ET snapshot. A prediction market contract tracking
+        this event would have lagged even further behind the sportsbook move.
+      </p>
+    </div>
+  </div>
+</section>
+
 <!-- COMPARISON TABLE -->
 <section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
   <div class="max-w-4xl mx-auto">
