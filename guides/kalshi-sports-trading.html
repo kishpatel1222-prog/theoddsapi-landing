@@ -413,41 +413,45 @@
 <!-- CASE STUDY: REAL DATA -->
 <section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
   <div class="max-w-4xl mx-auto">
-    <h2 class="font-serif text-2xl font-bold mb-4">Case Study: NHL, May 2 2026</h2>
+    <h2 class="font-serif text-2xl font-bold mb-4">Case Study: NHL, May 5 2026</h2>
     <p class="text-muted text-sm mb-8 max-w-2xl">
-      Real edge detected by TheOddsAPI 30 minutes before puck drop. Not a hypothetical.
+      Real edge captured by The Odds API 30 minutes before puck drop. Not a hypothetical, not backtested. Pulled directly from the live edge_snapshots feed.
     </p>
 
     <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
       <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
-        <span class="text-2xs font-mono text-gold uppercase tracking-widest">TheOddsAPI Edge Snapshot &mdash; 2026-05-02 19:40 ET</span>
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">TheOddsAPI Edge Snapshot, 2026-05-05 19:40 ET</span>
       </div>
       <div class="p-5">
-        <p class="text-sm font-medium mb-4">Carolina Hurricanes vs Philadelphia Flyers</p>
+        <p class="text-sm font-medium mb-4">Colorado Avalanche vs Minnesota Wild</p>
         <div class="space-y-3 text-xs">
           <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
             <span class="text-muted">Pinnacle (sharp anchor)</span>
-            <span class="text-gold font-bold">Hurricanes -233 / 70.0% fair probability</span>
+            <span class="text-gold font-bold">Avalanche -192 / 65.8% fair probability</span>
           </div>
           <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
-            <span class="text-muted">Marathonbet</span>
-            <span class="text-[#E8EEF7]">Hurricanes -137 / 57.8% implied</span>
-          </div>
-          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
-            <span class="text-muted">Coolbet</span>
-            <span class="text-[#E8EEF7]">Hurricanes -143 / 58.9% implied</span>
+            <span class="text-muted">Unibet</span>
+            <span class="text-[#E8EEF7]">Avalanche -115 / 53.5% implied</span>
           </div>
           <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
             <span class="text-muted">LeoVegas</span>
-            <span class="text-[#E8EEF7]">Hurricanes -148 / 59.7% implied</span>
+            <span class="text-[#E8EEF7]">Avalanche -115 / 53.5% implied</span>
           </div>
           <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
-            <span class="text-muted">William Hill</span>
-            <span class="text-[#E8EEF7]">Hurricanes -188 / 65.3% implied</span>
+            <span class="text-muted">Marathonbet</span>
+            <span class="text-[#E8EEF7]">Avalanche -116 / 53.7% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">Coolbet</span>
+            <span class="text-[#E8EEF7]">Avalanche -122 / 55.0% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">Tipico</span>
+            <span class="text-[#E8EEF7]">Avalanche -125 / 55.6% implied</span>
           </div>
           <div class="flex justify-between items-center py-2 mt-2">
             <span class="font-medium">Edge score (Pinnacle vs soft books)</span>
-            <span class="text-gold font-bold">45 to 96 points across 12 bookmakers</span>
+            <span class="text-gold font-bold">67 to 77 points across 10 bookmakers</span>
           </div>
         </div>
       </div>
@@ -456,19 +460,13 @@
     <div class="rounded-lg border border-alive/30 bg-navy-card p-5">
       <div class="flex items-center gap-2 mb-3">
         <span class="w-2 h-2 rounded-full bg-alive"></span>
-        <h3 class="text-sm font-semibold text-alive">Result: Hurricanes Won (Edge Hit)</h3>
+        <h3 class="text-sm font-semibold text-alive">Result: Avalanche Won (Edge Hit)</h3>
       </div>
       <p class="text-xs text-muted leading-relaxed mb-3">
-        A Kalshi "Hurricanes Win" contract priced at $0.60 (matching the soft book consensus of
-        ~60% implied probability) was mispriced by 10 cents relative to Pinnacle fair odds (70%).
-        A trader buying "Yes" at $0.60 collected $1.00 at settlement. After Kalshi's $0.01 per-side
-        fee, net profit was $0.38 per contract on a position with 10 cents of expected edge.
+        A Kalshi "Avalanche Win" contract priced at $0.55 (matching the soft book consensus of ~54.6% implied probability) was mispriced by 11 cents relative to TheOddsAPI fair odds via Pinnacle (65.8%). A trader buying "Yes" at $0.55 collected $1.00 at settlement. After Kalshi's $0.01 per-side fee, net profit was $0.43 per contract on a position with 11 cents of expected edge.
       </p>
       <p class="text-xs text-muted leading-relaxed">
-        TheOddsAPI detected Pinnacle at -233 while 11 European soft books (Marathonbet, Coolbet,
-        LeoVegas, Unibet, Tipico, Winamax) were still pricing Hurricanes between -137 and -155.
-        This divergence appeared 30 minutes before game start. A prediction market contract,
-        repricing even slower than soft sportsbooks, would have offered an even wider entry point.
+        TheOddsAPI flagged Pinnacle at -192 while 10 European soft books (Unibet, LeoVegas, Marathonbet, Coolbet, Tipico, Winamax, 1xBet) were still pricing Avalanche between -115 and -125. The edge writer surfaced the divergence at the 19:40 ET snapshot, 30 minutes before puck drop. Pinnacle anchoring is what made the gap visible. A naive average across soft books would have priced the Avalanche at the same wrong number.
       </p>
     </div>
   </div>
