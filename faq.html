@@ -297,6 +297,126 @@
           "@type": "Answer",
           "text": "A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is passing the key as an Authorization header instead of a query parameter. TheOddsAPI uses ?apiKey=YOUR_KEY in the URL, not a header. Other causes: omitting the parameter entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: https://api.theoddsapi.com/v4/sports?apiKey=YOUR_KEY. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "How should I cache responses from a sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the upstream refresh: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's the right way to handle rate limits in a production sports odds API integration?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Read X-RateLimit-Remaining and X-RateLimit-Limit on every response. Below 10 percent of monthly quota, throttle background polling (dashboards, scans) but keep critical paths (live scanning, customer requests) at full rate. ETag-cached 304s consume zero credits, so good caching makes rate limits a non-issue for most setups. On 429, exponential backoff starting at 1 second; respect Retry-After if present."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Should I retry failed requests to a sports odds API, and what's the right pattern?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Retry on 502, 503, 504, and connection timeouts. Don't retry on 400, 401, 403, 404; those mean you have a bug, not us. Exponential backoff 1s, 2s, 4s, 8s, capped at 30s, max 5 attempts. On 429, respect Retry-After. 4xx responses ship a JSON body with a detail field that tells you what to fix."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's typical request latency for a sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI median is 119 milliseconds, p95 is 537 milliseconds, p99 is 1.6 seconds, measured over 4,200+ recent prod requests. Cached endpoints (odds, edges, intelligence) are pre-computed during the refresh cycle and read straight from cache. Historical archive queries hit Postgres and run 500 to 1,500 milliseconds depending on date range and pagination. The API uses polling, not webhooks, so for low-latency use cases poll on the refresh cadence."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's the difference between raw market odds and vig-removed (devigged) fair odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Raw market odds bake in the bookmaker's vig. Implied probabilities across all outcomes sum to more than 100 percent; the excess is their margin. Vig-removed (devigged) odds normalize that to exactly 100 percent, the book's true probability assessment with no margin baked in. /intelligence/fair-odds/ on Business tier returns devigged odds calculated from a vig-removed consensus across 30 to 50 books including Pinnacle as a sharp anchor. Use it as the input to your own +EV calc against any retail book's offered price."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I calculate closing line value (CLV) using a sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "CLV is the implied-probability difference between the price you took and the closing-line price (typically Pinnacle's last pre-game number). To calculate it today: capture Pinnacle on /odds/ at bet time, capture again near commence_time, devig pairwise, take the delta. Positive CLV across hundreds of bets converges 10 times faster than realized P&L for validating edge. Native CLV tooling with closing-line snapshots ships in the Quant tier coming in our July release, pre-built so you skip the scaffolding."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I price multi-leg parlays with a sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pull single-leg prices from /odds/, /props/, or /best-lines/, convert each to decimal, multiply. The product is the parlay's true odds; compare to your sportsbook's offered parlay price to find mispricings. Caveat: same-game parlays are correlated. Outcomes aren't independent, so the multiplication overstates true odds, and books model that correlation in their SGP pricing. Modeling it yourself needs historical settlement data, available via /historical/settlements/ on Business tier."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is edge_score calculated in The Odds API's edge detection?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "edge_score = abs(line_gap) × 200 + abs(price_gap). line_gap is the spread or total difference between Pinnacle and the soft book; price_gap is the cent-value difference in their American odds. Line gaps weight more because they're more reliable signal. Recommended threshold: edge_score ≥ 50 for actionable edges. The 80 to 99 band has shown the strongest realized ROI in our internal grading data. Available on /edges/ with Business tier."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does The Odds API grade detected edges as wins, losses, or pushes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "After a game completes, /historical/settlements/ joins your edge snapshots against final scores from our /scores ingestion. h2h grades on the winning team; spreads and totals grade against the actual margin. Each settlement row has a result field (hit, miss, push, void) and a payout field (return per dollar at the soft book's price). Currently 1,700+ graded standard edges across 12 sports. Player prop grading is on the roadmap; we're integrating a player game-stats vendor, and until that lands prop snapshots collect but don't grade. Settlements are available on Business tier today; advanced settlement analytics (per-band ROI, performance attribution) ship in the Quant tier coming in our July release."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a sandbox or test environment for a sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The free tier is your sandbox. Same production endpoints, NBA + MLB h2h only, 25 requests per day. Build your integration against real production responses, then upgrade to Pro or Business with the same key. No separate sandbox URL, no migration, no code changes. Free keys are issued instantly, no credit card required."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I get decimal or fractional odds instead of American odds from The Odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "American by default. Pass oddsFormat=decimal as a query param to get decimal (1.91, 2.50). Fractional isn't returned natively but converts trivially from decimal: subtract 1, express as a fraction. American for US-facing apps, decimal for European or quant work."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What time zone are timestamps returned in by The Odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "All timestamps are UTC, ISO 8601 with the Z suffix (e.g., 2026-05-06T19:30:00Z). commence_time, last_update, captured_at, snapshot_time, all UTC. Convert to local in your application layer. Historical archive query params (from, to) expect ISO 8601 UTC inputs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is Pinnacle treated as the sharp anchor for edge detection?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pinnacle runs the lowest margins in the industry and accepts large action without limiting accounts, so their lines reflect the most informed pricing available. Sharp bettors and syndicates move Pinnacle's line through size; retail books (DraftKings, FanDuel, BetMGM) lean on Pinnacle and adjust for their own positions and margins. Comparing any retail book to Pinnacle gives the highest-signal cross-book edge. /edges/ and /intelligence/ use Pinnacle as the anchor."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "If a sports odds API doesn't support webhooks, how do I get real-time alerts?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI uses polling, not webhooks. For real-time alerts, poll the relevant endpoint at the refresh cadence (30 seconds for major sports), compare against your last-seen state, and fire your alert from your own code when a threshold trips (line moved more than X points, edge_score crossed Y). ETag caching keeps polling cheap; 304s cost zero credits. Same effective latency as webhooks for most use cases, simpler infra: no receiver, no retry queues, no replay logic. Push delivery with subscription endpoints is reserved for the Quant tier coming in our July release."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are closing line snapshots available from a sports odds API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TheOddsAPI captures closing-line snapshots (the last observed price per event, book, market, and outcome before commence_time) every 5 minutes via internal materialization. Public exposure ships in the Quant tier coming in our July release, with CLV calculation, line-movement signals, and vig-removed close-vs-open analysis pre-built. Today, Pro and Business can derive an approximate close from /historical/odds/ by querying the rows nearest commence_time per book per market."
+        }
       }
     ]
   }
@@ -787,6 +907,137 @@
           <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
         </summary>
         <div class="faq-body px-7 text-muted text-sm leading-relaxed">A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is passing the key as an Authorization header instead of a query parameter. TheOddsAPI uses ?apiKey=YOUR_KEY in the URL, not a header. Other causes: omitting the parameter entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: https://api.theoddsapi.com/v4/sports?apiKey=YOUR_KEY. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ADVANCED INTEGRATION & QUANT -->
+<section id="advanced" class="px-5 md:px-14 py-10 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-2xs font-bold text-gold/70 tracking-[.14em] uppercase font-mono mb-6 border-l-2 border-gold/50 pl-2.5">Advanced Integration &amp; Quant</p>
+    <div class="space-y-3">
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How should I cache responses from a sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the upstream refresh: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What's the right way to handle rate limits in a production sports odds API integration?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Read X-RateLimit-Remaining and X-RateLimit-Limit on every response. Below 10 percent of monthly quota, throttle background polling (dashboards, scans) but keep critical paths (live scanning, customer requests) at full rate. ETag-cached 304s consume zero credits, so good caching makes rate limits a non-issue for most setups. On 429, exponential backoff starting at 1 second; respect Retry-After if present.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Should I retry failed requests to a sports odds API, and what's the right pattern?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Retry on 502, 503, 504, and connection timeouts. Don't retry on 400, 401, 403, 404; those mean you have a bug, not us. Exponential backoff 1s, 2s, 4s, 8s, capped at 30s, max 5 attempts. On 429, respect Retry-After. 4xx responses ship a JSON body with a detail field that tells you what to fix.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What's typical request latency for a sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI median is 119 milliseconds, p95 is 537 milliseconds, p99 is 1.6 seconds, measured over 4,200+ recent prod requests. Cached endpoints (odds, edges, intelligence) are pre-computed during the refresh cycle and read straight from cache. Historical archive queries hit Postgres and run 500 to 1,500 milliseconds depending on date range and pagination. The API uses polling, not webhooks, so for low-latency use cases poll on the refresh cadence.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What's the difference between raw market odds and vig-removed (devigged) fair odds?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Raw market odds bake in the bookmaker's vig. Implied probabilities across all outcomes sum to more than 100 percent; the excess is their margin. Vig-removed (devigged) odds normalize that to exactly 100 percent, the book's true probability assessment with no margin baked in. /intelligence/fair-odds/ on Business tier returns devigged odds calculated from a vig-removed consensus across 30 to 50 books including Pinnacle as a sharp anchor. Use it as the input to your own +EV calc against any retail book's offered price.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How do I calculate closing line value (CLV) using a sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">CLV is the implied-probability difference between the price you took and the closing-line price (typically Pinnacle's last pre-game number). To calculate it today: capture Pinnacle on /odds/ at bet time, capture again near commence_time, devig pairwise, take the delta. Positive CLV across hundreds of bets converges 10 times faster than realized P&amp;L for validating edge. Native CLV tooling with closing-line snapshots ships in the Quant tier coming in our July release, pre-built so you skip the scaffolding.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Can I price multi-leg parlays with a sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Pull single-leg prices from /odds/, /props/, or /best-lines/, convert each to decimal, multiply. The product is the parlay's true odds; compare to your sportsbook's offered parlay price to find mispricings. Caveat: same-game parlays are correlated. Outcomes aren't independent, so the multiplication overstates true odds, and books model that correlation in their SGP pricing. Modeling it yourself needs historical settlement data, available via /historical/settlements/ on Business tier.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How is edge_score calculated in The Odds API's edge detection?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">edge_score = abs(line_gap) × 200 + abs(price_gap). line_gap is the spread or total difference between Pinnacle and the soft book; price_gap is the cent-value difference in their American odds. Line gaps weight more because they're more reliable signal. Recommended threshold: edge_score ≥ 50 for actionable edges. The 80 to 99 band has shown the strongest realized ROI in our internal grading data. Available on /edges/ with Business tier.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How does The Odds API grade detected edges as wins, losses, or pushes?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">After a game completes, /historical/settlements/ joins your edge snapshots against final scores from our /scores ingestion. h2h grades on the winning team; spreads and totals grade against the actual margin. Each settlement row has a result field (hit, miss, push, void) and a payout field (return per dollar at the soft book's price). Currently 1,700+ graded standard edges across 12 sports. Player prop grading is on the roadmap; we're integrating a player game-stats vendor, and until that lands prop snapshots collect but don't grade. Settlements are available on Business tier today; advanced settlement analytics (per-band ROI, performance attribution) ship in the Quant tier coming in our July release.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Is there a sandbox or test environment for a sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">The free tier is your sandbox. Same production endpoints, NBA + MLB h2h only, 25 requests per day. Build your integration against real production responses, then upgrade to Pro or Business with the same key. No separate sandbox URL, no migration, no code changes. Free keys are issued instantly, no credit card required.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Can I get decimal or fractional odds instead of American odds from The Odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">American by default. Pass oddsFormat=decimal as a query param to get decimal (1.91, 2.50). Fractional isn't returned natively but converts trivially from decimal: subtract 1, express as a fraction. American for US-facing apps, decimal for European or quant work.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">What time zone are timestamps returned in by The Odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">All timestamps are UTC, ISO 8601 with the Z suffix (e.g., 2026-05-06T19:30:00Z). commence_time, last_update, captured_at, snapshot_time, all UTC. Convert to local in your application layer. Historical archive query params (from, to) expect ISO 8601 UTC inputs.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Why is Pinnacle treated as the sharp anchor for edge detection?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Pinnacle runs the lowest margins in the industry and accepts large action without limiting accounts, so their lines reflect the most informed pricing available. Sharp bettors and syndicates move Pinnacle's line through size; retail books (DraftKings, FanDuel, BetMGM) lean on Pinnacle and adjust for their own positions and margins. Comparing any retail book to Pinnacle gives the highest-signal cross-book edge. /edges/ and /intelligence/ use Pinnacle as the anchor.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">If a sports odds API doesn't support webhooks, how do I get real-time alerts?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI uses polling, not webhooks. For real-time alerts, poll the relevant endpoint at the refresh cadence (30 seconds for major sports), compare against your last-seen state, and fire your alert from your own code when a threshold trips (line moved more than X points, edge_score crossed Y). ETag caching keeps polling cheap; 304s cost zero credits. Same effective latency as webhooks for most use cases, simpler infra: no receiver, no retry queues, no replay logic. Push delivery with subscription endpoints is reserved for the Quant tier coming in our July release.</div>
+      </details>
+
+      <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
+        <summary class="flex items-center justify-between gap-6 px-7 py-5 cursor-pointer">
+          <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Are closing line snapshots available from a sports odds API?</span>
+          <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
+        </summary>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI captures closing-line snapshots (the last observed price per event, book, market, and outcome before commence_time) every 5 minutes via internal materialization. Public exposure ships in the Quant tier coming in our July release, with CLV calculation, line-movement signals, and vig-removed close-vs-open analysis pre-built. Today, Pro and Business can derive an approximate close from /historical/odds/ by querying the rows nearest commence_time per book per market.</div>
       </details>
 
     </div>
