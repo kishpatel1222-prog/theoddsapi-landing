@@ -47,7 +47,7 @@
         "name": "How fast does TheOddsAPI surface NBA prop edges?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Edge detection runs server-side on the same cadence as the parent sport's refresh tick (30 seconds for NBA). Player props upstream feeds refresh approximately every 5 minutes for events starting within 24 hours. End-to-end edge surfacing latency is typically a few minutes, with worst case around 5 minutes 30 seconds. This is fast enough to act before retail flow corrects the soft books, but operators should size positions with the upstream prop refresh ceiling in mind."
+          "text": "Edge detection runs server-side on the same cadence as the parent sport's refresh tick (30 seconds for NBA). Player props refresh approximately every 5 minutes for events starting within 24 hours. End-to-end edge surfacing latency is typically a few minutes, with worst case around 5 minutes 30 seconds. This is fast enough to act before retail flow corrects the soft books, but operators should size positions with the prop refresh ceiling in mind."
         }
       },
       {
@@ -394,7 +394,7 @@
   <div class="max-w-4xl mx-auto">
     <h2 class="font-serif text-2xl font-bold mb-4">Refresh Cadence: What "Real Time" Actually Means</h2>
     <p class="text-muted text-sm mb-8 max-w-2xl">
-      Player props upstream feeds refresh approximately every 5 minutes for events starting within
+      Player props refresh approximately every 5 minutes for events starting within
       24 hours. TheOddsAPI's edge detection runs server-side on the same cadence as the parent
       sport's refresh tick (30 seconds for NBA). When a new prop quote enters our cache, the
       corresponding edge appears in /edges/ within roughly 30 seconds.
@@ -405,7 +405,7 @@
         End-to-end edge surfacing latency is the edge detection cycle plus the time since the last
         upstream props pull. Worst case is around 5 minutes 30 seconds. Best case is around 30
         seconds. Typical is a few minutes. Operators running quant systems on NBA props get edges
-        fast enough to act before retail flow corrects them, but the upstream prop refresh ceiling
+        fast enough to act before retail flow corrects them, but the prop refresh ceiling
         is not 30 seconds. Be honest with yourself about latency when sizing positions.
       </p>
     </div>
@@ -749,7 +749,7 @@ edges.sort(key=<span class="tk">lambda</span> e: e[<span class="ts">"gap_cents"<
         <p class="text-xs text-muted leading-relaxed">
           Some books quote regulation-only player point totals. Others include overtime. The same
           player's "Over 22.5 points" line can carry different settlement rules across books.
-          TheOddsAPI exposes the raw upstream feed without papering over this, so operators must
+          TheOddsAPI exposes the raw data feed without papering over this, so operators must
           read book-specific settlement rules before placing real money.
         </p>
       </div>

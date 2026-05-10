@@ -60,7 +60,7 @@ Tiered by sport priority:
 - 60–120s for full-coverage tier (MLS, EPL, La Liga, Bundesliga, Serie A, Ligue 1, Tennis, UFC)
 - 300s for niche or thin-coverage sports (AFL, NRL, Eredivisie, EFL Championship)
 
-Player props refresh approximately every 5 minutes upstream-bound, with edge surfacing within minutes via the `/edges/` endpoint.
+Player props refresh approximately every 5 minutes, with edge surfacing within minutes via the `/edges/` endpoint.
 
 ## Common use cases
 

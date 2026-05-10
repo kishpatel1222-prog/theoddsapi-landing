@@ -307,7 +307,7 @@
         "name": "How should I cache responses from a sports odds API?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the upstream refresh: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game."
+          "text": "TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the refresh cycle: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game."
         }
       },
       {

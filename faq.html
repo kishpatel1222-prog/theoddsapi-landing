@@ -303,7 +303,7 @@
         "name": "How should I cache responses from a sports odds API?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the upstream refresh: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game."
+          "text": "TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the refresh cycle: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game."
         }
       },
       {
@@ -925,7 +925,7 @@
           <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How should I cache responses from a sports odds API?</span>
           <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
         </summary>
-        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the upstream refresh: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game.</div>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI returns ETag headers. Cache the ETag, send it back as If-None-Match, and you get a 304 with zero credit cost when nothing changed. Application-side, match your TTL to the refresh cycle: 30 seconds for NBA, MLB, NFL, NHL; 60 to 300 seconds for everything else. Anything longer and you're serving stale lines pre-game.</div>
       </details>
 
       <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
