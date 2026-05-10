@@ -20,7 +20,54 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={theme:{extend:{colors:{gold:{DEFAULT:'#D4AF37',dark:'#C9A227'},navy:{DEFAULT:'#0B1426',mid:'#091325',card:'#0D1B30'},muted:'#8294B0',alive:'#4B9E5F'},fontFamily:{serif:['"Playfair Display"','Georgia','serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','"Fira Code"','monospace']}}}};</script>
-  <style>.top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37 50%,transparent)}</style>
+  <style>.top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#D4AF37 50%,transparent)}
+/* Guide hub filter chips + category badges (added 2026-05-09) */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(13, 27, 48, 0.5);
+  color: #8294B0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.filter-chip:hover {
+  color: #E8EEF7;
+  border-color: rgba(212, 175, 55, 0.5);
+}
+.filter-chip-active {
+  background: #D4AF37;
+  color: #0B1426;
+  border-color: #D4AF37;
+  font-weight: 700;
+}
+.filter-chip-active:hover { color: #0B1426; }
+
+.category-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.badge-intelligence { background: rgba(212,175,55,.15); color: #D4AF37; border: 1px solid rgba(212,175,55,.3); }
+.badge-props { background: rgba(168,85,247,.15); color: #c084fc; border: 1px solid rgba(168,85,247,.3); }
+.badge-prediction-markets { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+.badge-data { background: rgba(20,184,166,.15); color: #2dd4bf; border: 1px solid rgba(20,184,166,.3); }
+.badge-core { background: rgba(130,148,176,.15); color: #8294B0; border: 1px solid rgba(130,148,176,.3); }
+
+[data-guide-card][data-hidden="true"] { display: none !important; }
+
+</style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-V6023YJNQS');</script>
 </head>
@@ -47,6 +94,17 @@
 <section class="px-5 md:px-14 pt-12 pb-8">
   <div class="max-w-4xl mx-auto">
     <h1 class="font-serif text-3xl md:text-4xl font-bold mb-4">Guides</h1>
+<div class="max-w-6xl mx-auto px-5 md:px-14 mb-10">
+  <div class="flex flex-wrap items-center gap-2" id="guide-filters">
+    <button type="button" data-filter="all" class="filter-chip filter-chip-active">All</button>
+    <button type="button" data-filter="intelligence" class="filter-chip">Intelligence</button>
+    <button type="button" data-filter="props" class="filter-chip">Props</button>
+    <button type="button" data-filter="prediction-markets" class="filter-chip">Prediction Markets</button>
+    <button type="button" data-filter="data" class="filter-chip">Data</button>
+    <button type="button" data-filter="core" class="filter-chip">Core</button>
+  </div>
+</div>
+
     <p class="text-muted text-base max-w-2xl">
       Operational guides for sports betting edge detection, strategy, and API integration.
       Each guide leads with real output examples, then covers methodology and code.
@@ -175,6 +233,57 @@
     <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
   </div>
 </footer>
+
+
+<script>
+(function () {
+  const CATEGORY_MAP = [
+    { match: /(arbitrage|sharp-lines-pinnacle|value-bets|consensus-picks)/, category: 'intelligence', label: 'Intelligence' },
+    { match: /(player-props|nba-player-props)/, category: 'props', label: 'Props' },
+    { match: /(polymarket|kalshi)/, category: 'prediction-markets', label: 'Prediction Markets' },
+    { match: /(historical-odds-backtesting)/, category: 'data', label: 'Data' },
+    { match: /(odds-comparison)/, category: 'core', label: 'Core' },
+  ];
+
+  function categorize(href) {
+    for (const rule of CATEGORY_MAP) if (rule.match.test(href)) return rule;
+    return null;
+  }
+
+  const cards = Array.from(document.querySelectorAll('a[href*="/guides/"]')).filter(a => {
+    const href = a.getAttribute('href') || '';
+    if (href === '/guides/' || href === '/guides' || href.endsWith('theoddsapi.com/guides/')) return false;
+    return categorize(href) !== null;
+  });
+
+  cards.forEach(card => {
+    const rule = categorize(card.getAttribute('href'));
+    if (!rule) return;
+    card.setAttribute('data-guide-card', '');
+    card.setAttribute('data-category', rule.category);
+    if (!card.querySelector('.category-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'category-badge badge-' + rule.category;
+      badge.textContent = rule.label;
+      card.insertBefore(badge, card.firstChild);
+    }
+  });
+
+  const chips = document.querySelectorAll('#guide-filters .filter-chip');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const filter = chip.dataset.filter;
+      chips.forEach(c => c.classList.remove('filter-chip-active'));
+      chip.classList.add('filter-chip-active');
+      cards.forEach(card => {
+        if (filter === 'all' || card.dataset.category === filter) card.removeAttribute('data-hidden');
+        else card.setAttribute('data-hidden', 'true');
+      });
+      if (typeof window.gtag === 'function') window.gtag('event', 'guide_filter_click', { filter: filter });
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
