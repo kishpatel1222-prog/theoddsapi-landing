@@ -111,7 +111,7 @@
         "name": "How does authentication work for sports odds APIs?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "TheOddsAPI uses a single apiKey query parameter on every request. Example: https://api.theoddsapi.com/v4/sports/upcoming/odds?apiKey=YOUR_KEY&regions=us&markets=h2h. No OAuth, no bearer tokens, no request signing. One parameter, one key. Keys are issued per account and work across all endpoints your plan supports."
+          "text": "TheOddsAPI uses a single x-api-key HTTP header on every request. Example: curl -H 'x-api-key: YOUR_KEY' 'https://api.theoddsapi.com/odds/?sport_key=basketball_nba&regions=us&markets=h2h'. No OAuth, no bearer tokens, no request signing. One header, one key. Keys are issued per account and work across all endpoints your plan supports."
         }
       },
       {
@@ -295,7 +295,7 @@
         "name": "Why am I getting a 401 error from my sports odds API?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is passing the key as an Authorization header instead of a query parameter. TheOddsAPI uses ?apiKey=YOUR_KEY in the URL, not a header. Other causes: omitting the parameter entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: https://api.theoddsapi.com/v4/sports?apiKey=YOUR_KEY. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request."
+          "text": "A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is using the wrong header name (Authorization, Bearer, or auth) instead of x-api-key. TheOddsAPI uses x-api-key as the HTTP header name on every request. Other causes: omitting the header entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: curl -H 'x-api-key: YOUR_KEY' https://api.theoddsapi.com/sports/. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request."
         }
       },
       {
@@ -656,7 +656,7 @@
           <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How does authentication work for sports odds APIs?</span>
           <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
         </summary>
-        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI uses a single apiKey query parameter on every request. Example: https://api.theoddsapi.com/v4/sports/upcoming/odds?apiKey=YOUR_KEY&amp;regions=us&amp;markets=h2h. No OAuth, no bearer tokens, no request signing. One parameter, one key. Keys are issued per account and work across all endpoints your plan supports.</div>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI uses a single x-api-key HTTP header on every request. Example: curl -H 'x-api-key: YOUR_KEY' 'https://api.theoddsapi.com/odds/?sport_key=basketball_nba&amp;regions=us&amp;markets=h2h'. No OAuth, no bearer tokens, no request signing. One header, one key. Keys are issued per account and work across all endpoints your plan supports.</div>
       </details>
 
     </div>
@@ -906,7 +906,7 @@
           <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Why am I getting a 401 error from my sports odds API?</span>
           <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
         </summary>
-        <div class="faq-body px-7 text-muted text-sm leading-relaxed">A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is passing the key as an Authorization header instead of a query parameter. TheOddsAPI uses ?apiKey=YOUR_KEY in the URL, not a header. Other causes: omitting the parameter entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: https://api.theoddsapi.com/v4/sports?apiKey=YOUR_KEY. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request.</div>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">A 401 Unauthorized from TheOddsAPI means your API key is missing, invalid, or expired. The most common mistake is using the wrong header name (Authorization, Bearer, or auth) instead of x-api-key. TheOddsAPI uses x-api-key as the HTTP header name on every request. Other causes: omitting the header entirely, copy-pasting with extra whitespace, using a revoked key, or exceeding your plan quota. Test with: curl -H 'x-api-key: YOUR_KEY' https://api.theoddsapi.com/sports/. If that returns a 200 with a list of sports, your key is valid and the issue is in how your code constructs the request.</div>
       </details>
 
     </div>
