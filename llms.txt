@@ -50,8 +50,8 @@ API key in the `x-api-key` header on every request. Free keys via the homepage s
 ## Pricing tiers
 
 - **Free** — $0/mo. 25 requests per day, NBA + MLB only, h2h (moneyline) only.
-- **Professional** — $29/mo. 20,000 requests/month, 25 sports, all standard markets (h2h / spreads / totals), 50+ sportsbooks, multi-bookmaker normalized data.
-- **Business** — $99/mo. 200,000 requests/month, everything in Pro plus player props, edge detection, Pinnacle-anchored fair odds, consensus pricing, and the full historical odds archive at no additional credit cost.
+- **Professional** — $29/mo. 20,000 requests/month, 25 sports, all standard markets (h2h / spreads / totals), US sportsbooks (DraftKings, FanDuel, BetMGM, Caesars, BetRivers, and more).
+- **Business** — $99/mo. 200,000 requests/month, everything in Pro plus Pinnacle (the sharp anchor) and international bookmakers (UK / EU / AU regions, 50+ books total), player props, edge detection, Pinnacle-anchored fair odds, consensus pricing, and the full historical odds archive at no additional credit cost.
 
 ## Refresh cadence
 
