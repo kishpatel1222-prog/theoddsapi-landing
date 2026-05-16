@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MLB Player Props Edge Detection. Pinnacle-Anchored Data, 50 Sportsbooks | The Odds API</title>
+  <meta name="description" content="Detect edge on MLB player props (total bases, pitcher strikeouts, home runs) with Pinnacle-anchored data from 30+ sportsbooks. Daily slate, T-30 snapshot trail." />
+  <link rel="canonical" href="https://theoddsapi.com/guides/mlb-player-props-edge-detection" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://theoddsapi.com/guides/mlb-player-props-edge-detection" />
+  <meta property="og:title" content="MLB Player Props Edge Detection. Pinnacle-Anchored Data, 50 Sportsbooks | The Odds API" />
+  <meta property="og:description" content="Detect edge on MLB player props with Pinnacle-anchored data from 30+ sportsbooks. Total bases, pitcher strikeouts, home runs. T-30 snapshot trail." />
+  <meta property="og:image" content="https://theoddsapi.com/og-image.png" />
+  <meta property="og:site_name" content="The Odds API" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MLB Player Props Edge Detection | The Odds API" />
+  <meta name="twitter:description" content="Pinnacle-anchored MLB player prop edges from 30+ sportsbooks. Total bases, strikeouts, home runs. T-30 snapshot trail." />
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why are MLB player props softer than game lines?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Daily slate volume is the structural reason. MLB runs up to 15 games on a typical weekday. Books that hire senior trading teams for moneylines and run-line markets price prop boards from smaller teams running thinner models. Each game brings a unique starting-pitcher matchup, batter handedness splits, and a weather variable that changes the home run market. Soft books cannot keep up. TheOddsAPI surfaces those gaps for operators by anchoring every soft-book quote to Pinnacle in real time."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What MLB prop markets does The Odds API cover?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Three MLB player prop markets with active edge detection: batter_total_bases (dominant volume), pitcher_strikeouts, and batter_home_runs. Every market is priced by every book that quotes it, with Pinnacle present when available. Coverage extends to NBA and NHL props on the same endpoint pattern, so operators expanding from MLB into other sports do not need to rewrite integration logic."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How fast does TheOddsAPI surface MLB prop edges?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Edge detection runs server-side on the same cadence as the parent sport's refresh tick (30 seconds for MLB). Player props refresh approximately every 5 minutes for events starting within 24 hours. End-to-end edge surfacing latency is typically a few minutes, with worst case around 5 minutes 30 seconds. This is fast enough to act on lineup news (scratch from order, weather hold, starter change) before retail flow corrects the soft books."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is Pinnacle the sharp anchor for MLB prop edges?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pinnacle accepts large action, holds the lowest margin in the industry, and adjusts prop lines from the same models that price their game totals. When Pinnacle quotes a batter's total bases at -162 (Over 0.5), the implied probability is 61.8 percent. When BetMGM quotes the same Over at -150, BetMGM is implying 60.0 percent. The 1.8-point probability gap is real money compounded across the 15-game daily slate. TheOddsAPI uses Pinnacle as the baseline for fair probability across every MLB prop market."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I backtest MLB prop edges historically?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Every MLB prop edge surfaced by TheOddsAPI is captured at T-30 minutes to a timestamped table called prop_edge_snapshots, so operators can pull historical snapshots and apply their own settlement logic to compute a real cumulative ROI. Automated grading on Business+ tiers ships once the prop grading service is live for prop markets. Game-line historical odds (h2h, spreads, totals from 30+ sportsbooks) are already live on the historical odds endpoint."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://theoddsapi.com"},
+      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://theoddsapi.com/guides"},
+      {"@type": "ListItem", "position": 3, "name": "MLB Player Props Edge Detection", "item": "https://theoddsapi.com/guides/mlb-player-props-edge-detection"}
+    ]
+  }
+  </script>
+
+  <script>
+    const LINKS = {
+      GET_KEY:     'mailto:hello@theoddsapi.com?subject=API%20Key%20Request',
+      DOCS:        'https://api.theoddsapi.com/docs',
+      ENTERPRISE:  'mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry',
+      API_BASE:    'https://api.theoddsapi.com',
+      DOMAIN:      'https://theoddsapi.com',
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:  { DEFAULT: '#D4AF37', dark: '#C9A227' },
+            navy:  { DEFAULT: '#0B1426', mid: '#091325', card: '#0D1B30' },
+            muted: '#8294B0',
+            alive: '#4B9E5F',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            mono:  ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .tk { color: #89b4fa; }
+    .ts { color: #a6e3a1; }
+    .tn { color: #fab387; }
+    .tc { color: #D4AF37; }
+    .tm { color: #6b7280; font-style: italic; }
+    .top-line::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #D4AF37 50%, transparent);
+    }
+    .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 4px; }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #4B9E5F; }
+      50%       { opacity: .35; box-shadow: none; }
+    }
+    .live-dot { animation: pulse-live 2s ease-in-out infinite; }
+  </style>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6023YJNQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V6023YJNQS');
+  </script>
+</head>
+
+<body class="bg-navy text-[#E8EEF7] font-sans antialiased overflow-x-hidden leading-relaxed">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 flex items-center justify-between
+            px-5 md:px-14 h-16
+            bg-navy/90 backdrop-blur-xl border-b border-gold/[.15]">
+  <a href="/" class="font-serif text-xl font-bold text-[#E8EEF7] tracking-tight shrink-0">
+    TheOdds<span class="text-gold">API</span>
+  </a>
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    <li><a href="/quickstart.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Quick Start</a></li>
+    <li><a href="/guides/" class="text-gold text-sm font-semibold tracking-wide">Guides</a></li>
+    <li><a href="/#pricing" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Pricing</a></li>
+    <li><a href="/faq.html" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">FAQ</a></li>
+    <li><a href="/#enterprise" class="text-muted hover:text-[#E8EEF7] text-sm font-medium tracking-wide transition-colors">Enterprise</a></li>
+  </ul>
+  <div class="flex items-center gap-3">
+    <a href="https://api.theoddsapi.com/docs"
+       class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded
+              border border-gold/30 text-gold text-xs font-semibold tracking-wide
+              hover:bg-gold/10 hover:border-gold transition-all">
+      Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+       class="px-4 py-2 rounded bg-gold text-navy text-xs font-bold tracking-wide
+              hover:bg-gold-dark transition-all">
+      Get API Key
+    </a>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="px-5 md:px-14 py-4 text-xs text-muted/60">
+  <a href="/" class="hover:text-gold transition-colors">Home</a>
+  <span class="mx-2">/</span>
+  <a href="/guides/" class="hover:text-gold transition-colors">Guides</a>
+  <span class="mx-2">/</span>
+  <span class="text-muted">MLB Player Props Edge Detection</span>
+</div>
+
+<!-- HERO -->
+<section class="px-5 md:px-14 pt-8 pb-16">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+    <div class="pt-4">
+      <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6">
+        MLB Player Props Edge Detection<br/>
+        <span class="text-gold">with Pinnacle-Anchored Data</span>
+      </h1>
+      <p class="text-muted text-base leading-relaxed mb-8 max-w-lg">
+        Up to 15 games on a typical weekday slate. Every game brings a unique starting-pitcher
+        matchup, batter splits, weather window, and lineup card. Soft books cannot price all of
+        that in real time. TheOddsAPI surfaces the gaps for operators. MLB batter total bases,
+        pitcher strikeouts, and home runs from up to 50 sportsbooks with Pinnacle as the sharp anchor.
+      </p>
+
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">50</p>
+          <p class="text-xs text-muted mt-1">Sportsbooks priced per market</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">3</p>
+          <p class="text-xs text-muted mt-1">MLB prop markets active</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-gold">T-30</p>
+          <p class="text-xs text-muted mt-1">Snapshot trail per edge</p>
+        </div>
+      </div>
+
+      <a href="mailto:hello@theoddsapi.com?subject=API%20Key%20Request"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        Get API Key
+      </a>
+    </div>
+
+    <!-- HERO EDGE SNAPSHOT: Brewers at Padres May 14 -->
+    <div class="relative rounded-lg border border-gold/20 bg-navy-card overflow-hidden top-line">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="w-2 h-2 rounded-full bg-alive live-dot"></span>
+        <span class="text-2xs font-mono text-muted uppercase tracking-widest">TheOddsAPI Prop Edge Snapshot, 2026-05-14 13:11 ET</span>
+      </div>
+      <div class="p-5">
+        <p class="text-xs font-mono text-muted mb-4">San Diego Padres at Milwaukee Brewers, T-30 minutes to first pitch</p>
+        <div class="space-y-2 text-xs">
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06] text-2xs uppercase tracking-widest text-muted/70">
+            <div class="col-span-4">Player / Market</div>
+            <div class="col-span-3">Soft Book</div>
+            <div class="col-span-2 text-right">Soft</div>
+            <div class="col-span-2 text-right">Pinnacle</div>
+            <div class="col-span-1 text-right">Gap</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Griffin Canning</span><br/><span class="text-muted">K Over 4.5</span></div>
+            <div class="col-span-3 text-muted">Fanatics</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">+105</div>
+            <div class="col-span-2 text-right text-gold">-107</div>
+            <div class="col-span-1 text-right text-alive font-bold">12c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Nick Castellanos</span><br/><span class="text-muted">TB Over 0.5</span></div>
+            <div class="col-span-3 text-muted">BetMGM</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">-150</div>
+            <div class="col-span-2 text-right text-gold">-162</div>
+            <div class="col-span-1 text-right text-alive font-bold">12c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">William Contreras</span><br/><span class="text-muted">TB Under 1.5</span></div>
+            <div class="col-span-3 text-muted">William Hill US</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">-176</div>
+            <div class="col-span-2 text-right text-gold">-188</div>
+            <div class="col-span-1 text-right text-alive font-bold">12c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Xander Bogaerts</span><br/><span class="text-muted">TB Under 1.5</span></div>
+            <div class="col-span-3 text-muted">William Hill US</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">-190</div>
+            <div class="col-span-2 text-right text-gold">-202</div>
+            <div class="col-span-1 text-right text-alive font-bold">12c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Fernando Tatis Jr.</span><br/><span class="text-muted">TB Over 0.5</span></div>
+            <div class="col-span-3 text-muted">BetMGM</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">-165</div>
+            <div class="col-span-2 text-right text-gold">-176</div>
+            <div class="col-span-1 text-right text-alive font-bold">11c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2">
+            <div class="col-span-4"><span class="font-medium">Kyle Harrison</span><br/><span class="text-muted">K Over 5.5</span></div>
+            <div class="col-span-3 text-muted">BetOnline</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">-147</div>
+            <div class="col-span-2 text-right text-gold">-158</div>
+            <div class="col-span-1 text-right text-alive font-bold">11c</div>
+          </div>
+        </div>
+        <p class="text-2xs text-muted/60 mt-4 italic leading-relaxed">Six prop edges across both rosters from five different soft books, two markets. The soft books are paying 11 to 12 cents more than Pinnacle. Captured live from prop_edge_snapshots.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="max-w-6xl mx-auto text-xs text-muted/70 leading-relaxed mt-8 px-1">
+    This is a typical day on the MLB slate. The pattern below repeats nightly: multiple soft books
+    settling on consensus prices that drift from Pinnacle by 10 to 15 cents across batter totals
+    and pitcher strikeouts. Operators with a Pinnacle benchmark catch it. Single-book bettors do not.
+  </p>
+</section>
+
+<!-- WHY PINNACLE IS THE SHARP ANCHOR -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Why Pinnacle Is the Sharp Anchor for MLB Props</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Pinnacle accepts large action, holds the lowest margin in the industry, and adjusts prop
+      lines from the same models that price their game totals. When Pinnacle quotes a batter's
+      total bases at -162 (Over 0.5), the implied probability is 61.8 percent. When BetMGM quotes
+      the same Over at -150, BetMGM is implying 60.0 percent. The 1.8-point probability gap is
+      real money compounded across the daily slate.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">Daily slate volume</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Up to 15 MLB games on a weekday. Every game has a unique starting-pitcher matchup and
+          a full lineup of batter prop boards. Soft books cannot man this volume with senior
+          traders. They run consensus feeds that lag Pinnacle by minutes.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">Lineup news lag</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          A late scratch from the order, a starter pushed back a day, a weather hold extending
+          warmups, all move Pinnacle within seconds. Soft books wait for confirmed lineup cards
+          from official channels, which can lag by 30 to 60 minutes.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-3">Wider default vig</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Soft books default to wider margins on props than on game lines. The buffer absorbs
+          forecasting error, but it also leaves room for traders to extract that margin when they
+          identify which side of the line is wrong.
+        </p>
+      </div>
+    </div>
+
+    <p class="text-muted text-sm mt-8 max-w-2xl">
+      The structural result: MLB prop markets are where sharp pricing data has the highest
+      dollar-per-call ROI on a volume basis. Every night brings a new slate. Every slate brings
+      fresh divergence.
+    </p>
+  </div>
+</section>
+
+<!-- EDGE DETECTION PIPELINE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-10 text-center">The Edge Detection Pipeline</h2>
+
+    <div class="grid md:grid-cols-4 gap-6">
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">01</p>
+        <h3 class="text-sm font-semibold mb-2">Pull the prop market</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Call TheOddsAPI's /props/ endpoint for an event. The response includes every book's
+          lines for batter_total_bases, pitcher_strikeouts, and batter_home_runs, with Pinnacle
+          present when available.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">02</p>
+        <h3 class="text-sm font-semibold mb-2">Identify the Pinnacle anchor</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          For each market, locate Pinnacle's line and price. Pinnacle is the baseline for fair
+          probability. If Pinnacle has not yet quoted a market, skip it. There is no sharp anchor
+          to compare against.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">03</p>
+        <h3 class="text-sm font-semibold mb-2">Compare every soft book</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          For each soft book offering the same player, market, direction, and point, calculate
+          the cent-value gap against Pinnacle. The cent value works across the +100 / -100
+          boundary cleanly.
+        </p>
+      </div>
+      <div class="relative rounded-lg border border-gold/10 bg-navy-card p-6 top-line">
+        <p class="text-gold font-mono text-xs font-bold mb-3">04</p>
+        <h3 class="text-sm font-semibold mb-2">Filter by edge threshold</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Discard candidates below your threshold. TheOddsAPI's /edges/ endpoint defaults to a
+          min_edge of 50 (filters market microstructure noise). Set min_edge=10 for prop-scale
+          gaps. What remains is sorted by edge score.
+        </p>
+      </div>
+    </div>
+
+    <p class="text-muted text-sm mt-10 max-w-3xl mx-auto text-center">
+      A book paying 11 cents more than Pinnacle on a 50/50 prop translates to roughly 2.5 percent
+      expected value before juice. Multiply across a 15-game slate, every night, all season. The
+      compounded return is the difference between a hobbyist and an operator.
+    </p>
+  </div>
+</section>
+
+<!-- REFRESH CADENCE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Refresh Cadence: What "Real Time" Actually Means</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Player props refresh approximately every 5 minutes for events starting within 24 hours.
+      TheOddsAPI's edge detection runs server-side on the same cadence as the parent sport's
+      refresh tick (30 seconds for MLB). When a new prop quote enters our cache, the corresponding
+      edge appears in /edges/ within roughly 30 seconds.
+    </p>
+
+    <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+      <p class="text-xs text-muted leading-relaxed">
+        End-to-end edge surfacing latency is the edge detection cycle plus the time since the last
+        prop refresh. Worst case is around 5 minutes 30 seconds. Best case is around 30 seconds.
+        Typical is a few minutes. For MLB, the highest-value window is the 60 minutes before first
+        pitch when lineups confirm and weather updates land. Operators running automated scans
+        in this window catch the most edges before retail flow corrects them.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATION -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-3">Integration</h2>
+    <p class="text-muted text-sm mb-8">Map every soft-book MLB prop quote to Pinnacle and surface the gap. Python, ~40 lines.</p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">Python, MLB Prop Edge Scanner</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
+
+<span class="tm"># Step 1: Fetch MLB player props for an event from TheOddsAPI</span>
+event_id = <span class="ts">"YOUR_EVENT_ID"</span>
+response = requests.get(
+    <span class="ts">"https://api.theoddsapi.com/props/"</span>,
+    params={
+        <span class="ts">"apiKey"</span>:    <span class="ts">"YOUR_KEY"</span>,
+        <span class="ts">"sport_key"</span>: <span class="ts">"baseball_mlb"</span>,
+        <span class="ts">"event_id"</span>:  event_id,
+        <span class="ts">"markets"</span>:   <span class="ts">"batter_total_bases,pitcher_strikeouts,batter_home_runs"</span>,
+    },
+)
+event = response.json()
+
+<span class="tm"># Step 2: Index Pinnacle's lines by (market, player, direction)</span>
+PINNACLE = <span class="ts">"pinnacle"</span>
+props = event.get(<span class="ts">"props"</span>, [])
+pinnacle_index = {}
+<span class="tk">for</span> prop_market <span class="tk">in</span> props:
+    market_key = prop_market[<span class="ts">"market"</span>]
+    pinnacle_book = next((b <span class="tk">for</span> b <span class="tk">in</span> prop_market[<span class="ts">"books"</span>] <span class="tk">if</span> b[<span class="ts">"book"</span>] == PINNACLE), <span class="tk">None</span>)
+    <span class="tk">if not</span> pinnacle_book:
+        <span class="tk">continue</span>
+    <span class="tk">for</span> o <span class="tk">in</span> pinnacle_book[<span class="ts">"outcomes"</span>]:
+        key = (market_key, o[<span class="ts">"description"</span>], o[<span class="ts">"name"</span>])
+        pinnacle_index[key] = (o.get(<span class="ts">"point"</span>), o[<span class="ts">"price"</span>])
+
+<span class="tk">if not</span> pinnacle_index:
+    <span class="tk">raise</span> SystemExit(<span class="ts">"Pinnacle not quoting this event yet"</span>)
+
+<span class="tm"># Step 3: Compare every other book to Pinnacle on the same outcome</span>
+<span class="tk">def</span> cent_value(price):
+    <span class="tk">if</span> price &gt; <span class="tn">0</span>: <span class="tk">return</span> price - <span class="tn">100</span>
+    <span class="tk">if</span> price &lt; <span class="tn">0</span>: <span class="tk">return</span> <span class="tn">100</span> + price
+    <span class="tk">return</span> <span class="tn">0</span>
+
+EDGE_THRESHOLD_CENTS = <span class="tn">10</span>
+edges = []
+<span class="tk">for</span> prop_market <span class="tk">in</span> props:
+    market_key = prop_market[<span class="ts">"market"</span>]
+    <span class="tk">for</span> book <span class="tk">in</span> prop_market[<span class="ts">"books"</span>]:
+        <span class="tk">if</span> book[<span class="ts">"book"</span>] == PINNACLE:
+            <span class="tk">continue</span>
+        <span class="tk">for</span> o <span class="tk">in</span> book[<span class="ts">"outcomes"</span>]:
+            key = (market_key, o[<span class="ts">"description"</span>], o[<span class="ts">"name"</span>])
+            <span class="tk">if</span> key <span class="tk">not in</span> pinnacle_index:
+                <span class="tk">continue</span>
+            sharp_point, sharp_price = pinnacle_index[key]
+            <span class="tk">if</span> o.get(<span class="ts">"point"</span>) != sharp_point:
+                <span class="tk">continue</span>  <span class="tm"># different line, separate calculation</span>
+            price_gap = cent_value(o[<span class="ts">"price"</span>]) - cent_value(sharp_price)
+            <span class="tk">if</span> price_gap &gt; EDGE_THRESHOLD_CENTS:
+                edges.append({
+                    <span class="ts">"player"</span>:     o[<span class="ts">"description"</span>],
+                    <span class="ts">"market"</span>:     market_key,
+                    <span class="ts">"direction"</span>:  o[<span class="ts">"name"</span>],
+                    <span class="ts">"soft_book"</span>:  book[<span class="ts">"book"</span>],
+                    <span class="ts">"soft_price"</span>: o[<span class="ts">"price"</span>],
+                    <span class="ts">"pinnacle"</span>:   sharp_price,
+                    <span class="ts">"gap_cents"</span>:  price_gap,
+                })
+
+<span class="tm"># Step 4: Sort by gap, surface the best</span>
+edges.sort(key=<span class="tk">lambda</span> e: e[<span class="ts">"gap_cents"</span>], reverse=<span class="tk">True</span>)
+<span class="tk">for</span> e <span class="tk">in</span> edges[:<span class="tn">5</span>]:
+    print(<span class="ts">f"{e['player']:25s} {e['market']:18s} {e['direction']:5s} "</span>
+          <span class="ts">f"{e['soft_book']:15s} {e['soft_price']:+5d} vs PIN {e['pinnacle']:+5d} "</span>
+          <span class="ts">f"({e['gap_cents']:+d}c)"</span>)
+</code></pre>
+    </div>
+
+    <p class="text-muted text-xs mb-4">
+      For operators running this every 30 seconds across the MLB slate, TheOddsAPI's /edges/
+      endpoint pre-computes the full list server-side. One call returns a sorted list of every
+      Pinnacle-anchored edge across every MLB event currently quoted, including both standard
+      and prop edges in the same response.
+    </p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-4">
+      <div class="flex items-center px-4 py-2 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">curl, /edges/ endpoint</span>
+      </div>
+      <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code>curl <span class="ts">'https://api.theoddsapi.com/edges/?sport_key=baseball_mlb&min_edge=10'</span> \
+  -H <span class="ts">'x-api-key: YOUR_KEY'</span></code></pre>
+    </div>
+
+    <a href="https://api.theoddsapi.com/docs"
+       class="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-gold/30 text-gold text-xs font-semibold tracking-wide hover:bg-gold/10 transition-all">
+      Try /edges/ in Swagger
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- WHERE THE EDGE COMES FROM -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Where the Edge Comes From</h2>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-2">Starter mismatch</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Each MLB game features a unique pitching matchup. Pinnacle prices batter total bases
+          off pitcher-batter handedness splits, recent form, and park factors. Soft books often
+          run a default model that under-weights the pitcher variable, leaving batter TB lines
+          systematically off Pinnacle on extreme matchups.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-2">Late lineup news</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Lineup cards confirm 30 to 90 minutes before first pitch. A batter scratched from the
+          order moves teammates up the lineup and changes the at-bat distribution. Pinnacle adjusts
+          immediately. Soft books often wait until pre-game.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-2">Weather windows</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Wind direction and humidity move the home run market more than any other prop. Pinnacle
+          adjusts pitcher strikeout and batter total base lines in tandem with weather updates.
+          Soft books often hold lines until the National Weather Service official forecast lands.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold text-gold mb-2">Daily-slate fatigue</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          15 games means 15 batter boards and 15 pitcher boards in a single afternoon. The senior
+          trader desk does not manually price every line. Junior traders or default models fill
+          the gaps, and the gaps widen relative to Pinnacle as the day progresses.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">What The Odds API Adds Beyond a Single-Book Feed</h2>
+
+    <div class="rounded-lg border border-gold/20 overflow-hidden">
+      <table class="w-full text-xs">
+        <thead class="bg-navy-mid border-b border-gold/10">
+          <tr>
+            <th class="text-left px-4 py-3 text-muted font-medium"></th>
+            <th class="text-left px-4 py-3 text-muted font-medium">Single-Book Feed</th>
+            <th class="text-left px-4 py-3 text-gold font-semibold">TheOddsAPI</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gold/[.06]">
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Books quoted per market</td>
+            <td class="px-4 py-3 text-muted">1</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Up to 50 (30+ on most MLB prop markets)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Pinnacle as benchmark</td>
+            <td class="px-4 py-3 text-muted">Sometimes</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Always when Pinnacle is quoting</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Markets covered</td>
+            <td class="px-4 py-3 text-muted">Strikeouts or hits typically</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Total bases, pitcher strikeouts, home runs</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Refresh latency</td>
+            <td class="px-4 py-3 text-muted">Varies, often 5+ minutes</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Edge surfacing within minutes</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Edge detection</td>
+            <td class="px-4 py-3 text-muted">Build it yourself</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Pre-computed at /edges/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Snapshot trail for backtest</td>
+            <td class="px-4 py-3 text-muted">None</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">T-30 captures stored in prop_edge_snapshots</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-muted font-medium">Code integration</td>
+            <td class="px-4 py-3 text-muted">Custom per book</td>
+            <td class="px-4 py-3 text-[#E8EEF7] font-medium">Single REST API, JSON, any language</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-muted text-xs mt-6 leading-relaxed">
+      The snapshot trail is operator-specific. Every MLB prop edge surfaced by TheOddsAPI is
+      captured at T-30 to a timestamped table (prop_edge_snapshots), so operators can pull
+      historical snapshots and apply their own settlement logic to compute a real cumulative ROI.
+      Automated grading on Business+ tiers ships once the prop grading service is live.
+    </p>
+  </div>
+</section>
+
+<!-- CASE STUDY: REAL DATA -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Case Study: Pirates at Diamondbacks, May 5 2026</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      A second example showing the multi-book divergence pattern. Pulled directly from
+      prop_edge_snapshots, captured 30 minutes before first pitch.
+    </p>
+
+    <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">TheOddsAPI Prop Edge Snapshot, 2026-05-05 21:11 ET</span>
+      </div>
+      <div class="p-5">
+        <p class="text-sm font-medium mb-4">Pittsburgh Pirates at Arizona Diamondbacks, batter_total_bases</p>
+        <div class="space-y-2 text-xs">
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06] text-2xs uppercase tracking-widest text-muted/70">
+            <div class="col-span-4">Player / Market</div>
+            <div class="col-span-3">Soft Book</div>
+            <div class="col-span-2 text-right">Soft</div>
+            <div class="col-span-2 text-right">Pinnacle</div>
+            <div class="col-span-1 text-right">Gap</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Corbin Carroll</span><br/><span class="text-muted">TB Over 1.5</span></div>
+            <div class="col-span-3 text-muted">William Hill US</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">+110</div>
+            <div class="col-span-2 text-right text-gold">-103</div>
+            <div class="col-span-1 text-right text-alive font-bold">13c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Corbin Carroll</span><br/><span class="text-muted">TB Over 1.5</span></div>
+            <div class="col-span-3 text-muted">MyBookie</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">+108</div>
+            <div class="col-span-2 text-right text-gold">-103</div>
+            <div class="col-span-1 text-right text-alive font-bold">11c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Lourdes Gurriel Jr.</span><br/><span class="text-muted">TB Under 1.5</span></div>
+            <div class="col-span-3 text-muted">William Hill US</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">-176</div>
+            <div class="col-span-2 text-right text-gold">-189</div>
+            <div class="col-span-1 text-right text-alive font-bold">13c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2 border-b border-gold/[.06]">
+            <div class="col-span-4"><span class="font-medium">Oneil Cruz</span><br/><span class="text-muted">TB Under 1.5</span></div>
+            <div class="col-span-3 text-muted">DraftKings</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">-147</div>
+            <div class="col-span-2 text-right text-gold">-159</div>
+            <div class="col-span-1 text-right text-alive font-bold">12c</div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 py-2">
+            <div class="col-span-4"><span class="font-medium">Oneil Cruz</span><br/><span class="text-muted">TB Over 1.5</span></div>
+            <div class="col-span-3 text-muted">BetMGM</div>
+            <div class="col-span-2 text-right text-[#E8EEF7]">+130</div>
+            <div class="col-span-2 text-right text-gold">+119</div>
+            <div class="col-span-1 text-right text-alive font-bold">11c</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-alive/30 bg-navy-card p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-2 h-2 rounded-full bg-alive"></span>
+        <h3 class="text-sm font-semibold text-alive">Pattern: Multi-Book Divergence on the Same Line</h3>
+      </div>
+      <p class="text-xs text-muted leading-relaxed mb-3">
+        Corbin Carroll's Over 1.5 total bases was priced soft at both William Hill US (+110) and
+        MyBookie (+108) while Pinnacle had it at -103. Two independent soft books converged on a
+        consensus that Pinnacle disagreed with by 13 cents. Same player, same line, same direction.
+        Oneil Cruz showed the inverse pattern: BetMGM offered the Over at +130 while DraftKings
+        offered the Under at -147. Both were off Pinnacle by 11 to 12 cents in opposite directions.
+      </p>
+      <p class="text-xs text-muted leading-relaxed">
+        The pattern matters more than any single edge. When multiple soft books converge against
+        Pinnacle on the same outcome, that is signal. When opposing soft books straddle Pinnacle,
+        that is structural opportunity in either direction. An operator scanning 50 books rather
+        than one or two catches both patterns. An operator with no Pinnacle benchmark has nothing
+        to compare against.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- MARKETS COVERED -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Markets Covered</h2>
+    <p class="text-muted text-sm mb-8 max-w-2xl">
+      Three MLB player prop markets with active edge detection. Every market is priced by every
+      book that quotes it, with Pinnacle present when Pinnacle is in the feed.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-3">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <p class="text-xs font-mono text-gold mb-2">batter_total_bases</p>
+        <p class="text-xs text-muted leading-relaxed">
+          Over/Under on a batter's total bases (singles count 1, doubles 2, triples 3, home runs 4).
+          The dominant volume market on the MLB prop board.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <p class="text-xs font-mono text-gold mb-2">pitcher_strikeouts</p>
+        <p class="text-xs text-muted leading-relaxed">
+          Over/Under on a starting pitcher's strikeouts. Driven by handedness splits, recent form,
+          and the opposing lineup's strikeout rate.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <p class="text-xs font-mono text-gold mb-2">batter_home_runs</p>
+        <p class="text-xs text-muted leading-relaxed">
+          Over/Under on a batter recording a home run. Highly weather-sensitive. Soft-book edges
+          appear most around wind and humidity adjustments.
+        </p>
+      </div>
+    </div>
+
+    <p class="text-muted text-xs mt-6 leading-relaxed">
+      Coverage extends to NBA and NHL props on the same endpoint pattern, so operators expanding
+      from MLB into other sports do not need to rewrite integration logic. Additional MLB prop
+      markets are on the roadmap as upstream coverage expands.
+    </p>
+  </div>
+</section>
+
+<!-- RISK AND REALITY -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Risk and Reality</h2>
+    <p class="text-muted text-sm mb-6 max-w-2xl">
+      Prop edge detection is not risk-free. Understanding the limits protects your capital.
+    </p>
+
+    <div class="space-y-4">
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Stat-definition mismatches</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Some books quote regulation-only batter totals (9 innings). Others include extra innings.
+          The same player's "Over 1.5 total bases" line can carry different settlement rules
+          across books. TheOddsAPI exposes the raw upstream feed without papering over this, so
+          operators must read book-specific settlement rules before placing real money.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Liquidity at soft books</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Soft books that price props softly often impose lower betting limits on bettors who
+          consistently identify edges. Edge that exists at the line will not always exist at the
+          size you want to bet. Plan execution around per-book limits.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Weather and game-state risk</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          MLB games are uniquely exposed to weather: rain delays, wind shifts, and pitcher pulls
+          that change the at-bat distribution after the prop locks. Books may void or adjust props
+          differently when these events occur. Read each book's weather and pitcher-change rules
+          before sizing positions on weather-dependent markets like home runs.
+        </p>
+      </div>
+      <div class="rounded-lg border border-gold/10 bg-navy-card p-5">
+        <h3 class="text-sm font-semibold mb-2">Push and void semantics</h3>
+        <p class="text-xs text-muted leading-relaxed">
+          Player prop pushes are common at .5 and .0 lines. TheOddsAPI's prop_edge_snapshots table
+          captures every Pinnacle-anchored prop edge at T-30 minutes for every covered MLB, NBA,
+          and NHL game, building a timestamped trail. Automated grading of those snapshots (with
+          full push and void semantics) is on the roadmap for Business+ tiers and ships once the
+          grading service is live for prop markets. Operators who want to grade today can pull
+          snapshots and apply their own settlement logic.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED GUIDES -->
+<section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-8">Related</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <a href="/guides/nba-player-props-edge-detection" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">NBA Player Props Edge Detection</h3>
+        <p class="text-xs text-muted">Same engine, eight NBA markets. Pinnacle anchor and T-30 snapshot trail.</p>
+      </a>
+      <a href="/guides/sharp-lines-pinnacle" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Sharp Lines via Pinnacle</h3>
+        <p class="text-xs text-muted">Methodology behind the sharp anchor used in every edge calculation.</p>
+      </a>
+      <a href="/guides/historical-odds-backtesting" class="rounded-lg border border-gold/10 bg-navy-card p-5 hover:border-gold/30 transition-colors block">
+        <h3 class="text-sm font-semibold mb-2">Historical Odds (game-line markets)</h3>
+        <p class="text-xs text-muted">Backtest h2h, spreads, and totals against settled outcomes. Player props historical coverage is on the roadmap.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="px-5 md:px-14 py-20 border-t border-gold/[.08] text-center">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="font-serif text-2xl font-bold mb-4">Start Detecting MLB Prop Edges</h2>
+    <p class="text-muted text-sm mb-8">
+      Free tier includes 25 requests per day for evaluation. Pro unlocks all 24 sports plus h2h,
+      spreads, and totals. Business unlocks player props, the /edges/ endpoint with prop edges,
+      the T-30 snapshot trail, and edge surfacing within minutes for production prop trading.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="/#pricing"
+         class="px-6 py-3 rounded bg-gold text-navy text-sm font-bold tracking-wide hover:bg-gold-dark transition-all">
+        See Pricing
+      </a>
+      <a href="https://api.theoddsapi.com/docs"
+         class="px-6 py-3 rounded border border-gold/30 text-gold text-sm font-semibold tracking-wide hover:bg-gold/10 transition-all">
+        Try in Swagger
+      </a>
+      <a href="mailto:hello@theoddsapi.com?subject=TheOddsAPI%20Enterprise%20Inquiry"
+         class="px-6 py-3 rounded border border-gold/15 text-muted text-sm font-medium tracking-wide hover:text-gold hover:border-gold/30 transition-all">
+        Enterprise inquiries
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="px-5 md:px-14 py-10 border-t border-gold/[.15]
+               flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+  <div>
+    <p class="font-serif text-lg font-bold text-muted/70">TheOdds<span class="text-gold/70">API</span></p>
+    <p class="text-xs text-muted/40 mt-1">&copy; 2026 TheOddsAPI &middot; theoddsapi.com &middot; All rights reserved.</p>
+  </div>
+  <div class="flex flex-wrap gap-6">
+    <a href="/quickstart.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Quick Start</a>
+    <a href="/guides/" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Guides</a>
+    <a href="/faq.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">FAQ</a>
+    <a href="https://api.theoddsapi.com/docs" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Swagger</a>
+    <a href="/#pricing" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Pricing</a>
+    <a href="/terms.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Terms</a>
+    <a href="/privacy.html" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Privacy</a>
+    <a href="mailto:hello@theoddsapi.com" class="text-xs text-muted hover:text-gold transition-colors tracking-wide">Contact</a>
+  </div>
+</footer>
+
+<script>
+(function() {
+  function track(event, params) {
+    if (typeof window.gtag === 'function') window.gtag('event', event, params || {});
+  }
+  document.querySelectorAll('a[href*="subject=API%20Key"]').forEach(el => {
+    el.addEventListener('click', () => track('get_key_click', { page: 'mlb_player_props_guide' }));
+  });
+  document.querySelectorAll('a[href*="theoddsapi.com/docs"], a[href*="api.theoddsapi.com/docs"]').forEach(el => {
+    el.addEventListener('click', () => track('docs_click', { page: 'mlb_player_props_guide' }));
+  });
+  document.querySelectorAll('a[href*="#pricing"]').forEach(el => {
+    el.addEventListener('click', () => track('pricing_click', { page: 'mlb_player_props_guide' }));
+  });
+})();
+</script>
+
+</body>
+</html>
