@@ -51,7 +51,7 @@
         "name": "Does The Odds API have player props?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "TheOddsAPI provides player prop markets for NBA, NHL, and MLB. Available markets include points, rebounds, assists, PRA (points + rebounds + assists), pitcher strikeouts, batter hits, batter total bases, and additional stat categories. Props include Pinnacle sharp lines alongside soft book pricing, so you can identify props where the soft books are out of line with the sharp market. Available on the Business plan at $99/month."
+          "text": "TheOddsAPI provides player prop markets for NBA, WNBA, NHL, and MLB. NBA and WNBA each cover 8 markets including points, rebounds, assists, threes, blocks, steals, double-double, and PRA (points + rebounds + assists). NHL covers goals, assists, shots, and saves. MLB covers pitcher strikeouts, batter hits, batter total bases, home runs, and more. NBA, NHL, and MLB props include Pinnacle sharp lines alongside soft book pricing so you can identify props where the soft books are out of line with the sharp market. Available on the Business plan at $99/month."
         }
       },
       {
@@ -155,7 +155,7 @@
         "name": "What betting markets do sports odds APIs support?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "TheOddsAPI supports four market types: h2h (moneyline), spreads (handicap), totals (over/under), and player props. H2h, spreads, and totals cover all 24 sports. Player props cover NBA, NHL, and MLB on the Business plan. Markets can be combined in a single request. The intelligence layer adds fair odds (vig-removed true probability) and edge detection (sharp vs. soft book discrepancies) on top of raw market data."
+          "text": "TheOddsAPI supports four market types: h2h (moneyline), spreads (handicap), totals (over/under), and player props. H2h, spreads, and totals cover all 25 sports. Player props cover NBA, WNBA, NHL, and MLB on the Business plan. Markets can be combined in a single request. The intelligence layer adds fair odds (vig-removed true probability) and edge detection (sharp vs. soft book discrepancies) on top of raw market data."
         }
       },
       {
@@ -243,7 +243,7 @@
         "name": "What is the difference between professional and business sports odds API plans?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "TheOddsAPI Professional ($29/month) gives you 20,000 requests, 24 sports, h2h/spreads/totals, and US sportsbooks (DraftKings, FanDuel, BetMGM, Caesars, BetRivers, and more). Business ($99/month) gives you 200,000 requests and unlocks the features that serious operators need: player props for NBA/NHL/MLB, Pinnacle-anchored edge detection, fair odds (vig-removed true probability), consensus pricing, and the full historical archive across 22 sports at zero extra credit cost. Both use the same API key. Upgrading unlocks endpoints, no code migration."
+          "text": "TheOddsAPI Professional ($29/month) gives you 20,000 requests, 25 sports, h2h/spreads/totals, and US sportsbooks (DraftKings, FanDuel, BetMGM, Caesars, BetRivers, and more). Business ($99/month) gives you 200,000 requests and unlocks the features that serious operators need: player props for NBA/WNBA/NHL/MLB, Pinnacle-anchored edge detection, fair odds (vig-removed true probability), consensus pricing, and the full historical archive across 22 sports at zero extra credit cost. Both use the same API key. Upgrading unlocks endpoints, no code migration."
         }
       },
       {
@@ -1080,7 +1080,7 @@
         A sports odds API is a developer service that returns real-time betting lines from sportsbooks &mdash; programmatically, in a single normalized format. Instead of scraping <a href="https://sportsbook.draftkings.com" rel="nofollow" class="text-[#E8EEF7] hover:text-gold transition-colors">DraftKings</a>, FanDuel, BetMGM, Pinnacle, and 50 other books one by one, you make one HTTP request and get clean JSON covering every market for every game.
       </p>
       <p>
-        Developers use TheOddsAPI to power <strong class="text-[#E8EEF7] font-semibold">arbitrage detection</strong>, <strong class="text-[#E8EEF7] font-semibold">odds comparison apps</strong>, <strong class="text-[#E8EEF7] font-semibold">betting models</strong>, and <strong class="text-[#E8EEF7] font-semibold">analytics dashboards</strong>. Supported markets include <code class="text-gold/80 font-mono text-sm">h2h</code> (moneyline), <code class="text-gold/80 font-mono text-sm">spreads</code>, <code class="text-gold/80 font-mono text-sm">totals</code>, and player props for NBA, NHL, and MLB. Sports coverage spans 24 sports — NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, MLS, soccer (EPL, Champions League, Europa League, La Liga, Bundesliga, Serie A, Ligue 1, Liga MX, Eredivisie, EFL Championship), tennis, cricket, boxing, UFC, Euroleague, plus AFL and NRL as live odds only.
+        Developers use TheOddsAPI to power <strong class="text-[#E8EEF7] font-semibold">arbitrage detection</strong>, <strong class="text-[#E8EEF7] font-semibold">odds comparison apps</strong>, <strong class="text-[#E8EEF7] font-semibold">betting models</strong>, and <strong class="text-[#E8EEF7] font-semibold">analytics dashboards</strong>. Supported markets include <code class="text-gold/80 font-mono text-sm">h2h</code> (moneyline), <code class="text-gold/80 font-mono text-sm">spreads</code>, <code class="text-gold/80 font-mono text-sm">totals</code>, and player props for NBA, WNBA, NHL, and MLB. Sports coverage spans 25 sports — NBA, NFL, MLB, NHL, NCAAB, NCAAF, WNBA, MLS, soccer (EPL, Champions League, Europa League, La Liga, Bundesliga, Serie A, Ligue 1, Liga MX, Eredivisie, EFL Championship), tennis, cricket, boxing, UFC, Euroleague, plus AFL and NRL as live odds only.
       </p>
       <p>
         Why normalized multi-book data matters: every sportsbook publishes odds in its own format, schema, and update cadence. A single normalized response object lets you compare lines across books in milliseconds &mdash; the foundation of every modern sharp tool. TheOddsAPI normalizes that noise so your code stays focused on the part that ships value: signal detection, model training, and user experience.
@@ -1516,7 +1516,7 @@
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Fair odds pricing</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Cross-book edge detection</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Consensus pricing across books</li>
-          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, NHL &amp; MLB player props</li>
+          <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>NBA, WNBA, NHL &amp; MLB player props</li>
           <li class="flex gap-2.5 text-muted text-sm"><span class="text-gold mt-0.5 shrink-0">-</span>Historical odds archive</li>
         </ul>
         <p class="text-2xs font-bold tracking-[.12em] uppercase font-mono mt-6 mb-2.5"
