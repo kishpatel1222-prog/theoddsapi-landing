@@ -351,7 +351,7 @@
         "name": "Can I price multi-leg parlays with a sports odds API?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Pull single-leg prices from /odds/, /props/, or /best-lines/, convert each to decimal, multiply. The product is the parlay's true odds; compare to your sportsbook's offered parlay price to find mispricings. Caveat: same-game parlays are correlated. Outcomes aren't independent, so the multiplication overstates true odds, and books model that correlation in their SGP pricing. Modeling it yourself needs historical settlement data, available via /historical/settlements/ on Business tier."
+          "text": "Pull single-leg prices from /odds/, /props/, or /best-lines/, convert each to decimal, multiply. The product is the parlay's true odds; compare to your sportsbook's offered parlay price to find mispricings. Caveat: same-game parlays are correlated. Outcomes aren't independent, so the multiplication overstates true odds, and books model that correlation in their SGP pricing. Modeling it yourself needs historical settlement data, available via /historical/settlements on Business tier."
         }
       },
       {
@@ -367,7 +367,7 @@
         "name": "How does The Odds API grade detected edges as wins, losses, or pushes?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "After a game completes, /historical/settlements/ joins your edge snapshots against final scores from our /scores ingestion. h2h grades on the winning team; spreads and totals grade against the actual margin. Each settlement row has a result field (hit, miss, push, void) and a payout field (return per dollar at the soft book's price). Currently 1,700+ graded standard edges across 12 sports. Player prop grading is on the roadmap; we're integrating a player game-stats vendor, and until that lands prop snapshots collect but don't grade. Settlements are available on Business tier today; advanced settlement analytics (per-band ROI, performance attribution) ship in the Quant tier coming in our July release."
+          "text": "After a game completes, /historical/settlements joins your edge snapshots against final scores from our /scores ingestion. h2h grades on the winning team; spreads and totals grade against the actual margin. Each settlement row has a result field (hit, miss, push, void) and a payout field (return per dollar at the soft book's price). Currently 1,700+ graded standard edges across 12 sports. Player prop grading is on the roadmap; we're integrating a player game-stats vendor, and until that lands prop snapshots collect but don't grade. Settlements are available on Business tier today; advanced settlement analytics (per-band ROI, performance attribution) ship in the Quant tier coming in our July release."
         }
       },
       {
@@ -415,7 +415,7 @@
         "name": "Are closing line snapshots available from a sports odds API?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "TheOddsAPI captures closing-line snapshots (the last observed price per event, book, market, and outcome before commence_time) every 5 minutes via internal materialization. Public exposure ships in the Quant tier coming in our July release, with CLV calculation, line-movement signals, and vig-removed close-vs-open analysis pre-built. Today, Pro and Business can derive an approximate close from /historical/odds/ by querying the rows nearest commence_time per book per market."
+          "text": "TheOddsAPI captures closing-line snapshots (the last observed price per event, book, market, and outcome before commence_time) every 5 minutes via internal materialization. Public exposure ships in the Quant tier coming in our July release, with CLV calculation, line-movement signals, and vig-removed close-vs-open analysis pre-built. Today, Pro and Business can derive an approximate close from /historical/odds by querying the rows nearest commence_time per book per market."
         }
       }
     ]
@@ -973,7 +973,7 @@
           <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Can I price multi-leg parlays with a sports odds API?</span>
           <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
         </summary>
-        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Pull single-leg prices from /odds/, /props/, or /best-lines/, convert each to decimal, multiply. The product is the parlay's true odds; compare to your sportsbook's offered parlay price to find mispricings. Caveat: same-game parlays are correlated. Outcomes aren't independent, so the multiplication overstates true odds, and books model that correlation in their SGP pricing. Modeling it yourself needs historical settlement data, available via /historical/settlements/ on Business tier.</div>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">Pull single-leg prices from /odds/, /props/, or /best-lines/, convert each to decimal, multiply. The product is the parlay's true odds; compare to your sportsbook's offered parlay price to find mispricings. Caveat: same-game parlays are correlated. Outcomes aren't independent, so the multiplication overstates true odds, and books model that correlation in their SGP pricing. Modeling it yourself needs historical settlement data, available via /historical/settlements on Business tier.</div>
       </details>
 
       <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
@@ -989,7 +989,7 @@
           <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">How does The Odds API grade detected edges as wins, losses, or pushes?</span>
           <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
         </summary>
-        <div class="faq-body px-7 text-muted text-sm leading-relaxed">After a game completes, /historical/settlements/ joins your edge snapshots against final scores from our /scores ingestion. h2h grades on the winning team; spreads and totals grade against the actual margin. Each settlement row has a result field (hit, miss, push, void) and a payout field (return per dollar at the soft book's price). Currently 1,700+ graded standard edges across 12 sports. Player prop grading is on the roadmap; we're integrating a player game-stats vendor, and until that lands prop snapshots collect but don't grade. Settlements are available on Business tier today; advanced settlement analytics (per-band ROI, performance attribution) ship in the Quant tier coming in our July release.</div>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">After a game completes, /historical/settlements joins your edge snapshots against final scores from our /scores ingestion. h2h grades on the winning team; spreads and totals grade against the actual margin. Each settlement row has a result field (hit, miss, push, void) and a payout field (return per dollar at the soft book's price). Currently 1,700+ graded standard edges across 12 sports. Player prop grading is on the roadmap; we're integrating a player game-stats vendor, and until that lands prop snapshots collect but don't grade. Settlements are available on Business tier today; advanced settlement analytics (per-band ROI, performance attribution) ship in the Quant tier coming in our July release.</div>
       </details>
 
       <details class="faq-item group rounded border border-gold/[.15] bg-navy-card hover:border-gold/30 transition-colors">
@@ -1037,7 +1037,7 @@
           <span class="font-serif text-lg md:text-xl font-semibold text-[#E8EEF7] group-hover:text-gold transition-colors">Are closing line snapshots available from a sports odds API?</span>
           <span class="faq-toggle text-gold text-2xl font-thin shrink-0 leading-none select-none">+</span>
         </summary>
-        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI captures closing-line snapshots (the last observed price per event, book, market, and outcome before commence_time) every 5 minutes via internal materialization. Public exposure ships in the Quant tier coming in our July release, with CLV calculation, line-movement signals, and vig-removed close-vs-open analysis pre-built. Today, Pro and Business can derive an approximate close from /historical/odds/ by querying the rows nearest commence_time per book per market.</div>
+        <div class="faq-body px-7 text-muted text-sm leading-relaxed">TheOddsAPI captures closing-line snapshots (the last observed price per event, book, market, and outcome before commence_time) every 5 minutes via internal materialization. Public exposure ships in the Quant tier coming in our July release, with CLV calculation, line-movement signals, and vig-removed close-vs-open analysis pre-built. Today, Pro and Business can derive an approximate close from /historical/odds by querying the rows nearest commence_time per book per market.</div>
       </details>
 
     </div>
