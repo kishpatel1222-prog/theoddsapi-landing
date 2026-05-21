@@ -416,7 +416,7 @@
       <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
 
 response = requests.get(
-    <span class="ts">"https://api.theoddsapi.com/v4/intelligence/value"</span>,
+    <span class="ts">"https://api.theoddsapi.com/intelligence/value"</span>,
     headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
     params={<span class="ts">"sport_key"</span>: <span class="ts">"basketball_nba"</span>}
 )
@@ -437,7 +437,7 @@ value_bets = response.json()[<span class="ts">"data"</span>]
         <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
       </div>
       <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
-  <span class="ts">"https://api.theoddsapi.com/v4/intelligence/value?sport_key=basketball_nba"</span>,
+  <span class="ts">"https://api.theoddsapi.com/intelligence/value?sport_key=basketball_nba"</span>,
   { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
 );
 

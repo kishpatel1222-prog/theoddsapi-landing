@@ -251,7 +251,7 @@
 
 <span class="tm"># Pull NBA player props</span>
 response = requests.get(
-    <span class="ts">"https://api.theoddsapi.com/v4/sports/basketball_nba/events"</span>,
+    <span class="ts">"https://api.theoddsapi.com/events/?sport_key=basketball_nba"</span>,
     headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
     params={<span class="ts">"markets"</span>: <span class="ts">"player_points,player_rebounds,player_assists"</span>}
 )
@@ -275,7 +275,7 @@ events = response.json()
         <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
       </div>
       <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
-  <span class="ts">"https://api.theoddsapi.com/v4/sports/basketball_nba/events?markets=player_points"</span>,
+  <span class="ts">"https://api.theoddsapi.com/events/?sport_key=basketball_nba&markets=player_points"</span>,
   { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
 );
 <span class="tk">const</span> events = <span class="tk">await</span> res.json();

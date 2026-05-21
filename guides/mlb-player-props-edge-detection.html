@@ -435,8 +435,8 @@
 event_id = <span class="ts">"YOUR_EVENT_ID"</span>
 response = requests.get(
     <span class="ts">"https://api.theoddsapi.com/props/"</span>,
+    headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
     params={
-        <span class="ts">"apiKey"</span>:    <span class="ts">"YOUR_KEY"</span>,
         <span class="ts">"sport_key"</span>: <span class="ts">"baseball_mlb"</span>,
         <span class="ts">"event_id"</span>:  event_id,
         <span class="ts">"markets"</span>:   <span class="ts">"batter_total_bases,pitcher_strikeouts,batter_home_runs"</span>,
@@ -751,7 +751,7 @@ edges.sort(key=<span class="tk">lambda</span> e: e[<span class="ts">"gap_cents"<
     <p class="text-muted text-xs mt-6 leading-relaxed">
       Coverage extends to NBA and NHL props on the same endpoint pattern, so operators expanding
       from MLB into other sports do not need to rewrite integration logic. Additional MLB prop
-      markets are on the roadmap as upstream coverage expands.
+      markets are on the roadmap as our coverage expands.
     </p>
   </div>
 </section>
@@ -770,7 +770,7 @@ edges.sort(key=<span class="tk">lambda</span> e: e[<span class="ts">"gap_cents"<
         <p class="text-xs text-muted leading-relaxed">
           Some books quote regulation-only batter totals (9 innings). Others include extra innings.
           The same player's "Over 1.5 total bases" line can carry different settlement rules
-          across books. TheOddsAPI exposes the raw upstream feed without papering over this, so
+          across books. TheOddsAPI surfaces the raw book-by-book numbers without papering over this, so
           operators must read book-specific settlement rules before placing real money.
         </p>
       </div>

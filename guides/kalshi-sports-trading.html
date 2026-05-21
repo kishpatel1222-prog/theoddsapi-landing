@@ -413,45 +413,45 @@
 <!-- CASE STUDY: REAL DATA -->
 <section class="px-5 md:px-14 py-16 border-t border-gold/[.08]">
   <div class="max-w-4xl mx-auto">
-    <h2 class="font-serif text-2xl font-bold mb-4">Case Study: NHL, May 5 2026</h2>
+    <h2 class="font-serif text-2xl font-bold mb-4">Case Study: NHL Playoffs, May 13 2026</h2>
     <p class="text-muted text-sm mb-8 max-w-2xl">
       Real edge captured by The Odds API 30 minutes before puck drop. Not a hypothetical, not backtested. Pulled directly from the live edge_snapshots feed.
     </p>
 
     <div class="rounded-lg border border-gold/20 bg-navy-card overflow-hidden mb-6">
       <div class="flex items-center gap-2 px-4 py-2.5 border-b border-gold/10 bg-navy-mid">
-        <span class="text-2xs font-mono text-gold uppercase tracking-widest">TheOddsAPI Edge Snapshot, 2026-05-05 19:40 ET</span>
+        <span class="text-2xs font-mono text-gold uppercase tracking-widest">TheOddsAPI Edge Snapshot, 2026-05-13 19:40 ET</span>
       </div>
       <div class="p-5">
-        <p class="text-sm font-medium mb-4">Colorado Avalanche vs Minnesota Wild</p>
+        <p class="text-sm font-medium mb-4">Colorado Avalanche vs Minnesota Wild — NHL Playoffs</p>
         <div class="space-y-3 text-xs">
           <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
             <span class="text-muted">Pinnacle (sharp anchor)</span>
-            <span class="text-gold font-bold">Avalanche -192 / 65.8% fair probability</span>
-          </div>
-          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
-            <span class="text-muted">Unibet</span>
-            <span class="text-[#E8EEF7]">Avalanche -115 / 53.5% implied</span>
-          </div>
-          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
-            <span class="text-muted">LeoVegas</span>
-            <span class="text-[#E8EEF7]">Avalanche -115 / 53.5% implied</span>
+            <span class="text-gold font-bold">Avalanche -217 / 68.5% fair probability</span>
           </div>
           <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
             <span class="text-muted">Marathonbet</span>
-            <span class="text-[#E8EEF7]">Avalanche -116 / 53.7% implied</span>
+            <span class="text-[#E8EEF7]">Avalanche -130 / 56.5% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">1xBet</span>
+            <span class="text-[#E8EEF7]">Avalanche -130 / 56.5% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">LeoVegas</span>
+            <span class="text-[#E8EEF7]">Avalanche -132 / 56.9% implied</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
+            <span class="text-muted">Unibet</span>
+            <span class="text-[#E8EEF7]">Avalanche -132 / 56.9% implied</span>
           </div>
           <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
             <span class="text-muted">Coolbet</span>
-            <span class="text-[#E8EEF7]">Avalanche -122 / 55.0% implied</span>
-          </div>
-          <div class="flex justify-between items-center py-2 border-b border-gold/[.06]">
-            <span class="text-muted">Tipico</span>
-            <span class="text-[#E8EEF7]">Avalanche -125 / 55.6% implied</span>
+            <span class="text-[#E8EEF7]">Avalanche -133 / 57.1% implied</span>
           </div>
           <div class="flex justify-between items-center py-2 mt-2">
             <span class="font-medium">Edge score (Pinnacle vs soft books)</span>
-            <span class="text-gold font-bold">67 to 77 points across 10 bookmakers</span>
+            <span class="text-gold font-bold">84 to 87 points across 8 bookmakers</span>
           </div>
         </div>
       </div>
@@ -463,10 +463,10 @@
         <h3 class="text-sm font-semibold text-alive">Result: Avalanche Won (Edge Hit)</h3>
       </div>
       <p class="text-xs text-muted leading-relaxed mb-3">
-        A Kalshi "Avalanche Win" contract priced at $0.55 (matching the soft book consensus of ~54.6% implied probability) was mispriced by 11 cents relative to TheOddsAPI fair odds via Pinnacle (65.8%). A trader buying "Yes" at $0.55 collected $1.00 at settlement. After Kalshi's $0.01 per-side fee, net profit was $0.43 per contract on a position with 11 cents of expected edge.
+        A Kalshi "Avalanche Win Yes" contract priced at $0.57 (matching the soft book consensus of ~56.9% implied probability) was mispriced by nearly 12 cents relative to TheOddsAPI fair odds via Pinnacle (68.5%). A trader buying "Yes" at $0.57 collected $1.00 at settlement. After Kalshi's $0.01 per-side fee, net profit was $0.41 per contract on a position carrying nearly 12 cents of expected edge going in.
       </p>
       <p class="text-xs text-muted leading-relaxed">
-        TheOddsAPI flagged Pinnacle at -192 while 10 European soft books (Unibet, LeoVegas, Marathonbet, Coolbet, Tipico, Winamax, 1xBet) were still pricing Avalanche between -115 and -125. The edge writer surfaced the divergence at the 19:40 ET snapshot, 30 minutes before puck drop. Pinnacle anchoring is what made the gap visible. A naive average across soft books would have priced the Avalanche at the same wrong number.
+        TheOddsAPI flagged Pinnacle at -217 while eight European soft books (Marathonbet, 1xBet, LeoVegas, Unibet, Coolbet, Winamax, Tipico, Unibet FR) were still pricing the Avalanche between -130 and -139. Edge scores ranged from 84 to 87 across those books. The edge writer surfaced the divergence at the 19:40 ET snapshot, 30 minutes before puck drop. Pinnacle anchoring is what made the mispricing detectable. A naive average across soft books would have priced Colorado at the same wrong number and the 12-cent opportunity would have gone undetected.
       </p>
     </div>
   </div>
@@ -492,12 +492,12 @@ KALSHI_FEE = <span class="tn">0.01</span>  <span class="tm"># $0.01 per contract
 
 <span class="tm"># Step 1: Pull odds from 50 bookmakers</span>
 response = requests.get(
-    f<span class="ts">"https://api.theoddsapi.com/v4/sports/</span>{SPORT}<span class="ts">/odds"</span>,
+    <span class="ts">"https://api.theoddsapi.com/odds/"</span>,
+    headers={<span class="ts">"x-api-key"</span>: API_KEY},
     params={
-        <span class="ts">"apiKey"</span>: API_KEY,
+        <span class="ts">"sport_key"</span>: SPORT,
         <span class="ts">"regions"</span>: <span class="ts">"us,eu,uk,au"</span>,
-        <span class="ts">"markets"</span>: <span class="ts">"h2h"</span>,
-        <span class="ts">"oddsFormat"</span>: <span class="ts">"decimal"</span>
+        <span class="ts">"markets"</span>: <span class="ts">"h2h"</span>
     }
 )
 
@@ -555,7 +555,8 @@ events = response.json()
 
   <span class="tk">for</span> (<span class="tk">const</span> sport <span class="tk">of</span> SPORTS) {
     <span class="tk">const</span> res = <span class="tk">await</span> fetch(
-      <span class="ts">`https://api.theoddsapi.com/v4/sports/</span>${sport}<span class="ts">/odds?apiKey=YOUR_KEY&regions=us,eu&markets=h2h&oddsFormat=decimal`</span>
+      <span class="ts">`https://api.theoddsapi.com/odds/?sport_key=</span>${sport}<span class="ts">&regions=us,eu&markets=h2h`</span>,
+      { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
     );
     <span class="tk">const</span> events = <span class="tk">await</span> res.json();
 

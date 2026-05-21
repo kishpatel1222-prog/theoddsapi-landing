@@ -199,7 +199,7 @@
       <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">import</span> requests
 
 response = requests.get(
-    <span class="ts">"https://api.theoddsapi.com/v4/sports/baseball_mlb/odds"</span>,
+    <span class="ts">"https://api.theoddsapi.com/odds/?sport_key=baseball_mlb"</span>,
     headers={<span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span>},
     params={<span class="ts">"markets"</span>: <span class="ts">"h2h"</span>}
 )
@@ -222,7 +222,7 @@ response = requests.get(
         <span class="text-2xs font-mono text-gold uppercase tracking-widest">JavaScript</span>
       </div>
       <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto thin-scroll"><code><span class="tk">const</span> res = <span class="tk">await</span> fetch(
-  <span class="ts">"https://api.theoddsapi.com/v4/sports/baseball_mlb/odds?markets=h2h"</span>,
+  <span class="ts">"https://api.theoddsapi.com/odds/?sport_key=baseball_mlb&markets=h2h"</span>,
   { headers: { <span class="ts">"x-api-key"</span>: <span class="ts">"YOUR_KEY"</span> } }
 );
 <span class="tk">const</span> events = <span class="tk">await</span> res.json();
